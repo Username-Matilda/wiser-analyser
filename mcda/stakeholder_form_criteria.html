@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCDA - Criteria Collection</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .content { padding: 30px; }
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+        }
+        .section h2 { color: #667eea; margin-bottom: 20px; font-size: 1.4em; }
+        .input-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 500;
+        }
+        .required { color: #dc3545; }
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover { transform: translateY(-2px); }
+        button.secondary { background: #6c757d; }
+        button.danger { background: #dc3545; }
+        .criterion-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+        .criterion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .criterion-number {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .type-objective { background: #d4edda; color: #155724; }
+        .type-subjective { background: #d1ecf1; color: #0c5460; }
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .json-output {
+            background: #2d2d2d;
+            color: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .help-text { font-size: 0.9em; color: #6c757d; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Criteria Collection</h1>
+            <p>Identify important factors for this decision</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>Your Information</h2>
+                <div class="input-group">
+                    <label>Your Name <span class="required">*</span></label>
+                    <input type="text" id="stakeholderName" placeholder="Enter your name">
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Criteria</h2>
+                <div class="alert alert-info">
+                    <strong>Instructions:</strong> Suggest criteria for evaluation. For each:
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li><strong>Name:</strong> What to evaluate (e.g., "Cost", "Environmental Impact")</li>
+                        <li><strong>Unit:</strong> Measurement (e.g., "USD", "CO2 tons/year") - Optional</li>
+                        <li><strong>Type:</strong> Objective (measurable) or Subjective (judgment)</li>
+                    </ul>
+                </div>
+
+                <div id="criteriaContainer"></div>
+                <button onclick="addCriterion()">+ Add Criterion</button>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>📋 Export Process:</strong>
+                <ol style="margin-top: 10px; margin-left: 20px;">
+                    <li><strong>First:</strong> Click "Generate Data"</li>
+                    <li><strong>Then:</strong> Download JSON or copy text manually</li>
+                    <li><strong>Finally:</strong> Email to facilitator</li>
+                </ol>
+            </div>
+
+            <button onclick="generateJSON()" style="font-size: 18px; padding: 15px 40px;">1️⃣ Generate Data</button>
+            
+            <div id="exportButtons" style="display: none; margin-top: 20px;">
+                <div class="alert alert-success">
+                    ✓ Data generated. Choose export method:
+                </div>
+                <button onclick="downloadJSON()" class="secondary">💾 Download JSON</button>
+                <button onclick="clearForm()" class="danger">🗑️ Clear Form</button>
+                <p style="margin-top: 15px; color: #6c757d;">
+                    <strong>Or copy manually:</strong> Select text below, copy (Ctrl+C/Cmd+C), paste in email.
+                </p>
+            </div>
+
+            <div id="jsonOutput" style="display: none; margin-top: 20px;">
+                <h3 style="margin-bottom: 10px;">Generated Data:</h3>
+                <div class="json-output" id="jsonDisplay"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let criteria = [];
+        let criterionCounter = 0;
+
+        window.onload = () => addCriterion();
+
+        function addCriterion() {
+            criterionCounter++;
+            criteria.push({
+                id: criterionCounter,
+                name: '',
+                unit: '',
+                type: 'subjective'
+            });
+            renderCriteria();
+        }
+
+        function removeCriterion(id) {
+            criteria = criteria.filter(c => c.id !== id);
+            renderCriteria();
+        }
+
+        function updateCriterion(id, field, value) {
+            const criterion = criteria.find(c => c.id === id);
+            if (criterion) criterion[field] = value;
+        }
+
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            if (criteria.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; font-style: italic;">No criteria yet. Click "Add Criterion".</p>';
+                return;
+            }
+
+            container.innerHTML = criteria.map((crit, index) => `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-number">${index + 1}</div>
+                        <button class="danger" onclick="removeCriterion(${crit.id})">Remove</button>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Criterion Name <span class="required">*</span></label>
+                        <input type="text" 
+                               value="${crit.name}" 
+                               onchange="updateCriterion(${crit.id}, 'name', this.value)"
+                               placeholder="e.g., Cost, Location Quality">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Unit of Measurement</label>
+                        <input type="text" 
+                               value="${crit.unit}" 
+                               onchange="updateCriterion(${crit.id}, 'unit', this.value)"
+                               placeholder="e.g., USD, kilometers (optional)">
+                        <div class="help-text">How should this be measured?</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Type <span class="required">*</span></label>
+                        <select onchange="updateCriterion(${crit.id}, 'type', this.value)">
+                            <option value="subjective" ${crit.type === 'subjective' ? 'selected' : ''}>Subjective (requires judgment)</option>
+                            <option value="objective" ${crit.type === 'objective' ? 'selected' : ''}>Objective (measurable)</option>
+                        </select>
+                        <span class="type-badge ${crit.type === 'objective' ? 'type-objective' : 'type-subjective'}">
+                            ${crit.type === 'objective' ? '📊 Objective' : '💭 Subjective'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function generateJSON() {
+            const name = document.getElementById('stakeholderName').value.trim();
+
+            if (!name) {
+                alert('Please enter your name.');
+                return;
+            }
+
+            const validCriteria = criteria.filter(c => c.name.trim() !== '');
+            if (validCriteria.length === 0) {
+                alert('Please add at least one criterion with a name.');
+                return;
+            }
+
+            const data = {
+                stakeholder_name: name,
+                submission_date: new Date().toISOString(),
+                criteria: validCriteria.map(c => ({
+                    name: c.name,
+                    unit: c.unit || null,
+                    type: c.type
+                }))
+            };
+
+            const jsonString = JSON.stringify(data, null, 2);
+            document.getElementById('jsonDisplay').textContent = jsonString;
+            document.getElementById('jsonOutput').style.display = 'block';
+            document.getElementById('exportButtons').style.display = 'block';
+            document.getElementById('jsonOutput').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadJSON() {
+            const jsonText = document.getElementById('jsonDisplay').textContent;
+            if (!jsonText) {
+                alert('Generate data first.');
+                return;
+            }
+
+            const blob = new Blob([jsonText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const name = document.getElementById('stakeholderName').value.trim().replace(/\s+/g, '_');
+            const timestamp = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `criteria_${name}_${timestamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearForm() {
+            if (confirm('Clear form? This cannot be undone.')) {
+                document.getElementById('stakeholderName').value = '';
+                criteria = [];
+                criterionCounter = 0;
+                addCriterion();
+                document.getElementById('jsonOutput').style.display = 'none';
+                document.getElementById('exportButtons').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
