@@ -15,7 +15,7 @@ The toolkit includes tools for uncertainty quantification (Monte Carlo, Fermi Es
 
 ## Development & Attribution
 
-These tools were designed and developed by Matilda, with assistance from Claude (Anthropic). The collaboration involved:
+These tools were designed and developed by Matilda, with assistance from Claude Sonnet 3.5 and then a bit of Opus 4.5. The collaboration involved:
 
 - **Human direction**: Overall design philosophy, UX decisions, domain expertise and most of the resources syllabus, some copy, iterative feedback, and final editorial control
 - **AI contribution**: Code generation, some content drafting, pattern implementation across tools, and harmonising of design principles
@@ -48,9 +48,10 @@ Even small observations help — typos, confusing wording, features that would m
 
 Each `.html` file is a complete, self-contained tool, except for the MCDA interface. You can:
 
-- **Use online**: Visit the hosted version 
 - **Use offline**: Download any file and open it in your browser
 - **Save your work**: Most tools support JSON export/import for saving and resuming analyses
+
+You can't access these through GitHub Pages until I'm ready to make this repo public.
 
 Start with the [Tool Navigator](comprehensive-tool-navigator.html) for an overview of which tool to use when.
 
