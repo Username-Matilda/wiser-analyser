@@ -472,8 +472,8 @@
             <h1>Multi-Criteria Decision Analysis</h1>
             <p>Comprehensive MCDA Interface with AHP and Multi-Stakeholder Support</p>
             <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                <button onclick="saveProject()" style="background: #28a745; padding: 10px 25px;">ðŸ’¾ Save Project</button>
-                <button onclick="document.getElementById('loadProjectInput').click()" style="background: #17a2b8; padding: 10px 25px;">ðŸ“‚ Load Project</button>
+                <button onclick="saveProject()" style="background: #28a745; padding: 10px 25px;">💾 Save Project</button>
+                <button onclick="document.getElementById('loadProjectInput').click()" style="background: #17a2b8; padding: 10px 25px;">📂 Load Project</button>
                 <input type="file" id="loadProjectInput" accept=".json" style="display: none;" onchange="loadProject(event)">
                 <div id="validationStatus" style="padding: 10px 20px; border-radius: 8px; font-weight: 600;"></div>
             </div>
@@ -490,12 +490,12 @@
         <!-- Structure Tab -->
         <div id="structure" class="tab-content active">
             <div class="philosophy-box">
-                <strong>ðŸŽ¯ The Nature of MCDA:</strong> We evaluate ALTERNATIVES (the options before us) against CRITERIA (what matters). 
+                <strong>🎯 The Nature of MCDA:</strong> We evaluate ALTERNATIVES (the options before us) against CRITERIA (what matters). 
                 Like a river choosing its path through mountains, each alternative flows through the landscape of our values.
             </div>
 
             <div class="import-section">
-                <h4>ðŸ“¥ Import Criteria from Stakeholders</h4>
+                <h4>📥 Import Criteria from Stakeholders</h4>
                 <p>Paste JSON in any form - the system adapts:</p>
                 <p style="font-size: 0.9em; color: #856404; margin-top: 5px;">
                     <strong>One:</strong> {...}<br>
@@ -507,7 +507,7 @@
             </div>
 
             <div class="section">
-                <h2>ðŸ“‹ Define Decision Structure</h2>
+                <h2>📋 Define Decision Structure</h2>
                 
                 <div class="input-group">
                     <label>Decision Goal/Objective</label>
@@ -541,7 +541,7 @@
                         <li><strong>Subjective:</strong> Requires judgment (Aesthetic appeal, Community fit, Resilience)</li>
                     </ul>
                     <strong>Subcriteria:</strong> Optional hierarchy for organization. Only leaf (bottom-level) criteria are weighted and scored.
-                    <br>Example: "Cost" â†’ "Initial Investment", "Monthly Expenses", "Maintenance"
+                    <br>Example: "Cost" → "Initial Investment", "Monthly Expenses", "Maintenance"
                 </div>
                 <div class="input-group">
                     <label>Add Criterion</label>
@@ -559,20 +559,20 @@
 
                 <h3>Objective Criteria - Enter Factual Data</h3>
                 <div class="alert alert-info">
-                    <strong>ðŸ“Š The Foundation of Facts:</strong> Objective criteria have measurable values that are the same for everyone. Enter them once here - they will automatically populate for all stakeholders.
+                    <strong>📊 The Foundation of Facts:</strong> Objective criteria have measurable values that are the same for everyone. Enter them once here - they will automatically populate for all stakeholders.
                     <br><em>Examples: Cost in USD, Distance in km, Time in hours</em>
                 </div>
                 <div id="objectiveDataEntry"></div>
             </div>
 
             <div class="export-section">
-                <h4>ðŸ“¤ Export Setup for Stakeholders</h4>
+                <h4>📤 Export Setup for Stakeholders</h4>
                 <p>Once you've finalized alternatives and criteria, export this setup to send to stakeholders:</p>
                 <button onclick="exportSetup()">Generate Setup JSON</button>
                 <div id="setupExportOutput" style="display: none; margin-top: 15px;">
                     <p style="margin-bottom: 10px;"><strong>Send this to stakeholders:</strong></p>
                     <div class="json-output" id="setupExportDisplay"></div>
-                    <button onclick="downloadSetup()" class="secondary" style="margin-top: 10px;">ðŸ’¾ Download Setup JSON</button>
+                    <button onclick="downloadSetup()" class="secondary" style="margin-top: 10px;">💾 Download Setup JSON</button>
                 </div>
             </div>
         </div>
@@ -580,10 +580,10 @@
         <!-- Weights Tab -->
         <div id="weights" class="tab-content">
             <div class="section">
-                <h2>âš–ï¸ Determine Criteria Weights (AHP)</h2>
+                <h2>⚖ï¸ Determine Criteria Weights (AHP)</h2>
                 
                 <div class="import-section">
-                    <h4>ðŸ“¥ Import Stakeholder Data (Weights + Scores)</h4>
+                    <h4>📥 Import Stakeholder Data (Weights + Scores)</h4>
                     <p>Paste complete stakeholder data from the comprehensive form:</p>
                     <textarea id="stakeholderImport" placeholder='{"stakeholder_name": "Alice", "criteria": [...], "weights": {...}, "scores": {...}, ...}'></textarea>
                     <button onclick="importStakeholder()">Import Stakeholder</button>
@@ -610,7 +610,7 @@
         <!-- Scoring Tab -->
         <div id="scoring" class="tab-content">
             <div class="section">
-                <h2>ðŸ“Š Performance Scoring</h2>
+                <h2>📊 Performance Scoring</h2>
                 
                 <div class="philosophy-box">
                     <strong>The Scoring Matrix:</strong> Each cell represents how well an alternative performs on a criterion. 
@@ -701,7 +701,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            alert('âœ“ Project saved successfully!');
+            alert('✓ Project saved successfully!');
         }
 
         function loadProject(event) {
@@ -726,7 +726,7 @@
                     if (previousTab === 'scoring') renderScoringTab();
                     
                     updateValidationStatus();
-                    alert('âœ“ Project loaded successfully!');
+                    alert('✓ Project loaded successfully!');
                     
                 } catch (error) {
                     alert('Failed to load project: ' + error.message);
@@ -744,11 +744,11 @@
             const container = document.getElementById('validationStatus');
             
             if (status.ready) {
-                container.innerHTML = 'âœ“ Ready to Calculate';
+                container.innerHTML = '✓ Ready to Calculate';
                 container.style.background = '#d4edda';
                 container.style.color = '#155724';
             } else {
-                container.innerHTML = 'âš  ' + status.warnings.length + ' Warning(s)';
+                container.innerHTML = '⚠ ' + status.warnings.length + ' Warning(s)';
                 container.style.background = '#fff3cd';
                 container.style.color = '#856404';
                 container.title = status.warnings.join('\n');
@@ -942,12 +942,12 @@
                     }
                 });
 
-                alert(`âœ“ Imported ${addedCount} criteria from ${submissions.length} stakeholder(s)`);
+                alert(`✓ Imported ${addedCount} criteria from ${submissions.length} stakeholder(s)`);
                 document.getElementById('criteriaImport').value = '';
                 renderCriteria();
                 
             } catch (error) {
-                alert('Import failed: ' + error.message + '\n\nAccepted formats:\nâ€¢ Single: {...}\nâ€¢ Multiple sequential: {...}{...}\nâ€¢ Array: [{...}, {...}]');
+                alert('Import failed: ' + error.message + '\n\nAccepted formats:\n• Single: {...}\n• Multiple sequential: {...}{...}\n• Array: [{...}, {...}]');
             }
         }
 
@@ -1169,7 +1169,7 @@
 
         function renderCriteriaRecursive(criteria, level = 0) {
             return criteria.map((crit, index) => {
-                const typeLabel = crit.type === 'objective' ? 'ðŸ“Š Objective' : 'ðŸ’­ Subjective';
+                const typeLabel = crit.type === 'objective' ? '📊 Objective' : '💭 Subjective';
                 const isLeaf = crit.subcriteria.length === 0;
                 return `
                     <div class="criterion-item" style="margin-left: ${level * 20}px">
@@ -1273,11 +1273,11 @@
                 <div class="stakeholder-section">
                     <h3>${sh.name}'s Configuration</h3>
                     ${Object.keys(sh.weights).length > 0 ? 
-                        '<div class="alert alert-success">âœ“ Weights imported from form</div>' : ''}
+                        '<div class="alert alert-success">✓ Weights imported from form</div>' : ''}
                     
                     <div class="alert alert-info">
-                        <strong>ðŸŽ¯ Specialty Domains:</strong> Select up to 2 criteria where you have specialized expertise. 
-                        Your voice on these criteria will carry 2Ã— weight in final aggregation. This honors distributed competency without hierarchy.
+                        <strong>🎯 Specialty Domains:</strong> Select up to 2 criteria where you have specialized expertise. 
+                        Your voice on these criteria will carry 2× weight in final aggregation. This honors distributed competency without hierarchy.
                     </div>
                     
                     <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -1292,7 +1292,7 @@
                                                onchange="toggleSpecialty(${shIndex}, '${crit.id}')"
                                                style="margin-right: 10px; width: auto;">
                                         <span>${crit.name} ${crit.unit ? `(${crit.unit})` : ''}</span>
-                                        ${isChecked ? '<span style="margin-left: 10px; color: #667eea; font-weight: 600;">2Ã— Voice</span>' : ''}
+                                        ${isChecked ? '<span style="margin-left: 10px; color: #667eea; font-weight: 600;">2× Voice</span>' : ''}
                                     </label>
                                 </div>
                             `;
@@ -1517,7 +1517,7 @@
             const subjectiveCriteria = leafCriteria.filter(c => c.type === 'subjective');
 
             if (mcda.alternatives.length === 0) {
-                objectiveContainer.innerHTML = '<div class="alert alert-warning">âš ï¸ Please add alternatives in the Structure tab first.</div>';
+                objectiveContainer.innerHTML = '<div class="alert alert-warning">⚠ï¸ Please add alternatives in the Structure tab first.</div>';
                 subjectiveContainer.innerHTML = '';
                 return;
             }
@@ -1562,7 +1562,7 @@
                     );
                     
                     if (hasImportedScores) {
-                        shHtml += '<div class="alert alert-success">âœ“ Scores imported from form</div>';
+                        shHtml += '<div class="alert alert-success">✓ Scores imported from form</div>';
                     }
                     
                     shHtml += '<table><thead><tr><th>Alternative</th>';
@@ -1675,7 +1675,7 @@
             finalScores.sort((a, b) => b.score - a.score);
 
             let html = '<div class="philosophy-box">';
-            html += '<strong>ðŸ“Š Understanding the Percentages</strong><br><br>';
+            html += '<strong>📊 Understanding the Percentages</strong><br><br>';
             html += '<strong>The Mechanics:</strong> Each criterion is normalized independently - best performance scores 1.0, worst scores 0.0, others fall proportionally between. ';
             html += 'Your final percentage is the weighted sum of these normalized values.<br><br>';
             html += '<strong>What 100% Means:</strong> An alternative reaches 100% only by achieving maximum performance on every single criterion - complete dominance across all dimensions. ';
