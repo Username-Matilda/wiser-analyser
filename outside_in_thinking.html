@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outside-In Thinking</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        h1 { color: #2c5282; margin-bottom: 8px; }
+        h2 { color: #2c5282; margin-bottom: 15px; font-size: 1.25em; }
+        h3 { color: #2c5282; margin: 0 0 10px 0; font-size: 1.1em; }
+        h4 { color: #2c5282; margin: 0 0 8px 0; font-size: 1em; }
+        
+        .subtitle { 
+            color: #555; 
+            margin-bottom: 20px; 
+            font-size: 1.05em;
+        }
+        
+        /* Load banner */
+        .load-banner {
+            background: #f0f7ff;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 12px 18px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .load-banner-text {
+            font-size: 14px;
+            color: #1565c0;
+        }
+        .load-banner button {
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+        
+        /* Intro box */
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        
+        /* Example box */
+        .example-box {
+            background: #f0fdfa;
+            border: 1px solid #81cdc6;
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .example-box h4 {
+            color: #276b63;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .example-box p {
+            margin: 0;
+            color: #2a6b64;
+            font-size: 14px;
+        }
+        
+        /* Philosophy box */
+        .philosophy-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-left: 4px solid #0d9488;
+            padding: 18px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .philosophy-box p {
+            margin: 0;
+            color: #1a4a45;
+        }
+        
+        /* Epistemic check */
+        .epistemic-check {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-left: 4px solid #0d9488;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .epistemic-check strong {
+            color: #0d7377;
+        }
+        
+        /* Tool guidance */
+        .tool-guidance {
+            background: #f8f5ff;
+            border: 1px solid #d4c4f0;
+            padding: 18px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .tool-guidance h3 {
+            color: #5b3d99;
+            margin-bottom: 12px;
+        }
+        .tool-guidance p {
+            font-size: 14px;
+            color: #444;
+            margin: 0 0 12px 0;
+        }
+        .tool-guidance ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+            font-size: 14px;
+            color: #444;
+        }
+        .tool-guidance li { margin-bottom: 8px; }
+        
+        /* Sections */
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c5282;
+            margin-bottom: 10px;
+        }
+        .hint-text {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 15px;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        .input-large { min-height: 100px; }
+        .input-medium { min-height: 80px; }
+        
+        /* Layers */
+        .layers {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-top: 20px;
+        }
+        .layer-card {
+            background: white;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        .layer-card:hover {
+            border-color: #2c5282;
+        }
+        .layer-card.has-content {
+            border-color: #0d9488;
+            background: linear-gradient(135deg, #f7ffff 0%, #fff 100%);
+        }
+        
+        /* Layer depth coloring */
+        .layer-card[data-layer="1"] { border-left: 4px solid #7c3aed; }
+        .layer-card[data-layer="2"] { border-left: 4px solid #2563eb; }
+        .layer-card[data-layer="3"] { border-left: 4px solid #0d9488; }
+        .layer-card[data-layer="4"] { border-left: 4px solid #059669; }
+        .layer-card[data-layer="5"] { border-left: 4px solid #d97706; }
+        
+        .layer-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: #2c5282;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .layer-card[data-layer="1"] .layer-number { background: #7c3aed; }
+        .layer-card[data-layer="2"] .layer-number { background: #2563eb; }
+        .layer-card[data-layer="3"] .layer-number { background: #0d9488; }
+        .layer-card[data-layer="4"] .layer-number { background: #059669; }
+        .layer-card[data-layer="5"] .layer-number { background: #d97706; }
+        
+        .layer-title {
+            font-weight: 600;
+            color: #2c5282;
+            font-size: 15px;
+            margin-bottom: 6px;
+            padding-right: 50px;
+        }
+        .layer-description {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+        
+        .layer-prompts {
+            background: #f8f5ff;
+            border: 1px solid #e0d6f0;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #5b3d99;
+        }
+        .layer-prompts summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #5b3d99;
+        }
+        .layer-prompts ul {
+            margin: 8px 0 0 0;
+            padding-left: 18px;
+        }
+        .layer-prompts li { margin-bottom: 4px; }
+        
+        .factor-list { margin-top: 10px; }
+        .factor-item {
+            background: #f8f8f8;
+            border-left: 3px solid #2c5282;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 3px;
+        }
+        .factor-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 60px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .factor-input:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 18px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.add-btn {
+            background: #059669;
+            font-size: 13px;
+            padding: 8px 14px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button.add-btn:hover { background: #047857; }
+        button.remove-btn {
+            background: #718096;
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+        button.remove-btn:hover { background: #5a6678; }
+        button.secondary { background: #718096; }
+        button.secondary:hover { background: #5a6678; }
+        
+        /* Synthesis section */
+        .synthesis-section {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 2px solid #0d9488;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        /* Analysis render */
+        .analysis-render {
+            display: none;
+            background: #fafafa;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .analysis-render.visible { display: block; }
+        .analysis-render h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+        .render-layer {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #2c5282;
+        }
+        .render-layer h4 {
+            margin-bottom: 10px;
+            color: #2c5282;
+        }
+        .render-factor {
+            background: #f5f5f5;
+            padding: 10px 12px;
+            margin: 6px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .render-synthesis {
+            background: linear-gradient(135deg, #f0fdfa 0%, #fff 100%);
+            border: 2px solid #0d9488;
+            border-radius: 6px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+        .render-synthesis h4 {
+            color: #0d9488;
+            margin-bottom: 10px;
+        }
+        .close-render {
+            float: right;
+            background: #718096;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        /* Next steps */
+        .next-steps-box {
+            background: #f8f5ff;
+            border: 1px solid #d4c4f0;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .next-steps-box h3 {
+            color: #5b3d99;
+            margin-bottom: 12px;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 14px;
+            color: #444;
+        }
+        .next-steps-box li { margin-bottom: 10px; }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 20px;
+            border-top: 1px solid #e8e8e8;
+            margin-top: 25px;
+        }
+        .toolbar-note {
+            width: 100%;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            color: #999;
+            font-size: 14px;
+            padding: 12px;
+            text-align: center;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 600px) {
+            .load-banner { flex-direction: column; align-items: stretch; }
+            .toolbar { flex-direction: column; }
+            .toolbar button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Outside-In Thinking</h1>
+        <p class="subtitle">Begin at the periphery. The center obscures what the edges reveal.</p>
+        
+        <!-- Load banner -->
+        <div class="load-banner">
+            <span class="load-banner-text">Have a previous analysis? Load it to continue, or load an example to see how this works.</span>
+            <div>
+                <button onclick="document.getElementById('loadInput').click()">📂 Load Previous</button>
+                <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadAnalysis(event)">
+                <button onclick="loadExample()" class="secondary">📋 Load Example</button>
+            </div>
+        </div>
+        
+        <!-- Intro -->
+        <div class="intro-box">
+            <p><strong>What this tool does:</strong> Most analysis starts from what we know and control — our skills, our resources, our immediate situation. This feels natural, but it's a trap. By starting from the <em>inside out</em>, we miss the larger forces that shape our context: forces we cannot control but must navigate.</p>
+            <p>Outside-in thinking inverts the frame. Begin with the global, the systemic, the uncontrollable. Work inward through decreasing scales. Only then does your true position — and your actual degrees of freedom — become visible.</p>
+            
+            <div class="example-box">
+                <h4>📖 The Railway Gauge Problem</h4>
+                <p>When the British built railways across their empire, they started from what they could control: engineering specifications, available materials, local construction capacity. They built to different gauges in different places. Only later did the costs of this inside-out thinking become clear: incompatible systems, goods requiring transfer at borders, decades of expensive standardization. Had they begun outside-in — asking "what global transport system are we building into?" — the constraints would have been visible from the start.</p>
+            </div>
+        </div>
+        
+        <!-- Epistemic check -->
+        <div class="epistemic-check">
+            <strong>🪞 Before you begin:</strong> Are you genuinely willing to discover that forces beyond your control might constrain your options more than you'd like? Outside-in thinking works best when approached with openness to uncomfortable truths.
+        </div>
+        
+        <!-- Tool guidance -->
+        <div class="tool-guidance">
+            <h3>🧭 Choosing & Sequencing Tools</h3>
+            <p>Several tools in this suite examine external forces. Here's how they differ and when to use each:</p>
+            <ul>
+                <li><strong>Outside-In Thinking</strong> (this tool): Maps the <em>structural hierarchy</em> of forces from macro to micro. Use when you need to understand how different scales of context nest and constrain each other. Best for: framing a situation before detailed analysis.</li>
+                <li><strong>Environmental Scanning:</strong> Systematic <em>categorical</em> analysis of external factors (PESTLE framework). Use when you need comprehensive coverage of external forces within a single layer. Best for: thorough external research.</li>
+                <li><strong>Alternative Futures:</strong> Explores <em>multiple possible futures</em> via scenario generation. Use when key outer-layer factors are uncertain and you need to plan for different ways they might resolve. Best for: strategy under uncertainty.</li>
+                <li><strong>Cone of Possibilities:</strong> Maps possibilities across <em>time horizons</em> with probability bands. Use when you need to think about how certainty changes over time. Best for: long-range planning.</li>
+                <li><strong>Reference Class Forecasting:</strong> Calibrates estimates using <em>base rates from similar cases</em>. Use when you need to check your assumptions against historical data. Best for: estimation and planning accuracy.</li>
+            </ul>
+            <p><strong>Common sequences:</strong> Outside-In → Environmental Scanning (frame first, then research systematically) | Outside-In → Alternative Futures (understand structure, then explore scenarios) | Reference Class → Outside-In (calibrate, then understand why your case might differ from the reference class).</p>
+        </div>
+        
+        <!-- Philosophy box -->
+        <div class="philosophy-box">
+            <p><strong>The discipline:</strong> Resist the temptation to start at the center. Force yourself to begin with Layer 1 and work inward. Each layer provides essential context for the next. Where do forces at different layers conflict? Where might influence at one layer create change at another? Are you overestimating your control at inner layers while ignoring outer constraints?</p>
+        </div>
+
+        <!-- Issue input -->
+        <div class="section">
+            <div class="section-title">Your Issue (The Center)</div>
+            <div class="hint-text">What decision, project, or situation lies at the center of your analysis? Be specific enough that you can evaluate whether outer forces constrain it.</div>
+            <textarea id="issue" 
+                      class="input-medium" 
+                      placeholder="Example: Whether to expand our research community to a second location in the next 18 months..."></textarea>
+        </div>
+
+        <!-- Layers -->
+        <div class="section">
+            <div class="section-title">The Layers of Influence</div>
+            <div class="hint-text">Work from the outermost forces inward. Start with what you cannot control but must navigate.</div>
+            
+            <div class="layers">
+                <!-- Layer 1: Global/Macro -->
+                <div class="layer-card" data-layer="1" id="layer1Card">
+                    <div class="layer-number">1</div>
+                    <div class="layer-title">🌍 Global/Macro Forces</div>
+                    <div class="layer-description">
+                        The widest context: civilizational trends, climate trajectories, technology waves, geopolitical shifts, demographic patterns. These shape everything but lie far from your influence.
+                    </div>
+                    <details class="layer-prompts">
+                        <summary>Prompts to consider</summary>
+                        <ul>
+                            <li>What long-term trends (10-50 years) could reshape the context for your issue?</li>
+                            <li>What geopolitical shifts might change the playing field?</li>
+                            <li>What technological or scientific developments are on the horizon?</li>
+                            <li>What demographic or cultural shifts are underway?</li>
+                            <li>What environmental or climate factors could matter?</li>
+                        </ul>
+                    </details>
+                    <div class="factor-list" id="layer1Factors"></div>
+                    <button class="add-btn" onclick="addFactor('layer1')">+ Add Global Force</button>
+                </div>
+
+                <!-- Layer 2: Sector/Industry -->
+                <div class="layer-card" data-layer="2" id="layer2Card">
+                    <div class="layer-number">2</div>
+                    <div class="layer-title">🏭 Sector/Field Dynamics</div>
+                    <div class="layer-description">
+                        Your broader field: market structures, competitive dynamics, regulatory environment, technological standards, professional norms, funding landscapes.
+                    </div>
+                    <details class="layer-prompts">
+                        <summary>Prompts to consider</summary>
+                        <ul>
+                            <li>What are the dominant players and power structures in your field?</li>
+                            <li>What regulatory or policy changes are emerging?</li>
+                            <li>How is funding/investment flowing in this space?</li>
+                            <li>What professional norms or standards constrain action?</li>
+                            <li>What's the competitive/collaborative landscape?</li>
+                        </ul>
+                    </details>
+                    <div class="factor-list" id="layer2Factors"></div>
+                    <button class="add-btn" onclick="addFactor('layer2')">+ Add Field Factor</button>
+                </div>
+
+                <!-- Layer 3: Organizational/Community -->
+                <div class="layer-card" data-layer="3" id="layer3Card">
+                    <div class="layer-number">3</div>
+                    <div class="layer-title">🏢 Organizational/Community Context</div>
+                    <div class="layer-description">
+                        Your immediate ecosystem: organizational culture, resource availability, stakeholder expectations, community norms, existing relationships and commitments.
+                    </div>
+                    <details class="layer-prompts">
+                        <summary>Prompts to consider</summary>
+                        <ul>
+                            <li>What does your organizational culture enable or prevent?</li>
+                            <li>What resource constraints shape your options?</li>
+                            <li>What do key stakeholders expect or demand?</li>
+                            <li>What existing commitments constrain future choices?</li>
+                            <li>What relationships are essential to maintain?</li>
+                        </ul>
+                    </details>
+                    <div class="factor-list" id="layer3Factors"></div>
+                    <button class="add-btn" onclick="addFactor('layer3')">+ Add Context Factor</button>
+                </div>
+
+                <!-- Layer 4: Team/Project -->
+                <div class="layer-card" data-layer="4" id="layer4Card">
+                    <div class="layer-number">4</div>
+                    <div class="layer-title">👥 Team/Project Level</div>
+                    <div class="layer-description">
+                        Your direct working context: team capabilities and gaps, current initiatives, immediate constraints, available tools, active working relationships.
+                    </div>
+                    <details class="layer-prompts">
+                        <summary>Prompts to consider</summary>
+                        <ul>
+                            <li>What capabilities does your team have or lack?</li>
+                            <li>What current work competes for attention?</li>
+                            <li>What tools and infrastructure are available?</li>
+                            <li>What team dynamics affect what's possible?</li>
+                            <li>What's the bandwidth and energy situation?</li>
+                        </ul>
+                    </details>
+                    <div class="factor-list" id="layer4Factors"></div>
+                    <button class="add-btn" onclick="addFactor('layer4')">+ Add Team Factor</button>
+                </div>
+
+                <!-- Layer 5: Individual/Decision -->
+                <div class="layer-card" data-layer="5" id="layer5Card">
+                    <div class="layer-number">5</div>
+                    <div class="layer-title">🎯 Individual/Decision Level</div>
+                    <div class="layer-description">
+                        The innermost circle: personal capabilities and limitations, immediate choices, direct actions within your control, your own energy and attention.
+                    </div>
+                    <details class="layer-prompts">
+                        <summary>Prompts to consider</summary>
+                        <ul>
+                            <li>What can you personally decide and act on?</li>
+                            <li>What skills or knowledge do you bring?</li>
+                            <li>What are your own constraints (time, energy, attention)?</li>
+                            <li>What's within your direct sphere of influence?</li>
+                            <li>What choices are truly yours to make?</li>
+                        </ul>
+                    </details>
+                    <div class="factor-list" id="layer5Factors"></div>
+                    <button class="add-btn" onclick="addFactor('layer5')">+ Add Individual Factor</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis render (before synthesis) -->
+        <div class="analysis-render" id="analysisRender">
+            <button class="close-render" onclick="hideAnalysis()">✕ Close</button>
+            <h3>Your Outside-In Analysis So Far</h3>
+            <div id="analysisContent"></div>
+            <div id="synthesisPortion" style="display: none;"></div>
+        </div>
+
+        <!-- Synthesis -->
+        <div class="synthesis-section">
+            <div class="section-title">Synthesis: What the Outside Reveals</div>
+            <div class="hint-text">
+                Now that you've mapped from outside-in, what do you see differently? How do the outer forces constrain or enable your options at the center? What was invisible when thinking inside-out?
+            </div>
+            <div style="margin-bottom: 15px;">
+                <button onclick="showAnalysis()" id="viewAnalysisBtn" disabled>📊 View Your Inputs</button>
+            </div>
+            <textarea id="synthesis" 
+                      class="input-large" 
+                      placeholder="What insights emerge from this perspective? Where do forces at different layers align or conflict? What constraints were you previously ignoring? What options open up when you accept the outer constraints rather than fight them?"></textarea>
+            
+            <div style="margin-top: 15px;">
+                <button onclick="completeSynthesis()" id="completeSynthesisBtn" style="background: #0d9488;">✓ Synthesis Complete</button>
+            </div>
+        </div>
+
+        <!-- Next steps -->
+        <div class="next-steps-box">
+            <h3>What To Do With This Analysis</h3>
+            <ul>
+                <li><strong>For binding constraints:</strong> Accept them. Stop spending energy fighting what you cannot change. Redirect that energy toward what you <em>can</em> influence.</li>
+                <li><strong>For misalignments between layers:</strong> These are often where problems originate. A team-level goal that conflicts with field-level dynamics will struggle indefinitely until the misalignment is addressed.</li>
+                <li><strong>For leverage points:</strong> Where might action at one layer create change at another? These are often the highest-value interventions.</li>
+                <li><strong>Revisit periodically:</strong> Outer layers shift slowly but consequentially. When you notice changes at Layers 1-2, return here to reassess how they propagate inward.</li>
+                <li><strong>Companion tools:</strong> Use <em>Environmental Scanning</em> for systematic research on factors you've identified. Use <em>Alternative Futures</em> to explore how key uncertainties might resolve. Use <em>Pre-mortem Analysis</em> once you've chosen a course of action.</li>
+            </ul>
+        </div>
+
+        <!-- Claude prompt template (collapsible) -->
+        <details class="section" style="background: #f8f5ff; border: 1px solid #d4c4f0;">
+            <summary style="cursor: pointer; font-weight: 600; color: #5b3d99; font-size: 1.1em; padding: 5px 0;">🤖 Template: Analyze This With Claude</summary>
+            <div style="margin-top: 15px;">
+                <div class="hint-text">Copy your analysis and paste it into a conversation with Claude using this prompt structure. The prompt is designed to elicit rigorous, non-sycophantic thinking.</div>
+                <div style="background: white; border: 1px solid #e0d6f0; border-radius: 4px; padding: 15px; margin-top: 10px;">
+                    <p style="font-size: 13px; color: #444; margin: 0 0 10px 0; font-weight: 500;">Click "Copy Analysis for Claude" below to copy your analysis with this prompt:</p>
+                    <div style="font-size: 13px; color: #555; font-family: monospace; white-space: pre-wrap; background: #fafafa; padding: 12px; border-radius: 4px; line-height: 1.5;">I've completed an outside-in thinking analysis. I want you to stress-test it with rigorous, direct feedback. Don't reassure me — challenge me.
+
+[ANALYSIS WILL BE INSERTED HERE]
+
+Please examine this analysis and respond to:
+
+1. BLIND SPOTS: What forces have I likely missed or underweighted at each layer? What's conspicuously absent?
+
+2. WISHFUL THINKING: Where am I treating constraints as more flexible than they probably are? Where might I be overestimating my influence?
+
+3. LAYER CONFLICTS: What tensions between layers am I not acknowledging? Where are my inner-layer goals misaligned with outer-layer realities?
+
+4. ALTERNATIVE FRAMINGS: How might someone with different assumptions frame this situation? What would they see that I'm missing?
+
+5. NEXT MOVES: Given the constraints I've mapped, what are the highest-leverage actions available? What should I stop doing?
+
+Be direct. I'm seeking clarity, not comfort.</div>
+                </div>
+                <div style="margin-top: 12px;">
+                    <button onclick="copyForClaude()" style="background: #5b3d99;">📋 Copy Analysis for Claude</button>
+                </div>
+            </div>
+        </details>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-note"><strong>Save:</strong> Downloads .json file you can reload later. <strong>Export:</strong> Downloads human-readable .txt report.</div>
+            <button onclick="saveAnalysis()">💾 Save Analysis</button>
+            <button onclick="exportAnalysis()" class="secondary">📄 Export Report</button>
+            <button onclick="copyToClipboard()" class="secondary">📋 Copy to Clipboard</button>
+            <button onclick="clearAll()" class="secondary">🔄 Clear All</button>
+        </div>
+    </div>
+
+    <script>
+        let layers = {
+            layer1: [],
+            layer2: [],
+            layer3: [],
+            layer4: [],
+            layer5: []
+        };
+        let nextId = 1;
+
+        const layerMeta = {
+            layer1: { name: '🌍 Global/Macro Forces', color: '#7c3aed' },
+            layer2: { name: '🏭 Sector/Field Dynamics', color: '#2563eb' },
+            layer3: { name: '🏢 Organizational/Community Context', color: '#0d9488' },
+            layer4: { name: '👥 Team/Project Level', color: '#059669' },
+            layer5: { name: '🎯 Individual/Decision Level', color: '#d97706' }
+        };
+
+        function addFactor(layerId) {
+            layers[layerId].push({ id: nextId++, text: '' });
+            renderLayer(layerId);
+            updateLayerState(layerId);
+            checkViewButton();
+        }
+
+        function removeFactor(layerId, factorId) {
+            layers[layerId] = layers[layerId].filter(f => f.id !== factorId);
+            renderLayer(layerId);
+            updateLayerState(layerId);
+            checkViewButton();
+        }
+
+        function updateFactor(layerId, factorId, value) {
+            const factor = layers[layerId].find(f => f.id === factorId);
+            if (factor) factor.text = value;
+            updateLayerState(layerId);
+            checkViewButton();
+        }
+
+        function updateLayerState(layerId) {
+            const card = document.getElementById(`${layerId}Card`);
+            const hasContent = layers[layerId].some(f => f.text.trim());
+            if (hasContent) {
+                card.classList.add('has-content');
+            } else {
+                card.classList.remove('has-content');
+            }
+        }
+
+        function checkViewButton() {
+            const hasAnyContent = Object.values(layers).some(layerFactors => 
+                layerFactors.some(f => f.text.trim())
+            ) || document.getElementById('issue').value.trim() || document.getElementById('synthesis').value.trim();
+            
+            document.getElementById('viewAnalysisBtn').disabled = !hasAnyContent;
+        }
+
+        function renderLayer(layerId) {
+            const container = document.getElementById(`${layerId}Factors`);
+            const layerFactors = layers[layerId];
+            
+            if (layerFactors.length === 0) {
+                container.innerHTML = '<div class="empty-state">No factors added yet</div>';
+                return;
+            }
+
+            container.innerHTML = layerFactors.map(factor => `
+                <div class="factor-item">
+                    <div style="display: flex; gap: 10px; align-items: start;">
+                        <textarea class="factor-input"
+                                  placeholder="Describe a factor at this level..."
+                                  onchange="updateFactor('${layerId}', ${factor.id}, this.value)"
+                                  oninput="updateFactor('${layerId}', ${factor.id}, this.value)">${escapeHtml(factor.text)}</textarea>
+                        <button class="remove-btn" onclick="removeFactor('${layerId}', ${factor.id})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showAnalysis() {
+            const issue = document.getElementById('issue').value.trim();
+            
+            let html = '';
+            
+            if (issue) {
+                html += `<div class="render-layer" style="border-left-color: #2c5282;">
+                    <h4>Central Issue</h4>
+                    <div class="render-factor">${escapeHtml(issue)}</div>
+                </div>`;
+            }
+            
+            Object.keys(layers).forEach(layerId => {
+                const factors = layers[layerId].filter(f => f.text.trim());
+                if (factors.length > 0) {
+                    html += `<div class="render-layer" style="border-left-color: ${layerMeta[layerId].color};">
+                        <h4>${layerMeta[layerId].name}</h4>
+                        ${factors.map(f => `<div class="render-factor">${escapeHtml(f.text)}</div>`).join('')}
+                    </div>`;
+                }
+            });
+            
+            if (!html) {
+                html = '<p style="color: #666; text-align: center; padding: 20px;">No content to display yet.</p>';
+            }
+            
+            document.getElementById('analysisContent').innerHTML = html;
+            document.getElementById('synthesisPortion').style.display = 'none';
+            document.getElementById('analysisRender').classList.add('visible');
+            document.getElementById('analysisRender').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function completeSynthesis() {
+            const issue = document.getElementById('issue').value.trim();
+            const synthesis = document.getElementById('synthesis').value.trim();
+            
+            if (!synthesis) {
+                alert('Please write your synthesis first.');
+                return;
+            }
+            
+            let html = '';
+            
+            if (issue) {
+                html += `<div class="render-layer" style="border-left-color: #2c5282;">
+                    <h4>Central Issue</h4>
+                    <div class="render-factor">${escapeHtml(issue)}</div>
+                </div>`;
+            }
+            
+            Object.keys(layers).forEach(layerId => {
+                const factors = layers[layerId].filter(f => f.text.trim());
+                if (factors.length > 0) {
+                    html += `<div class="render-layer" style="border-left-color: ${layerMeta[layerId].color};">
+                        <h4>${layerMeta[layerId].name}</h4>
+                        ${factors.map(f => `<div class="render-factor">${escapeHtml(f.text)}</div>`).join('')}
+                    </div>`;
+                }
+            });
+            
+            document.getElementById('analysisContent').innerHTML = html;
+            
+            // Add synthesis to its own portion
+            document.getElementById('synthesisPortion').innerHTML = `
+                <div class="render-synthesis">
+                    <h4>✓ Synthesis</h4>
+                    <p style="margin: 0; white-space: pre-wrap;">${escapeHtml(synthesis)}</p>
+                </div>`;
+            document.getElementById('synthesisPortion').style.display = 'block';
+            
+            // Update header
+            document.querySelector('#analysisRender h3').textContent = 'Your Complete Outside-In Analysis';
+            
+            document.getElementById('analysisRender').classList.add('visible');
+            document.getElementById('analysisRender').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideAnalysis() {
+            document.getElementById('analysisRender').classList.remove('visible');
+            // Reset header for next view
+            document.querySelector('#analysisRender h3').textContent = 'Your Outside-In Analysis So Far';
+        }
+
+        function generateReportText() {
+            const issue = document.getElementById('issue').value.trim();
+            const synthesis = document.getElementById('synthesis').value.trim();
+            
+            let report = 'OUTSIDE-IN THINKING ANALYSIS\n';
+            report += '='.repeat(50) + '\n\n';
+            
+            if (issue) {
+                report += 'CENTRAL ISSUE:\n' + issue + '\n\n';
+                report += '-'.repeat(50) + '\n\n';
+            }
+            
+            Object.keys(layers).forEach(layerId => {
+                const factors = layers[layerId].filter(f => f.text.trim());
+                if (factors.length > 0) {
+                    report += layerMeta[layerId].name.toUpperCase() + '\n\n';
+                    factors.forEach((f, i) => {
+                        report += `${i + 1}. ${f.text}\n`;
+                    });
+                    report += '\n' + '-'.repeat(50) + '\n\n';
+                }
+            });
+            
+            if (synthesis) {
+                report += 'SYNTHESIS:\n\n' + synthesis + '\n\n';
+                report += '='.repeat(50) + '\n';
+            }
+            
+            report += `\nGenerated: ${new Date().toLocaleString()}\n`;
+            
+            return report;
+        }
+
+        function saveAnalysis() {
+            const data = {
+                version: '2.0',
+                issue: document.getElementById('issue').value,
+                layers: layers,
+                synthesis: document.getElementById('synthesis').value,
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `outside_in_thinking_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportAnalysis() {
+            const report = generateReportText();
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `outside_in_report_${date}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            const report = generateReportText();
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Analysis copied to clipboard.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = report;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Analysis copied to clipboard.');
+            });
+        }
+
+        function copyForClaude() {
+            const issue = document.getElementById('issue').value.trim();
+            const synthesis = document.getElementById('synthesis').value.trim();
+            
+            let analysis = 'OUTSIDE-IN THINKING ANALYSIS\n';
+            analysis += '='.repeat(50) + '\n\n';
+            
+            if (issue) {
+                analysis += 'CENTRAL ISSUE:\n' + issue + '\n\n';
+            }
+            
+            Object.keys(layers).forEach(layerId => {
+                const factors = layers[layerId].filter(f => f.text.trim());
+                if (factors.length > 0) {
+                    analysis += layerMeta[layerId].name + '\n';
+                    factors.forEach((f, i) => {
+                        analysis += `  ${i + 1}. ${f.text}\n`;
+                    });
+                    analysis += '\n';
+                }
+            });
+            
+            if (synthesis) {
+                analysis += 'SYNTHESIS:\n' + synthesis + '\n';
+            }
+            
+            const prompt = `I've completed an outside-in thinking analysis. I want you to stress-test it with rigorous, direct feedback. Don't reassure me — challenge me.
+
+${analysis}
+
+Please examine this analysis and respond to:
+
+1. BLIND SPOTS: What forces have I likely missed or underweighted at each layer? What's conspicuously absent?
+
+2. WISHFUL THINKING: Where am I treating constraints as more flexible than they probably are? Where might I be overestimating my influence?
+
+3. LAYER CONFLICTS: What tensions between layers am I not acknowledging? Where are my inner-layer goals misaligned with outer-layer realities?
+
+4. ALTERNATIVE FRAMINGS: How might someone with different assumptions frame this situation? What would they see that I'm missing?
+
+5. NEXT MOVES: Given the constraints I've mapped, what are the highest-leverage actions available? What should I stop doing?
+
+Be direct. I'm seeking clarity, not comfort.`;
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert('Analysis with prompt copied! Paste into a Claude conversation.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = prompt;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Analysis with prompt copied!');
+            });
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    document.getElementById('issue').value = data.issue || '';
+                    document.getElementById('synthesis').value = data.synthesis || '';
+                    layers = data.layers || {};
+                    
+                    // Ensure all layers exist
+                    ['layer1', 'layer2', 'layer3', 'layer4', 'layer5'].forEach(layerId => {
+                        if (!layers[layerId]) layers[layerId] = [];
+                    });
+                    
+                    // Update nextId
+                    nextId = 1;
+                    Object.values(layers).forEach(layerFactors => {
+                        layerFactors.forEach(factor => {
+                            if (factor.id >= nextId) nextId = factor.id + 1;
+                        });
+                    });
+                    
+                    // Render and update states
+                    Object.keys(layers).forEach(layerId => {
+                        renderLayer(layerId);
+                        updateLayerState(layerId);
+                    });
+                    checkViewButton();
+                    hideAnalysis();
+                    
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function loadExample() {
+            if (document.getElementById('issue').value.trim() || 
+                Object.values(layers).some(l => l.some(f => f.text.trim()))) {
+                if (!confirm('This will replace your current work. Continue?')) {
+                    return;
+                }
+            }
+            
+            document.getElementById('issue').value = 'Whether to expand our residential nonprofit community to a second site over the next 18-24 months.';
+            
+            layers = {
+                layer1: [
+                    { id: 1, text: 'Remote work normalization — physical co-location less necessary for professional collaboration but still valuable for community building.' },
+                    { id: 2, text: 'Climate instability increasing — some regions relatively insulated, but global supply chains becoming less reliable.' },
+                    { id: 3, text: 'Geopolitical tensions affecting mobility — visa regimes tightening in many countries, international relocations harder.' },
+                    { id: 4, text: 'Growing interest in intentional communities — more potential residents, but also more competing projects for similar demographics.' }
+                ],
+                layer2: [
+                    { id: 5, text: 'Intentional community sector is small and fragmented — few established models, limited knowledge-sharing infrastructure between projects.' },
+                    { id: 6, text: 'Funding landscape for residential nonprofits is challenging — funders often skeptical of community-building as a fundable intervention.' },
+                    { id: 7, text: 'Increasing regulatory complexity — informal community structures facing pressure to formalize governance, compliance, insurance.' },
+                    { id: 8, text: 'Real estate markets volatile — timing of expansion affects capital requirements significantly.' }
+                ],
+                layer3: [
+                    { id: 9, text: 'Current site at capacity — physical space constrains growth, but expansion requires capital and management bandwidth we may not have.' },
+                    { id: 10, text: 'Community culture emphasizes autonomy and minimal hierarchy — works at current scale but may not scale gracefully.' },
+                    { id: 11, text: 'Existing relationships with local government and neighbors took years to build — replicating elsewhere would require similar investment.' },
+                    { id: 12, text: 'Some members have strong location preferences — expansion might fragment rather than grow the community.' }
+                ],
+                layer4: [
+                    { id: 13, text: 'Leadership team already stretched — no clear capacity to manage a second site without reducing focus on current operations.' },
+                    { id: 14, text: 'Current residents have mixed views on expansion — some excited, some worried about dilution of culture.' },
+                    { id: 15, text: 'No one on the team has set up a new site before — significant learning curve and risk of costly mistakes.' }
+                ],
+                layer5: [
+                    { id: 16, text: 'I feel torn — excited by growth potential but worried about losing what makes the current community work.' },
+                    { id: 17, text: 'My bandwidth is limited — taking on site selection and setup would mean stepping back from other responsibilities.' },
+                    { id: 18, text: 'I have stronger networks in some regions than others — this biases my assessment in ways I should acknowledge.' }
+                ]
+            };
+            
+            document.getElementById('synthesis').value = `Looking from outside-in reveals several things I was avoiding:
+
+1. The geopolitical and mobility constraints (Layer 1-2) mean our realistic candidate pool for residents is narrower than I assumed. Many people we'd want to attract face constraints that limit where they can relocate.
+
+2. Our current culture (Layer 3) depends on factors that emerged organically over years — trying to "install" this culture at a new site would likely fail. We might end up with two half-functional communities instead of one strong one.
+
+3. The honest truth at Layer 5 is that I don't have the capacity to do this well right now. Pushing forward anyway would mean ignoring a real constraint.
+
+What this suggests: Rather than expanding to a second permanent site, consider temporary residency programs that bring people to our existing site for 3-6 month stints. This addresses the capacity constraint without requiring us to replicate what can't easily be replicated.
+
+The outer layers are telling us that the window for this kind of expansion may be narrowing (visa regimes, real estate), but they're also telling us that rushing it would be worse than not doing it.`;
+
+            // Render and update
+            Object.keys(layers).forEach(layerId => {
+                renderLayer(layerId);
+                updateLayerState(layerId);
+            });
+            nextId = 19;
+            checkViewButton();
+            hideAnalysis();
+            
+            // Scroll to issue
+            document.getElementById('issue').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function clearAll() {
+            if (!confirm('Clear all data? This cannot be undone.')) return;
+            
+            document.getElementById('issue').value = '';
+            document.getElementById('synthesis').value = '';
+            layers = {
+                layer1: [],
+                layer2: [],
+                layer3: [],
+                layer4: [],
+                layer5: []
+            };
+            nextId = 1;
+            
+            Object.keys(layers).forEach(layerId => {
+                renderLayer(layerId);
+                updateLayerState(layerId);
+            });
+            checkViewButton();
+            hideAnalysis();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Event listeners for issue and synthesis
+        document.getElementById('issue').addEventListener('input', checkViewButton);
+        document.getElementById('synthesis').addEventListener('input', checkViewButton);
+
+        // Initialize
+        Object.keys(layers).forEach(layerId => renderLayer(layerId));
+        checkViewButton();
+    </script>
+</body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swing Weighting Calculator</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 10px; }
+        h2 { color: #2c5282; margin-bottom: 15px; }
+        h3 { color: #2c5282; margin: 0 0 12px 0; }
+        h4 { color: #2c5282; margin: 15px 0 10px 0; }
+        .subtitle { color: #555; margin-bottom: 25px; }
+        
+        /* Intro box */
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .section-help {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary {
+            background: #718096;
+            font-size: 14px;
+            padding: 6px 12px;
+        }
+        button.secondary:hover { background: #5a6878; }
+        button.remove {
+            background: #718096;
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+        button.remove:hover { background: #5a6878; }
+        button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        
+        input[type="text"], input[type="number"] {
+            padding: 10px 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 0;
+            font-family: inherit;
+        }
+        input:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        input::placeholder {
+            color: #a0aec0;
+        }
+        
+        /* Worked example box */
+        .example-box {
+            background: #f0fafa;
+            border: 1px solid #81cdc6;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .example-box h4 {
+            color: #276b63;
+            margin: 0 0 15px 0;
+            font-size: 15px;
+        }
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .example-table th, .example-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #b8e0db;
+        }
+        .example-table th {
+            background: #e0f4f2;
+            color: #1f5f58;
+            font-weight: 600;
+        }
+        .example-table td {
+            background: white;
+        }
+        .example-narrative {
+            font-size: 14px;
+            color: #2a6b64;
+            margin-top: 15px;
+            padding: 12px;
+            background: #e8f6f4;
+            border-radius: 4px;
+        }
+        .example-narrative p { margin: 0 0 10px 0; }
+        .example-narrative p:last-child { margin-bottom: 0; }
+        
+        /* Criteria table */
+        .criteria-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .criteria-table th, .criteria-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .criteria-table th {
+            background: #e2e8f0;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .criteria-table input[type="number"] {
+            width: 90px;
+        }
+        .criteria-table input[type="text"] {
+            min-width: 120px;
+        }
+        .criteria-table td:last-child {
+            width: 80px;
+            text-align: center;
+        }
+        
+        .range-display {
+            background: #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        /* Swing ranking section */
+        .swing-ranking {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 6px;
+        }
+        .swing-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .swing-item:last-of-type { margin-bottom: 0; }
+        .swing-item.reference {
+            background: #f0f7ff;
+            border: 2px solid #2c5282;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .slider {
+            flex: 1;
+            min-width: 120px;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #cbd5e0;
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2c5282;
+            cursor: pointer;
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2c5282;
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Results section */
+        .weight-results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            border: 1px solid #bee3f8;
+        }
+        .weight-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #bee3f8;
+        }
+        .weight-item:last-of-type { border-bottom: none; }
+        .weight-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #2c5282 0%, #4a7ab8 100%);
+            border-radius: 4px;
+            margin-top: 6px;
+            min-width: 4px;
+        }
+        
+        /* Info and warning boxes */
+        .info {
+            background: #f0f7ff;
+            border: 1px solid #bee3f8;
+            color: #2c5282;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .warning {
+            background: #fef5f5;
+            border: 1px solid #e8c4bc;
+            color: #8b5a4a;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        /* Next steps box */
+        .next-steps-box {
+            background: #f0f7ff;
+            border: 1px solid #bee3f8;
+            padding: 25px;
+            border-radius: 6px;
+            margin-top: 30px;
+        }
+        .next-steps-box h3 {
+            margin: 0 0 15px 0;
+        }
+        .next-steps-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .next-step-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        .next-step-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .next-step-card p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+        .next-step-card ul {
+            margin: 8px 0 0 20px;
+            padding: 0;
+            font-size: 14px;
+            color: #555;
+        }
+        .next-step-card li { margin-bottom: 4px; }
+        
+        .questions-box {
+            background: #f8f5fc;
+            border: 1px solid #d4c6e8;
+            border-left: 4px solid #7c5cad;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .questions-box h4 {
+            color: #5b4180;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .questions-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #555;
+            font-size: 14px;
+        }
+        .questions-box li { margin-bottom: 6px; }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .section { padding: 15px; }
+            .swing-item { 
+                flex-direction: column; 
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .swing-item > div:last-child {
+                width: 100%;
+            }
+            .criteria-table { font-size: 13px; }
+            .criteria-table input[type="number"] { width: 70px; }
+            .next-steps-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Swing Weighting Calculator</h1>
+        <p class="subtitle">Ground criteria weights in actual ranges rather than abstract importance</p>
+        
+        <div class="intro-box">
+            <p><strong>What this tool does:</strong> Swing weighting determines how much each criterion matters by asking a concrete question: "How valuable is improving from the worst available option to the best?" This grounds your weights in the actual improvements at stake, not abstract notions of importance.</p>
+            <p><strong>Why it matters:</strong> When someone says "quality is more important than cost," that's meaningless without context. Is quality improving from 60% to 95%? Or from 90% to 92%? The same criterion can have vastly different weights depending on the actual range of options you face.</p>
+        </div>
+        
+        <!-- Worked Example -->
+        <div class="example-box">
+            <h4>📊 Worked Example: Vendor Selection</h4>
+            <p style="font-size: 14px; color: #2a6b64; margin-bottom: 15px;">Imagine you're choosing between three vendors. First, identify the worst and best values across your actual options:</p>
+            
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>Worst</th>
+                        <th>Best</th>
+                        <th>Unit</th>
+                        <th>The "Swing"</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Cost</strong></td>
+                        <td>$8M</td>
+                        <td>$2M</td>
+                        <td>$M</td>
+                        <td>Saving $6M</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Delivery Time</strong></td>
+                        <td>18 months</td>
+                        <td>6 months</td>
+                        <td>months</td>
+                        <td>Saving 12 months</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance</strong></td>
+                        <td>60%</td>
+                        <td>95%</td>
+                        <td>%</td>
+                        <td>Gaining 35 points</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="example-narrative">
+                <p><strong>Step 1:</strong> Ask: "If all criteria were at their worst, which swing to best would I value most?" Suppose the $6M cost saving is most valuable—make that the <em>reference swing</em> at 100 points.</p>
+                <p><strong>Step 2:</strong> Compare other swings. "Is saving 12 months worth 60% as much as saving $6M? Maybe 70 points." "Is gaining 35% performance worth 40% as much? Maybe 40 points."</p>
+                <p><strong>Step 3:</strong> Normalize. Total = 100 + 70 + 40 = 210. Final weights: Cost = 48%, Delivery = 33%, Performance = 19%.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 1: Define Criteria and Ranges</h2>
+            <p class="section-help">List your decision criteria and their realistic worst-to-best ranges based on your actual options. What's the worst value any of your options offers? The best?</p>
+            
+            <table class="criteria-table" id="criteriaTable">
+                <thead>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>Worst Value</th>
+                        <th>Best Value</th>
+                        <th>Unit</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="criteriaBody"></tbody>
+            </table>
+            
+            <button class="secondary" onclick="addCriterion()" style="margin-top: 15px;">+ Add Criterion</button>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Rank and Score Swings</h2>
+            <div id="swingRanking" style="display:none;">
+                <p class="section-help"><strong>The key question:</strong> If all criteria were at their worst levels, which improvement to best would be most valuable to you?</p>
+                
+                <div class="info">
+                    The criterion with the most valuable swing becomes your <strong>reference</strong> at 100 points. Score all other swings relative to it. If saving 12 months is 70% as valuable as the reference swing, give it 70 points.
+                </div>
+                
+                <div class="swing-ranking" id="swingItems"></div>
+                
+                <button onclick="calculateWeights()" style="margin-top: 20px;">Calculate Final Weights</button>
+            </div>
+            <p id="rankingPrompt" style="color: #64748b; font-style: italic;">Add at least 2 complete criteria above to begin swing weighting</p>
+        </div>
+
+        <div class="section" id="resultsSection" style="display:none;">
+            <h2>Step 3: Final Weights</h2>
+            <div class="weight-results" id="weightResults"></div>
+            
+            <div class="toolbar">
+                <button class="secondary" onclick="exportCSV()">📥 Export CSV</button>
+                <button class="secondary" onclick="copyWeights()">📋 Copy Weights</button>
+            </div>
+        </div>
+        
+        <!-- What to Do With This Analysis -->
+        <div class="next-steps-box" id="nextStepsBox" style="display:none;">
+            <h3>What to Do With This Analysis</h3>
+            
+            <div class="next-steps-grid">
+                <div class="next-step-card">
+                    <h4>📊 Use in MCDA</h4>
+                    <p>These weights are designed for Multi-Criteria Decision Analysis. Import them into the <strong>MCDA Interface</strong> to score your alternatives and calculate overall rankings.</p>
+                </div>
+                
+                <div class="next-step-card">
+                    <h4>👥 Share with Stakeholders</h4>
+                    <p>The visual bar chart above communicates weights intuitively. Export to CSV for spreadsheet analysis, or screenshot the results for presentations.</p>
+                </div>
+                
+                <div class="next-step-card">
+                    <h4>🔄 Aggregate Multiple Perspectives</h4>
+                    <p>Have different stakeholders complete swing weighting independently, then use the <strong>Geometric Mean Aggregator</strong> to combine their weights mathematically.</p>
+                </div>
+                
+                <div class="next-step-card">
+                    <h4>🔍 Test Sensitivity</h4>
+                    <p>Weights are subjective. Use the <strong>MCDA Sensitivity Analysis</strong> to see how much the final ranking changes if weights shift—this reveals which weights truly matter.</p>
+                </div>
+            </div>
+            
+            <div class="questions-box">
+                <h4>Questions to Reflect On</h4>
+                <ul>
+                    <li>Do these weights feel right? Would you defend them to stakeholders?</li>
+                    <li>Did any swing surprise you by being more or less valuable than expected?</li>
+                    <li>If the ranges changed (say, best cost became $3M instead of $2M), how would that shift your weights?</li>
+                    <li>Are there criteria you initially thought were important but, given the actual ranges, matter less?</li>
+                    <li>Would different stakeholders assign different scores? If so, whose perspective should dominate, and why?</li>
+                </ul>
+            </div>
+            
+            <div class="warning">
+                <strong>Remember:</strong> These weights are specific to the ranges you defined. If your options change significantly—a new vendor appears, or requirements shift—revisit this analysis with updated ranges. The power of swing weighting is its grounding in reality; that grounding must stay current.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let criteria = [];
+        let swingScores = {};
+        
+        function addCriterion() {
+            const tbody = document.getElementById('criteriaBody');
+            const row = document.createElement('tr');
+            const id = 'crit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+            
+            row.innerHTML = `
+                <td><input type="text" placeholder="e.g., Cost" id="${id}_name" onchange="updateCriteriaList()"></td>
+                <td><input type="number" placeholder="e.g., 8" id="${id}_worst" step="any" onchange="updateCriteriaList()"></td>
+                <td><input type="number" placeholder="e.g., 2" id="${id}_best" step="any" onchange="updateCriteriaList()"></td>
+                <td><input type="text" placeholder="e.g., $M" id="${id}_unit" onchange="updateCriteriaList()"></td>
+                <td><button class="remove" onclick="removeCriterion('${id}')">Remove</button></td>
+            `;
+            row.id = id;
+            
+            tbody.appendChild(row);
+        }
+        
+        function removeCriterion(id) {
+            document.getElementById(id).remove();
+            delete swingScores[id];
+            updateCriteriaList();
+        }
+        
+        function updateCriteriaList() {
+            // Collect valid criteria
+            criteria = [];
+            const rows = document.querySelectorAll('#criteriaBody tr');
+            
+            rows.forEach(row => {
+                const id = row.id;
+                const nameEl = document.getElementById(`${id}_name`);
+                const worstEl = document.getElementById(`${id}_worst`);
+                const bestEl = document.getElementById(`${id}_best`);
+                const unitEl = document.getElementById(`${id}_unit`);
+                
+                if (!nameEl || !worstEl || !bestEl || !unitEl) return;
+                
+                const name = nameEl.value.trim();
+                const worst = parseFloat(worstEl.value);
+                const best = parseFloat(bestEl.value);
+                const unit = unitEl.value.trim();
+                
+                if (name && !isNaN(worst) && !isNaN(best) && worst !== best) {
+                    criteria.push({ id, name, worst, best, unit });
+                }
+            });
+            
+            // Update UI
+            if (criteria.length >= 2) {
+                document.getElementById('swingRanking').style.display = 'block';
+                document.getElementById('rankingPrompt').style.display = 'none';
+                updateSwingRanking();
+            } else {
+                document.getElementById('swingRanking').style.display = 'none';
+                document.getElementById('rankingPrompt').style.display = 'block';
+                document.getElementById('resultsSection').style.display = 'none';
+                document.getElementById('nextStepsBox').style.display = 'none';
+            }
+        }
+        
+        function updateSwingRanking() {
+            const container = document.getElementById('swingItems');
+            container.innerHTML = '';
+            
+            // Initialize scores if needed
+            criteria.forEach(crit => {
+                if (!(crit.id in swingScores)) {
+                    swingScores[crit.id] = 50;
+                }
+            });
+            
+            // Find the criterion with max score (reference)
+            let maxScore = 0;
+            let referenceId = null;
+            for (const [id, score] of Object.entries(swingScores)) {
+                if (criteria.find(c => c.id === id) && score > maxScore) {
+                    maxScore = score;
+                    referenceId = id;
+                }
+            }
+            
+            // If no reference or max is not 100, set first criterion as reference
+            if (!referenceId || maxScore !== 100) {
+                referenceId = criteria[0].id;
+                swingScores[referenceId] = 100;
+            }
+            
+            // Sort criteria by score
+            const sortedCriteria = [...criteria].sort((a, b) => 
+                (swingScores[b.id] || 0) - (swingScores[a.id] || 0)
+            );
+            
+            // Render each criterion
+            sortedCriteria.forEach(crit => {
+                const isReference = crit.id === referenceId;
+                const div = document.createElement('div');
+                div.className = `swing-item ${isReference ? 'reference' : ''}`;
+                
+                const improvement = Math.abs(crit.best - crit.worst);
+                const improvementText = `${crit.worst}${crit.unit} → ${crit.best}${crit.unit}`;
+                
+                div.innerHTML = `
+                    <div style="flex: 1;">
+                        <strong style="font-size: 15px;">${escapeHtml(crit.name)}</strong><br>
+                        <span class="range-display">${escapeHtml(improvementText)} (Δ${improvement}${escapeHtml(crit.unit)})</span>
+                        ${isReference ? '<br><em style="color: #2c5282; font-size: 13px;">Reference swing (100 points)</em>' : ''}
+                    </div>
+                    <div style="text-align: right; min-width: 200px;">
+                        ${isReference ? 
+                            '<button class="secondary" disabled style="background: #2c5282;">Reference: 100</button>' :
+                            `<div class="slider-container">
+                                <span style="font-size: 12px; color: #666;">0</span>
+                                <input type="range" class="slider" min="0" max="100" value="${swingScores[crit.id]}" 
+                                       onchange="updateSwingScore('${crit.id}', this.value)" 
+                                       oninput="document.getElementById('score_${crit.id}').textContent = this.value">
+                                <span style="font-size: 12px; color: #666;">100</span>
+                                <span style="width: 35px; text-align: right; font-weight: 600;" id="score_${crit.id}">${swingScores[crit.id]}</span>
+                            </div>
+                            <button class="secondary" onclick="setAsReference('${crit.id}')" style="margin-top: 8px; font-size: 12px;">Set as Reference</button>`
+                        }
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+            
+            // Add guidance
+            const guidance = document.createElement('div');
+            guidance.style.cssText = 'margin-top: 20px; font-size: 14px; color: #555; padding: 12px; background: #fafafa; border-radius: 4px;';
+            guidance.innerHTML = `
+                <strong>How to score:</strong> Compare each swing to the reference. 
+                If improving delivery time is 60% as valuable as the reference swing, give it 60 points.
+                Consider the actual magnitude of improvement and its impact on your decision.
+            `;
+            container.appendChild(guidance);
+        }
+        
+        function setAsReference(id) {
+            // Set all current scores relative to new reference
+            const newRefScore = swingScores[id];
+            
+            if (newRefScore === 0) {
+                alert('Cannot set a zero-scored item as reference');
+                return;
+            }
+            
+            // Scale all scores
+            for (const [critId, score] of Object.entries(swingScores)) {
+                if (criteria.find(c => c.id === critId)) {
+                    swingScores[critId] = Math.round((score / newRefScore) * 100);
+                }
+            }
+            
+            // Ensure reference is 100
+            swingScores[id] = 100;
+            
+            updateSwingRanking();
+        }
+        
+        function updateSwingScore(id, value) {
+            swingScores[id] = parseInt(value);
+        }
+        
+        function calculateWeights() {
+            // Calculate normalized weights
+            const totalScore = Object.entries(swingScores)
+                .filter(([id]) => criteria.find(c => c.id === id))
+                .reduce((sum, [, score]) => sum + score, 0);
+            
+            if (totalScore === 0) {
+                alert('Please assign scores to criteria');
+                return;
+            }
+            
+            const weights = {};
+            criteria.forEach(crit => {
+                weights[crit.id] = swingScores[crit.id] / totalScore;
+            });
+            
+            displayWeights(weights);
+        }
+        
+        function displayWeights(weights) {
+            const container = document.getElementById('weightResults');
+            container.innerHTML = '<h3 style="margin-top: 0;">Normalized Weights</h3>';
+            
+            // Sort by weight
+            const sortedCriteria = [...criteria].sort((a, b) => 
+                weights[b.id] - weights[a.id]
+            );
+            
+            sortedCriteria.forEach(crit => {
+                const weight = weights[crit.id];
+                const percentage = (weight * 100).toFixed(1);
+                const swingScore = swingScores[crit.id];
+                
+                const div = document.createElement('div');
+                div.className = 'weight-item';
+                div.innerHTML = `
+                    <div style="flex: 1;">
+                        <strong>${escapeHtml(crit.name)}</strong>
+                        <div class="weight-bar" style="width: ${percentage}%;"></div>
+                    </div>
+                    <div style="text-align: right; min-width: 100px;">
+                        <strong style="font-size: 18px; color: #2c5282;">${percentage}%</strong><br>
+                        <span style="font-size: 12px; color: #666;">Score: ${swingScore}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('nextStepsBox').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function exportCSV() {
+            const totalScore = Object.entries(swingScores)
+                .filter(([id]) => criteria.find(c => c.id === id))
+                .reduce((sum, [, score]) => sum + score, 0);
+            
+            if (totalScore === 0) {
+                alert('Calculate weights first');
+                return;
+            }
+            
+            let csv = 'Criterion,Worst,Best,Unit,Swing Score,Weight,Weight %\n';
+            criteria.forEach(crit => {
+                const weight = swingScores[crit.id] / totalScore;
+                csv += `"${crit.name}",${crit.worst},${crit.best},"${crit.unit}",${swingScores[crit.id]},${weight.toFixed(4)},${(weight * 100).toFixed(1)}%\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `swing_weights_${date}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function copyWeights() {
+            const totalScore = Object.entries(swingScores)
+                .filter(([id]) => criteria.find(c => c.id === id))
+                .reduce((sum, [, score]) => sum + score, 0);
+            
+            if (totalScore === 0) {
+                alert('Calculate weights first');
+                return;
+            }
+            
+            let report = 'SWING WEIGHTING RESULTS\n';
+            report += '='.repeat(40) + '\n\n';
+            
+            report += 'CRITERIA RANGES:\n';
+            criteria.forEach(crit => {
+                report += `• ${crit.name}: ${crit.worst}${crit.unit} → ${crit.best}${crit.unit}\n`;
+            });
+            
+            report += '\nFINAL WEIGHTS:\n';
+            const sortedCriteria = [...criteria].sort((a, b) => 
+                swingScores[b.id] - swingScores[a.id]
+            );
+            sortedCriteria.forEach(crit => {
+                const weight = swingScores[crit.id] / totalScore;
+                report += `• ${crit.name}: ${(weight * 100).toFixed(1)}% (score: ${swingScores[crit.id]})\n`;
+            });
+            
+            report += '\n' + '-'.repeat(40) + '\n';
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+            
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Weights copied to clipboard!');
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = report;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Weights copied to clipboard!');
+            });
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+        
+        // Initialize with empty rows (just placeholders, no values)
+        addCriterion();
+        addCriterion();
+        addCriterion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Circles — Systems Mapping Tool</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+            font-size: 15px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        h1 { color: #2c5282; margin-bottom: 8px; }
+        h2 { color: #2c5282; margin: 0 0 15px 0; font-size: 1.15em; }
+        h3 { color: #2c5282; margin: 0 0 12px 0; font-size: 1.05em; }
+        h4 { margin: 0 0 10px 0; font-size: 14px; }
+        .subtitle { color: #555; margin-bottom: 20px; font-size: 1.05em; }
+        
+        /* Load banner */
+        .load-banner {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .load-banner p {
+            margin: 0;
+            color: #234e52;
+            font-size: 14px;
+        }
+        .load-banner-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Intro box */
+        .intro-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-left: 4px solid #0d9488;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; font-size: 14px; color: #333; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: #0f766e; }
+        
+        /* Example box */
+        .example-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border: 1px solid #5eead4;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .example-box h4 { color: #0f766e; font-size: 14px; }
+        .example-box p, .example-box li { 
+            margin: 0 0 8px 0; 
+            color: #115e59; 
+            font-size: 14px; 
+        }
+        .example-box ul { margin: 8px 0; padding-left: 20px; }
+        
+        /* Key concepts box */
+        .concepts-box {
+            background: linear-gradient(135deg, #f8f5ff 0%, #f3e8ff 100%);
+            border-left: 4px solid #7c5cad;
+            padding: 18px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        .concepts-box h3 { color: #5b4180; margin-bottom: 12px; }
+        .concepts-box p, .concepts-box li { 
+            margin: 0 0 10px 0; 
+            color: #333; 
+            font-size: 14px; 
+        }
+        .concepts-box p:last-child { margin-bottom: 0; }
+        .concepts-box strong { color: #5b4180; }
+        
+        /* Elements guidance box */
+        .elements-guidance {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #fcd34d;
+            padding: 18px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .elements-guidance h3 { color: #92400e; margin-bottom: 12px; }
+        .elements-guidance p, .elements-guidance li { 
+            margin: 0 0 10px 0; 
+            color: #333; 
+            font-size: 14px; 
+        }
+        .elements-guidance ul { margin: 10px 0; padding-left: 20px; }
+        .elements-guidance strong { color: #92400e; }
+        
+        /* Reading box */
+        .reading-box {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .reading-box h4 { color: #444; font-size: 14px; margin: 0 0 10px 0; }
+        .reading-box p { margin: 0 0 8px 0; font-size: 14px; color: #444; }
+        .reading-box p:last-child { margin-bottom: 0; }
+        .reading-box a { color: #2c5282; }
+        
+        /* Collapsible details */
+        details { margin-top: 15px; }
+        details summary {
+            cursor: pointer;
+            color: #0d9488;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        details summary:hover { color: #0f766e; }
+        
+        /* Section styling */
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        .section-help {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 18px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary {
+            background: #6b7280;
+            padding: 8px 14px;
+        }
+        button.secondary:hover { background: #4b5563; }
+        button.add-btn {
+            background: #0d9488;
+        }
+        button.add-btn:hover { background: #0f766e; }
+        button.remove-btn {
+            background: #6b7280;
+            padding: 4px 10px;
+            font-size: 14px;
+        }
+        button.remove-btn:hover { background: #4b5563; }
+        button.mode-btn.active {
+            background: #0d9488;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
+        }
+        button.analysis-btn {
+            background: #7c5cad;
+        }
+        button.analysis-btn:hover { background: #5b4180; }
+        
+        /* Inputs */
+        input[type="text"], select {
+            padding: 10px;
+            border: 2px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        /* Element list */
+        .element-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            min-height: 40px;
+        }
+        .element-item {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .empty-elements {
+            color: #555;
+            font-size: 14px;
+            padding: 10px;
+        }
+        
+        /* Canvas container */
+        .canvas-container {
+            position: relative;
+            margin: 15px 0;
+        }
+        #canvas {
+            border: 2px solid #d0d0d0;
+            background: white;
+            cursor: grab;
+            display: block;
+            margin: 0 auto;
+            border-radius: 6px;
+            max-width: 100%;
+        }
+        #canvas:active {
+            cursor: grabbing;
+        }
+        
+        /* Connection types legend */
+        .connection-legend {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-line {
+            width: 40px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        .legend-line.neutral { background: #6b7280; }
+        .legend-line.reinforcing { background: #2563eb; }
+        .legend-line.balancing { background: #d97706; }
+        .legend-hint {
+            color: #777;
+            font-size: 13px;
+            margin-left: auto;
+        }
+        
+        /* Analysis panel */
+        .analysis-render {
+            display: none;
+            background: #fafafa;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .analysis-render.visible { display: block; }
+        .analysis-render h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 15px;
+        }
+        .metric-card h4 {
+            color: #2c5282;
+            margin-bottom: 8px;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 700px) {
+            .metric-grid { grid-template-columns: 1fr; }
+        }
+        .metric-box {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        
+        .leverage-point {
+            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+            border: 1px solid #fde047;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .leverage-point strong { color: #854d0e; }
+        
+        .feedback-loop {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border: 1px solid #5eead4;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .feedback-loop.reinforcing-loop {
+            border-color: #93c5fd;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        .feedback-loop.balancing-loop {
+            border-color: #fdba74;
+            background: linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%);
+        }
+        .feedback-loop strong { color: #0f766e; }
+        .feedback-loop.reinforcing-loop strong { color: #1e40af; }
+        .feedback-loop.balancing-loop strong { color: #92400e; }
+        
+        /* Next steps box */
+        .next-steps-box {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+            border: 1px solid #7dd3fc;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .next-steps-box h3 {
+            color: #0369a1;
+            margin-bottom: 12px;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .next-steps-box li {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+        .next-steps-box li strong { color: #0369a1; }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            margin-top: 25px;
+            border: 1px solid #e0e0e0;
+        }
+        .toolbar-note {
+            width: 100%;
+            font-size: 14px;
+            color: #555;
+            margin-top: 8px;
+        }
+        
+        @media (max-width: 700px) {
+            .controls { flex-direction: column; align-items: stretch; }
+            .controls button, .controls input, .controls select { width: 100%; }
+            .toolbar { flex-direction: column; }
+            .toolbar button { width: 100%; }
+            .load-banner { flex-direction: column; align-items: stretch; }
+            .load-banner-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Connection Circles</h1>
+        <p class="subtitle">"The behaviour of a system cannot be known just by knowing the elements of which the system is made." — Donella Meadows</p>
+        
+        <!-- Load Banner -->
+        <div class="load-banner">
+            <p>Have a previous diagram? Load it to continue working, or load an example to see how this works.</p>
+            <div class="load-banner-buttons">
+                <button class="secondary" onclick="document.getElementById('loadInput').click()">📂 Load Previous (.json)</button>
+                <button class="secondary" onclick="loadExample()">📋 Load Example</button>
+                <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadDiagram(event)">
+            </div>
+        </div>
+        
+        <!-- Intro Box -->
+        <div class="intro-box">
+            <p><strong>Why map systems visually?</strong> Complex situations involve elements that influence each other in loops. A price increase reduces demand, which reduces revenue, which pressures margins, which pressures prices. Written lists hide these circular patterns. Visual connection diagrams reveal them — and reveal where to intervene.</p>
+            
+            <p>Connection circles show <strong>reinforcing loops</strong> (where change amplifies itself — growth spirals, vicious cycles) and <strong>balancing loops</strong> (where change triggers counterforces — thermostats, market corrections). Neither type is inherently good or bad; both are present in most real systems, interacting in non-obvious ways.</p>
+            
+            <p><strong>The goal isn't a perfect map.</strong> It's a thinking tool. By making your mental model explicit, you expose it to scrutiny — yours and others'. Once you've mapped your system, use the <strong>Copy Prompt for Claude</strong> button at the bottom to get rigorous analysis and critique of your diagram.</p>
+            
+            <details>
+                <summary>📖 Example: The Hiring-Quality Spiral</summary>
+                <div class="example-box">
+                    <h4>Scenario: A growing startup noticing declining code quality</h4>
+                    <p>The team maps what they think is happening:</p>
+                    <ul>
+                        <li><strong>Growth Pressure</strong> → (+) → <strong>Hiring Speed</strong>: More growth demands faster hiring</li>
+                        <li><strong>Hiring Speed</strong> → (−) → <strong>Hiring Quality</strong>: Faster hiring reduces vetting thoroughness</li>
+                        <li><strong>Hiring Quality</strong> → (+) → <strong>Code Quality</strong>: Lower-quality hires produce lower-quality code</li>
+                        <li><strong>Code Quality</strong> → (+) → <strong>Development Speed</strong>: Poor code slows everyone down</li>
+                        <li><strong>Development Speed</strong> → (−) → <strong>Growth Pressure</strong>: Slower delivery creates more pressure</li>
+                    </ul>
+                    <p style="margin-top: 12px;"><strong>The insight:</strong> Mapping this reveals a vicious cycle. The "obvious" solution (hire faster) actually makes things worse. The high-leverage intervention is at Hiring Quality — slow down hiring, raise the bar, and the whole system improves.</p>
+                </div>
+            </details>
+        </div>
+        
+        <!-- Elements Guidance -->
+        <div class="elements-guidance">
+            <h3>🎯 Choosing the Right Elements</h3>
+            <p>The quality of your system map depends on identifying elements that capture what actually matters. Our intuitive categories often miss what drives outcomes — surface similarity can mask structural differences, and vice versa.</p>
+            <p><strong>Questions to help identify essential elements:</strong></p>
+            <ul>
+                <li><strong>What varies?</strong> System elements are things that can increase or decrease (customer satisfaction, hiring speed, technical debt). If it can't vary, it's probably not an element.</li>
+                <li><strong>What would an expert notice?</strong> Someone with deep domain knowledge often sees distinctions invisible to outsiders. "Team morale" might be better split into "psychological safety" and "workload stress."</li>
+                <li><strong>What's actually driving outcomes?</strong> Surface-level categories often miss the structural forces underneath. "Communication problems" might really be "meeting frequency" or "decision authority clarity."</li>
+                <li><strong>What would change if you intervened?</strong> If you can't imagine how an element would respond to intervention, it might be too abstract or poorly defined.</li>
+                <li><strong>Are you conflating different things?</strong> "Company culture" might bundle together "risk tolerance," "feedback norms," and "hierarchy levels" — which behave differently and connect to different parts of the system.</li>
+            </ul>
+            <p>Aim for 4-12 elements. Fewer risks missing key dynamics; more becomes hard to interpret. You can always revise as your understanding develops.</p>
+        </div>
+        
+        <!-- Key Concepts -->
+        <div class="concepts-box">
+            <h3>🔑 Key Concepts</h3>
+            <p><strong>Reinforcing connections (+):</strong> When A increases, B increases (or when A decreases, B decreases). These create growth or decline spirals. Shown in <span style="color: #2563eb; font-weight: bold;">blue</span>.</p>
+            <p><strong>Balancing connections (−):</strong> When A increases, B decreases (or vice versa). These create stability or resistance to change. Shown in <span style="color: #d97706; font-weight: bold;">amber</span>.</p>
+            <p><strong>Feedback loops:</strong> Chains of connections that circle back to their starting point. A loop with an even number of balancing connections is reinforcing (amplifies change). A loop with an odd number of balancing connections is balancing (resists change).</p>
+            <p><strong>Leverage points:</strong> Elements with many connections, especially outgoing ones. Changes here cascade widely through the system. Donella Meadows' hierarchy suggests the highest-leverage interventions change system goals or paradigms, not just parameters.</p>
+        </div>
+        
+        <!-- Step 1: Add Elements -->
+        <div class="section">
+            <h2>Step 1: Define System Elements</h2>
+            <p class="section-help">Add the variables, factors, or components you want to map. Use nouns or noun phrases that can increase or decrease (e.g., "Technical Debt", "Hiring Speed", "Meeting Frequency").</p>
+            <div class="controls">
+                <input type="text" id="elementName" placeholder="e.g., Customer Satisfaction" style="flex: 1; min-width: 200px;" onkeypress="if(event.key === 'Enter') addElement()">
+                <button class="add-btn" onclick="addElement()">+ Add Element</button>
+            </div>
+            <div class="element-list" id="elementList">
+                <span class="empty-elements">No elements added yet. Add elements above to begin mapping.</span>
+            </div>
+        </div>
+        
+        <!-- Step 2: Draw Connections -->
+        <div class="section">
+            <h2>Step 2: Draw Connections</h2>
+            <p class="section-help">Use <strong>Move Mode</strong> to drag elements around the canvas. Use <strong>Connect Mode</strong> to draw arrows: select a connection type, then click the source element, then click the target element. The arrow shows influence direction: "A → B" means "when A changes, it causes B to change."</p>
+            
+            <div class="controls">
+                <button class="secondary mode-btn active" id="moveModeBtn" onclick="setMode('move')">🖐️ Move Mode</button>
+                <button class="add-btn mode-btn" id="connectModeBtn" onclick="setMode('connect')">🔗 Connect Mode</button>
+                <select id="connectionType" style="min-width: 180px;">
+                    <option value="reinforcing">+ Reinforcing (same direction)</option>
+                    <option value="balancing">− Balancing (opposite direction)</option>
+                    <option value="neutral">→ Neutral (unspecified)</option>
+                </select>
+            </div>
+            
+            <div class="connection-legend">
+                <div class="legend-item">
+                    <div class="legend-line reinforcing"></div>
+                    <span><strong>+</strong> Reinforcing</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line balancing"></div>
+                    <span><strong>−</strong> Balancing</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line neutral"></div>
+                    <span>→ Neutral</span>
+                </div>
+                <span class="legend-hint">Double-click a connection to remove it</span>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="canvas" width="1000" height="600"></canvas>
+            </div>
+        </div>
+        
+        <!-- Step 3: Analyze -->
+        <div class="section">
+            <h2>Step 3: Analyse Your System</h2>
+            <p class="section-help">Once you've mapped connections, analyse the structure to find leverage points and feedback loops.</p>
+            <div class="controls">
+                <button onclick="viewAnalysis()">📊 View Analysis</button>
+                <button class="secondary" onclick="exportImage()">🖼️ Export as PNG</button>
+                <button class="secondary" onclick="exportSVG()">📐 Export as SVG</button>
+            </div>
+            <p style="font-size: 14px; color: #555; margin-top: 10px;">PNG is a static image. SVG can be imported into tools like Miro, Mural, or FigJam for collaborative workshopping — elements can be ungrouped and moved after import.</p>
+        </div>
+        
+        <!-- Analysis Render (hidden by default) -->
+        <div class="analysis-render" id="analysisRender">
+            <button class="secondary" onclick="hideAnalysis()" style="float: right;">Close</button>
+            <h3>System Analysis</h3>
+            <div id="analysisContent"></div>
+        </div>
+        
+        <!-- What To Do With This Analysis -->
+        <div class="next-steps-box">
+            <h3>📋 What To Do With This Analysis</h3>
+            <ul>
+                <li><strong>Challenge your map:</strong> Show it to others involved in the system. What connections would they add or dispute? What elements are missing?</li>
+                <li><strong>Test assumptions:</strong> For each connection, ask: "How confident am I that this relationship exists? What evidence would change my mind?" Consider using the <em>Key Assumptions Check</em> tool to formalise this.</li>
+                <li><strong>Identify interventions:</strong> Look at leverage points. What would happen if you changed them? Use the <em>Premortem Analysis</em> or <em>Red Team Analysis</em> to stress-test intervention ideas.</li>
+                <li><strong>Map dependencies:</strong> For project or organisational systems, the <em>Design Structure Matrix</em> provides a complementary view focused on task/role dependencies.</li>
+                <li><strong>Consider wider forces:</strong> Your system exists within larger systems. Use <em>Outside-In Thinking</em> to map the external constraints and forces acting on your system.</li>
+            </ul>
+        </div>
+        
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="secondary" onclick="saveDiagram()">💾 Save (.json)</button>
+            <button class="secondary" onclick="exportText()">📄 Export (.txt)</button>
+            <button class="secondary" onclick="copyForClaude()">🤖 Copy Prompt for Claude</button>
+            <button class="secondary" onclick="clearAll()">🗑️ Clear All</button>
+            <p class="toolbar-note"><strong>Save (.json)</strong> preserves element positions and all data for reloading. <strong>Export (.txt)</strong> creates a human-readable summary. <strong>Copy Prompt for Claude</strong> packages your analysis for AI-assisted critique.</p>
+        </div>
+        
+        <!-- Resources -->
+        <details style="margin-top: 25px;">
+            <summary>📚 Further Reading & Resources</summary>
+            <div class="reading-box">
+                <h4>Systems Thinking Foundations</h4>
+                <p>Donella Meadows, <em>Thinking in Systems: A Primer</em> (2008) — The classic accessible introduction. Her essay "Leverage Points: Places to Intervene in a System" is essential reading and freely available online.</p>
+                <p>Peter Senge, <em>The Fifth Discipline</em> (1990) — Systems thinking applied to organisations. The archetypes chapter (Limits to Growth, Shifting the Burden, etc.) provides useful pattern-recognition templates.</p>
+                <p>Jay Forrester, <em>Industrial Dynamics</em> (1961) — The foundational text for system dynamics modelling. More technical than Meadows or Senge; relevant if you want to move from qualitative diagrams to quantitative simulations.</p>
+                <p>John Holland, <em>Signals and Boundaries: Building Blocks for Complex Adaptive Systems</em> (2012) — Explores how complex systems emerge from simple agents exchanging signals across boundaries. Holland (creator of genetic algorithms) provides a rigorous framework for understanding how adaptation, learning, and emergence arise from basic mechanisms. Particularly useful for thinking about systems that evolve over time.</p>
+                
+                <h4 style="margin-top: 15px;">On Categorisation</h4>
+                <p><a href="https://www.lesswrong.com/posts/veN86cBhoe7mBxXLk/categories-and-carving-reality-at-its-joints" target="_blank">Categories and Carving Reality at Its Joints</a> — LessWrong post on finding categories that reflect real structure rather than surface similarity.</p>
+            </div>
+        </details>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let elements = [];
+        let connections = [];
+        let mode = 'move';
+        let selectedElement = null;
+        let connectingFrom = null;
+        let mousePos = { x: 0, y: 0 };
+        let isDragging = false;
+        
+        // Event listeners
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('dblclick', handleDoubleClick);
+        
+        // Touch support
+        canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+        canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+        canvas.addEventListener('touchend', handleTouchEnd);
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+        
+        function setMode(newMode) {
+            mode = newMode;
+            connectingFrom = null;
+            
+            // Update button states
+            const moveBtn = document.getElementById('moveModeBtn');
+            const connectBtn = document.getElementById('connectModeBtn');
+            
+            if (mode === 'move') {
+                moveBtn.classList.add('active');
+                moveBtn.classList.remove('secondary');
+                connectBtn.classList.remove('active');
+                connectBtn.classList.add('secondary');
+                connectBtn.classList.remove('add-btn');
+                canvas.style.cursor = 'grab';
+            } else {
+                connectBtn.classList.add('active');
+                connectBtn.classList.remove('secondary');
+                connectBtn.classList.add('add-btn');
+                moveBtn.classList.remove('active');
+                moveBtn.classList.add('secondary');
+                canvas.style.cursor = 'crosshair';
+            }
+            draw();
+        }
+        
+        function addElement() {
+            const input = document.getElementById('elementName');
+            const name = input.value.trim();
+            
+            if (!name) return;
+            if (elements.find(e => e.name.toLowerCase() === name.toLowerCase())) {
+                alert('An element with this name already exists.');
+                return;
+            }
+            
+            // Calculate position on circle
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) * 0.6;
+            const angle = (elements.length / Math.max(8, elements.length + 1)) * 2 * Math.PI - Math.PI / 2;
+            
+            elements.push({
+                name: name,
+                x: centerX + radius * Math.cos(angle),
+                y: centerY + radius * Math.sin(angle)
+            });
+            
+            input.value = '';
+            updateElementList();
+            draw();
+        }
+        
+        function removeElement(name) {
+            elements = elements.filter(e => e.name !== name);
+            connections = connections.filter(c => c.from !== name && c.to !== name);
+            updateElementList();
+            draw();
+            hideAnalysis();
+        }
+        
+        function clearAll() {
+            if (elements.length === 0 || confirm('Clear all elements and connections? This cannot be undone.')) {
+                elements = [];
+                connections = [];
+                updateElementList();
+                draw();
+                hideAnalysis();
+            }
+        }
+        
+        function updateElementList() {
+            const list = document.getElementById('elementList');
+            if (elements.length === 0) {
+                list.innerHTML = '<span class="empty-elements">No elements added yet. Add elements above to begin mapping.</span>';
+                return;
+            }
+            list.innerHTML = elements.map(el => `
+                <div class="element-item">
+                    <span>${escapeHtml(el.name)}</span>
+                    <button class="remove-btn" onclick="removeElement('${escapeHtml(el.name).replace(/'/g, "\\'")}')">×</button>
+                </div>
+            `).join('');
+        }
+        
+        function getCanvasCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+        
+        function handleMouseDown(e) {
+            mousePos = getCanvasCoords(e);
+            const clickedElement = getElementAt(mousePos.x, mousePos.y);
+            
+            if (mode === 'move' && clickedElement) {
+                selectedElement = clickedElement;
+                isDragging = true;
+                canvas.style.cursor = 'grabbing';
+            } else if (mode === 'connect' && clickedElement) {
+                if (!connectingFrom) {
+                    connectingFrom = clickedElement;
+                } else if (connectingFrom !== clickedElement) {
+                    // Create connection
+                    const type = document.getElementById('connectionType').value;
+                    const existing = connections.find(c => 
+                        c.from === connectingFrom.name && c.to === clickedElement.name
+                    );
+                    
+                    if (existing) {
+                        existing.type = type;
+                    } else {
+                        connections.push({
+                            from: connectingFrom.name,
+                            to: clickedElement.name,
+                            type: type
+                        });
+                    }
+                    
+                    connectingFrom = null;
+                    hideAnalysis();
+                }
+                draw();
+            }
+        }
+        
+        function handleMouseMove(e) {
+            mousePos = getCanvasCoords(e);
+            
+            if (isDragging && selectedElement) {
+                selectedElement.x = Math.max(40, Math.min(canvas.width - 40, mousePos.x));
+                selectedElement.y = Math.max(40, Math.min(canvas.height - 40, mousePos.y));
+                draw();
+            } else if (mode === 'connect' && connectingFrom) {
+                draw();
+            }
+        }
+        
+        function handleMouseUp() {
+            isDragging = false;
+            selectedElement = null;
+            if (mode === 'move') {
+                canvas.style.cursor = 'grab';
+            }
+        }
+        
+        function handleDoubleClick(e) {
+            const coords = getCanvasCoords(e);
+            
+            // Find connection near click
+            const removed = connections.filter(conn => {
+                const from = elements.find(el => el.name === conn.from);
+                const to = elements.find(el => el.name === conn.to);
+                if (!from || !to) return true;
+                
+                const dist = distanceToLine(coords.x, coords.y, from.x, from.y, to.x, to.y);
+                return dist > 15;
+            });
+            
+            if (removed.length < connections.length) {
+                connections = removed;
+                draw();
+                hideAnalysis();
+            }
+        }
+        
+        // Touch handlers
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            handleMouseDown(mouseEvent);
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            handleMouseMove(mouseEvent);
+        }
+        
+        function handleTouchEnd(e) {
+            handleMouseUp();
+        }
+        
+        function getElementAt(x, y) {
+            return elements.find(el => {
+                const dx = x - el.x;
+                const dy = y - el.y;
+                return Math.sqrt(dx * dx + dy * dy) < 40;
+            });
+        }
+        
+        function distanceToLine(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+            
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            
+            if (lenSq !== 0) param = dot / lenSq;
+            
+            let xx, yy;
+            
+            if (param < 0) {
+                xx = x1; yy = y1;
+            } else if (param > 1) {
+                xx = x2; yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections
+            connections.forEach(conn => {
+                const from = elements.find(e => e.name === conn.from);
+                const to = elements.find(e => e.name === conn.to);
+                if (!from || !to) return;
+                
+                drawArrow(from.x, from.y, to.x, to.y, conn.type);
+            });
+            
+            // Draw temporary connection line
+            if (mode === 'connect' && connectingFrom) {
+                ctx.strokeStyle = '#999';
+                ctx.setLineDash([5, 5]);
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(connectingFrom.x, connectingFrom.y);
+                ctx.lineTo(mousePos.x, mousePos.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // Draw elements
+            elements.forEach(el => {
+                const isSelected = el === selectedElement || el === connectingFrom;
+                
+                // Draw circle - larger size
+                ctx.fillStyle = isSelected ? '#0d9488' : '#2c5282';
+                ctx.beginPath();
+                ctx.arc(el.x, el.y, 38, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Draw border
+                ctx.strokeStyle = isSelected ? '#0f766e' : '#1a365d';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw label
+                ctx.fillStyle = 'white';
+                ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Wrap text - more generous width
+                const maxWidth = 65;
+                const words = el.name.split(' ');
+                let lines = [];
+                let currentLine = '';
+                
+                words.forEach(word => {
+                    const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                    const metrics = ctx.measureText(testLine);
+                    if (metrics.width > maxWidth && currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                });
+                if (currentLine) lines.push(currentLine);
+                
+                const lineHeight = 15;
+                const startY = el.y - (lines.length - 1) * lineHeight / 2;
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, el.x, startY + i * lineHeight);
+                });
+            });
+        }
+        
+        function drawArrow(fromX, fromY, toX, toY, type) {
+            const headLen = 12;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            
+            // Adjust start and end points to circle edges (larger radius)
+            const startX = fromX + 40 * Math.cos(angle);
+            const startY = fromY + 40 * Math.sin(angle);
+            const endX = toX - 40 * Math.cos(angle);
+            const endY = toY - 40 * Math.sin(angle);
+            
+            // Set style based on type - blue/amber instead of green/red
+            switch(type) {
+                case 'reinforcing':
+                    ctx.strokeStyle = '#2563eb';
+                    ctx.lineWidth = 3;
+                    break;
+                case 'balancing':
+                    ctx.strokeStyle = '#d97706';
+                    ctx.lineWidth = 3;
+                    break;
+                default:
+                    ctx.strokeStyle = '#6b7280';
+                    ctx.lineWidth = 2;
+            }
+            
+            // Draw curved line
+            const midX = (startX + endX) / 2;
+            const midY = (startY + endY) / 2;
+            const perpX = -(endY - startY) * 0.1;
+            const perpY = (endX - startX) * 0.1;
+            const ctrlX = midX + perpX;
+            const ctrlY = midY + perpY;
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+            ctx.stroke();
+            
+            // Draw arrowhead
+            const arrowAngle = Math.atan2(endY - ctrlY, endX - ctrlX);
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - headLen * Math.cos(arrowAngle - Math.PI / 6), 
+                      endY - headLen * Math.sin(arrowAngle - Math.PI / 6));
+            ctx.lineTo(endX - headLen * Math.cos(arrowAngle + Math.PI / 6), 
+                      endY - headLen * Math.sin(arrowAngle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
+            
+            // Draw + or - symbol
+            if (type !== 'neutral') {
+                const labelX = ctrlX;
+                const labelY = ctrlY;
+                
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(labelX, labelY, 11, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.strokeStyle = type === 'reinforcing' ? '#2563eb' : '#d97706';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(labelX, labelY, 11, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                ctx.fillStyle = type === 'reinforcing' ? '#2563eb' : '#d97706';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(type === 'reinforcing' ? '+' : '−', labelX, labelY);
+            }
+        }
+        
+        function analyseSystem() {
+            // Calculate connection counts
+            const stats = {};
+            elements.forEach(el => {
+                stats[el.name] = { in: 0, out: 0, reinforcingIn: 0, reinforcingOut: 0, balancingIn: 0, balancingOut: 0 };
+            });
+            
+            connections.forEach(conn => {
+                if (stats[conn.from]) {
+                    stats[conn.from].out++;
+                    if (conn.type === 'reinforcing') stats[conn.from].reinforcingOut++;
+                    if (conn.type === 'balancing') stats[conn.from].balancingOut++;
+                }
+                if (stats[conn.to]) {
+                    stats[conn.to].in++;
+                    if (conn.type === 'reinforcing') stats[conn.to].reinforcingIn++;
+                    if (conn.type === 'balancing') stats[conn.to].balancingIn++;
+                }
+            });
+            
+            // Find leverage points (high connectivity, especially outgoing)
+            const leveragePoints = elements
+                .map(el => ({
+                    name: el.name,
+                    inbound: stats[el.name].in,
+                    outbound: stats[el.name].out,
+                    total: stats[el.name].in + stats[el.name].out,
+                    leverage: stats[el.name].out * 1.5 + stats[el.name].in
+                }))
+                .filter(el => el.total > 0)
+                .sort((a, b) => b.leverage - a.leverage)
+                .slice(0, 4);
+            
+            // Find feedback loops (DFS)
+            const loops = findFeedbackLoops();
+            
+            return { stats, leveragePoints, loops };
+        }
+        
+        function findFeedbackLoops() {
+            const loops = [];
+            const maxDepth = 6;
+            
+            function dfs(start, current, path, depth) {
+                if (depth > maxDepth) return;
+                
+                connections
+                    .filter(c => c.from === current)
+                    .forEach(conn => {
+                        if (conn.to === start && path.length > 1) {
+                            // Found a loop
+                            loops.push({
+                                path: [...path, conn.to],
+                                connections: path.map((node, i) => {
+                                    const nextNode = i === path.length - 1 ? start : path[i + 1];
+                                    return connections.find(c => c.from === node && c.to === nextNode);
+                                }).filter(Boolean)
+                            });
+                        } else if (!path.includes(conn.to)) {
+                            dfs(start, conn.to, [...path, conn.to], depth + 1);
+                        }
+                    });
+            }
+            
+            elements.forEach(el => {
+                dfs(el.name, el.name, [el.name], 0);
+            });
+            
+            // Remove duplicates (same loop starting from different points)
+            const uniqueLoops = [];
+            loops.forEach(loop => {
+                const sorted = [...loop.path].slice(0, -1).sort().join('|');
+                if (!uniqueLoops.find(ul => [...ul.path].slice(0, -1).sort().join('|') === sorted)) {
+                    // Determine loop type
+                    const balancingCount = loop.connections.filter(c => c.type === 'balancing').length;
+                    loop.type = balancingCount % 2 === 0 ? 'reinforcing' : 'balancing';
+                    uniqueLoops.push(loop);
+                }
+            });
+            
+            return uniqueLoops;
+        }
+        
+        function viewAnalysis() {
+            if (elements.length === 0) {
+                alert('Add some elements first.');
+                return;
+            }
+            
+            const analysis = analyseSystem();
+            const content = document.getElementById('analysisContent');
+            
+            let html = `
+                <div class="metric-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Elements</div>
+                        <div class="metric-value">${elements.length}</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Connections</div>
+                        <div class="metric-value">${connections.length}</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Feedback Loops</div>
+                        <div class="metric-value">${analysis.loops.length}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (analysis.leveragePoints.length > 0) {
+                html += `<h4 style="margin: 20px 0 12px 0;">🎯 Potential Leverage Points</h4>`;
+                html += `<p style="font-size: 14px; color: #555; margin-bottom: 12px;">Elements with high connectivity, especially outgoing connections. Changes here cascade through the system.</p>`;
+                analysis.leveragePoints.forEach(lp => {
+                    html += `
+                        <div class="leverage-point">
+                            <strong>${escapeHtml(lp.name)}</strong><br>
+                            <span style="font-size: 14px; color: #666;">
+                                ${lp.outbound} outgoing, ${lp.inbound} incoming connections
+                            </span>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (analysis.loops.length > 0) {
+                html += `<h4 style="margin: 20px 0 12px 0;">🔄 Feedback Loops</h4>`;
+                analysis.loops.forEach(loop => {
+                    const loopClass = loop.type === 'reinforcing' ? 'reinforcing-loop' : 'balancing-loop';
+                    const loopLabel = loop.type === 'reinforcing' ? 'Reinforcing Loop (amplifies change)' : 'Balancing Loop (resists change)';
+                    html += `
+                        <div class="feedback-loop ${loopClass}">
+                            <strong>${loopLabel}</strong><br>
+                            <span style="font-size: 14px;">${loop.path.map(p => escapeHtml(p)).join(' → ')}</span>
+                        </div>
+                    `;
+                });
+            } else if (connections.length > 0) {
+                html += `<p style="color: #555; margin-top: 15px; font-size: 14px;">No feedback loops detected. This may indicate a linear system, or that key connections are missing from your map.</p>`;
+            }
+            
+            if (connections.length === 0) {
+                html += `<p style="color: #555; margin-top: 15px; font-size: 14px;">No connections yet. Switch to Connect Mode and draw arrows between elements to see analysis.</p>`;
+            }
+            
+            content.innerHTML = html;
+            document.getElementById('analysisRender').classList.add('visible');
+            document.getElementById('analysisRender').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function hideAnalysis() {
+            document.getElementById('analysisRender').classList.remove('visible');
+        }
+        
+        function saveDiagram() {
+            const data = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                elements: elements,
+                connections: connections
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'connection_circles_' + new Date().toISOString().slice(0, 10) + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadDiagram(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    elements = data.elements || [];
+                    connections = data.connections || [];
+                    updateElementList();
+                    draw();
+                    hideAnalysis();
+                    alert('Diagram loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        function exportText() {
+            if (elements.length === 0) {
+                alert('Add elements first.');
+                return;
+            }
+            
+            const analysis = analyseSystem();
+            
+            let text = `CONNECTION CIRCLES ANALYSIS
+Generated: ${new Date().toLocaleString()}
+
+ELEMENTS (${elements.length}):
+${elements.map((el, i) => `${i + 1}. ${el.name}`).join('\n')}
+
+CONNECTIONS (${connections.length}):
+${connections.length === 0 ? '(No connections defined)' : connections.map(c => {
+    const symbol = c.type === 'reinforcing' ? '(+)' : c.type === 'balancing' ? '(−)' : '(→)';
+    return `• ${c.from} ${symbol} → ${c.to}`;
+}).join('\n')}
+
+FEEDBACK LOOPS (${analysis.loops.length}):
+${analysis.loops.length === 0 ? '(No feedback loops detected)' : analysis.loops.map(loop => {
+    return `• ${loop.type.toUpperCase()}: ${loop.path.join(' → ')}`;
+}).join('\n')}
+
+LEVERAGE POINTS:
+${analysis.leveragePoints.length === 0 ? '(Insufficient connections to identify leverage points)' : analysis.leveragePoints.map(lp => {
+    return `• ${lp.name}: ${lp.outbound} outgoing, ${lp.inbound} incoming`;
+}).join('\n')}
+`;
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'connection_circles_' + new Date().toISOString().slice(0, 10) + '.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportImage() {
+            const link = document.createElement('a');
+            link.download = 'connection_circles_' + new Date().toISOString().slice(0, 10) + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function exportSVG() {
+            if (elements.length === 0) {
+                alert('Add elements first.');
+                return;
+            }
+            
+            let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}" viewBox="0 0 ${canvas.width} ${canvas.height}">
+  <rect width="100%" height="100%" fill="white"/>
+  <defs>
+    <marker id="arrowhead-reinforcing" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowhead-balancing" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#d97706"/>
+    </marker>
+    <marker id="arrowhead-neutral" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+  </defs>
+`;
+            
+            // Draw connections
+            connections.forEach(conn => {
+                const from = elements.find(e => e.name === conn.from);
+                const to = elements.find(e => e.name === conn.to);
+                if (!from || !to) return;
+                
+                const angle = Math.atan2(to.y - from.y, to.x - from.x);
+                const startX = from.x + 40 * Math.cos(angle);
+                const startY = from.y + 40 * Math.sin(angle);
+                const endX = to.x - 40 * Math.cos(angle);
+                const endY = to.y - 40 * Math.sin(angle);
+                
+                const midX = (startX + endX) / 2;
+                const midY = (startY + endY) / 2;
+                const perpX = -(endY - startY) * 0.1;
+                const perpY = (endX - startX) * 0.1;
+                const ctrlX = midX + perpX;
+                const ctrlY = midY + perpY;
+                
+                const color = conn.type === 'reinforcing' ? '#2563eb' : conn.type === 'balancing' ? '#d97706' : '#6b7280';
+                const width = conn.type === 'neutral' ? 2 : 3;
+                
+                svg += `  <path d="M ${startX} ${startY} Q ${ctrlX} ${ctrlY} ${endX} ${endY}" fill="none" stroke="${color}" stroke-width="${width}" marker-end="url(#arrowhead-${conn.type})"/>
+`;
+                
+                // Draw +/- symbol
+                if (conn.type !== 'neutral') {
+                    const symbol = conn.type === 'reinforcing' ? '+' : '−';
+                    svg += `  <circle cx="${ctrlX}" cy="${ctrlY}" r="11" fill="white" stroke="${color}" stroke-width="2"/>
+  <text x="${ctrlX}" y="${ctrlY}" text-anchor="middle" dominant-baseline="central" fill="${color}" font-family="sans-serif" font-size="16" font-weight="bold">${symbol}</text>
+`;
+                }
+            });
+            
+            // Draw elements
+            elements.forEach(el => {
+                svg += `  <circle cx="${el.x}" cy="${el.y}" r="38" fill="#2c5282" stroke="#1a365d" stroke-width="2"/>
+`;
+                
+                // Text wrapping for SVG
+                const words = el.name.split(' ');
+                let lines = [];
+                let currentLine = '';
+                const maxWidth = 65;
+                
+                words.forEach(word => {
+                    const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                    if (testLine.length * 7 > maxWidth && currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                });
+                if (currentLine) lines.push(currentLine);
+                
+                const lineHeight = 15;
+                const startY = el.y - (lines.length - 1) * lineHeight / 2;
+                
+                lines.forEach((line, i) => {
+                    svg += `  <text x="${el.x}" y="${startY + i * lineHeight}" text-anchor="middle" dominant-baseline="central" fill="white" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14">${escapeHtml(line)}</text>
+`;
+                });
+            });
+            
+            svg += `</svg>`;
+            
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'connection_circles_' + new Date().toISOString().slice(0, 10) + '.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function copyForClaude() {
+            if (elements.length === 0) {
+                alert('Add elements first.');
+                return;
+            }
+            
+            const analysis = analyseSystem();
+            
+            let systemDescription = `I've created a connection circles diagram mapping a system. I want you to rigorously analyse it, challenge my thinking, and help me see what I'm missing. Don't be diplomatic at the expense of truth.
+
+SYSTEM ELEMENTS:
+${elements.map(el => `• ${el.name}`).join('\n')}
+
+CONNECTIONS:
+${connections.length === 0 ? '(No connections defined yet)' : connections.map(c => {
+    const type = c.type === 'reinforcing' ? '(+) reinforcing' : c.type === 'balancing' ? '(−) balancing' : '(→) unspecified';
+    return `• ${c.from} → ${c.to} ${type}`;
+}).join('\n')}
+
+FEEDBACK LOOPS IDENTIFIED:
+${analysis.loops.length === 0 ? '(None detected)' : analysis.loops.map(loop => {
+    return `• ${loop.type.toUpperCase()}: ${loop.path.join(' → ')}`;
+}).join('\n')}
+
+APPARENT LEVERAGE POINTS:
+${analysis.leveragePoints.map(lp => `• ${lp.name} (${lp.outbound} outgoing, ${lp.inbound} incoming)`).join('\n')}
+
+Please help me with:
+
+1. MISSING ELEMENTS: What important variables or factors might I have left out? What would someone with deep expertise in this domain include?
+
+2. MISSING CONNECTIONS: Are there likely causal relationships between elements that I haven't drawn? What indirect effects am I ignoring?
+
+3. WRONG CONNECTIONS: Which of my connections might be wrong? Where have I assumed causation from correlation? Where might the direction be reversed?
+
+4. LOOP ANALYSIS: For each feedback loop, what does it actually imply for system behaviour? Are there dominant loops I should focus on? What would happen if I tried to break or strengthen specific loops?
+
+5. LEVERAGE ASSESSMENT: Are my identified leverage points actually high-leverage? Are there higher-leverage interventions I'm missing? What are the second-order effects of intervening at each point?
+
+6. BLIND SPOTS: What biases might be shaping how I've drawn this map? What would someone with a different perspective emphasise?
+
+Be specific and direct. I'm seeking insight, not validation.`;
+            
+            navigator.clipboard.writeText(systemDescription).then(() => {
+                alert('Prompt copied! Paste into a Claude conversation for analysis.');
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = systemDescription;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Prompt copied! Paste into a Claude conversation for analysis.');
+            });
+        }
+        
+        function loadExample() {
+            if (elements.length > 0 || connections.length > 0) {
+                if (!confirm('This will replace your current diagram. Continue?')) {
+                    return;
+                }
+            }
+            
+            // Example: Hiring-Quality Spiral from the intro
+            elements = [
+                { name: 'Growth Pressure', x: 450, y: 100 },
+                { name: 'Hiring Speed', x: 750, y: 200 },
+                { name: 'Hiring Quality', x: 750, y: 420 },
+                { name: 'Code Quality', x: 450, y: 520 },
+                { name: 'Development Speed', x: 150, y: 420 },
+                { name: 'Technical Debt', x: 150, y: 200 }
+            ];
+            
+            connections = [
+                { from: 'Growth Pressure', to: 'Hiring Speed', type: 'reinforcing' },
+                { from: 'Hiring Speed', to: 'Hiring Quality', type: 'balancing' },
+                { from: 'Hiring Quality', to: 'Code Quality', type: 'reinforcing' },
+                { from: 'Code Quality', to: 'Development Speed', type: 'reinforcing' },
+                { from: 'Development Speed', to: 'Growth Pressure', type: 'balancing' },
+                { from: 'Code Quality', to: 'Technical Debt', type: 'balancing' },
+                { from: 'Technical Debt', to: 'Development Speed', type: 'balancing' },
+                { from: 'Technical Debt', to: 'Hiring Speed', type: 'reinforcing' }
+            ];
+            
+            updateElementList();
+            draw();
+            hideAnalysis();
+        }
+        
+        // Initialize
+        updateElementList();
+        draw();
+    </script>
+</body>
+</html>

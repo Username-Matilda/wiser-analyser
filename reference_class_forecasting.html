@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reference Class Forecasting Tool</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 10px; }
+        h2 { color: #2c5282; margin-top: 0; }
+        h3 { color: #374151; margin-top: 20px; }
+        .subtitle { color: #4b5563; margin-bottom: 30px; }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary {
+            background: #6b7280;
+            font-size: 14px;
+            padding: 8px 14px;
+        }
+        button.secondary:hover { background: #4b5563; }
+        button.danger {
+            background: #dc2626;
+        }
+        
+        input[type="text"], input[type="number"], select, textarea {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 15px;
+            width: 100%;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2c5282;
+            box-shadow: 0 0 0 2px rgba(44, 82, 130, 0.1);
+        }
+        
+        label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        
+        .philosophy-box {
+            background: #eff6ff;
+            border-left: 4px solid #2c5282;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #1e3a5f;
+        }
+        .philosophy-box strong {
+            color: #1e40af;
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #d97706;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #78350f;
+        }
+        
+        .insight-box {
+            background: #ecfdf5;
+            border-left: 4px solid #059669;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            color: #064e3b;
+        }
+        
+        .collapsible {
+            background: #f3f4f6;
+            color: #374151;
+            cursor: pointer;
+            padding: 12px 16px;
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .collapsible:hover { background: #e5e7eb; }
+        .collapsible::after {
+            content: '+';
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .collapsible.active::after { content: '−'; }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+        }
+        .collapsible-content-inner {
+            padding: 16px;
+            color: #374151;
+        }
+        
+        .deep-questions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .deep-question {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 12px;
+        }
+        .deep-question strong {
+            color: #2c5282;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .deep-question span {
+            font-size: 14px;
+            color: #4b5563;
+        }
+        
+        .case-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .case-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        .case-field label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .prompt-template {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .prompt-blank {
+            background: #374151;
+            color: #fbbf24;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+        
+        .statistics-box {
+            background: #eff6ff;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border: 1px solid #bfdbfe;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        
+        .slider-control {
+            margin-bottom: 20px;
+        }
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+            margin: 10px 0;
+        }
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2c5282;
+            cursor: pointer;
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .prediction-result {
+            background: linear-gradient(135deg, #2c5282 0%, #1e40af 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .prediction-value {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .confidence-interval {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .small-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reference Class Forecasting</h1>
+        <p class="subtitle">Learn from structurally similar situations to ground your expectations in reality</p>
+        
+        <div class="philosophy-box">
+            <strong>The core insight:</strong> When we forecast from the "inside view" — imagining how our specific situation will unfold — we tend to construct optimistic narratives. The "outside view" asks: what typically happens to endeavors like this one? Neither perspective is complete on its own. The inside view holds crucial specifics; the outside view provides grounding. This tool helps you integrate both.
+        </div>
+        
+        <div class="insight-box">
+            <strong>One class, one run.</strong> Each run of this tool examines one coherent reference class — one structural framing of your situation. Most situations benefit from multiple framings: run this exercise several times with different classes, then synthesize the results. The divergence between framings is where insight lives.
+        </div>
+
+        <!-- STEP 1: Define Success State -->
+        <div class="section">
+            <h2>Step 1: Define the Success State</h2>
+            <p>Describe what "done" looks like — not as an activity, but as a completed state. Be specific about observable outcomes.</p>
+            
+            <div class="warning-box">
+                <strong>Why this matters:</strong> Vague goals produce vague forecasts. "Launch the website" invites optimism. "New website is live, handles 10k concurrent users, and user testing shows 40% improvement in task completion" forces clarity about what you're actually trying to achieve.
+            </div>
+            
+            <label for="successState">Describe the completed success state:</label>
+            <textarea id="successState" placeholder="Example: Our research findings are published in a peer-reviewed journal, have been replicated by at least one independent team, and have influenced the direction of at least two other research groups working in the field."></textarea>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div>
+                    <label for="metricType">What dimension are you forecasting?</label>
+                    <select id="metricType" onchange="updateMetricUI()">
+                        <option value="duration">Duration / Time to completion</option>
+                        <option value="cost">Cost / Resources required</option>
+                        <option value="performance">Performance / Quality achieved</option>
+                        <option value="qualitative">Qualitative patterns (non-numeric)</option>
+                    </select>
+                </div>
+                <div id="unitContainer">
+                    <label for="metricUnit">Unit of measurement:</label>
+                    <input type="text" id="metricUnit" value="months" placeholder="e.g., months, $K, % accuracy">
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Register Inside View First -->
+        <div class="section">
+            <h2>Step 2: Register Your Inside View</h2>
+            <p>Before looking at base rates, record your intuitive estimate. This is your "inside view" — your mental simulation of how this specific situation will unfold.</p>
+            
+            <div class="insight-box">
+                <strong>Why record this first?</strong> Once you see base rates, your intuition will be anchored by them. Capturing your inside view beforehand lets you genuinely compare your instincts against historical patterns — and learn something about your own calibration.
+            </div>
+            
+            <div id="insideViewQuantitative">
+                <label for="insideViewEstimate">Your intuitive estimate (before seeing any base rates):</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="number" id="insideViewEstimate" placeholder="e.g., 6" style="width: 150px;">
+                    <span id="insideViewUnit" class="small-text">months</span>
+                </div>
+                <p class="small-text" style="margin-top: 8px;">What does your gut say? Don't overthink it — that's the point.</p>
+            </div>
+            
+            <div id="insideViewQualitative" style="display: none;">
+                <label for="insideViewNarrative">Describe your expectations for how this will unfold:</label>
+                <textarea id="insideViewNarrative" placeholder="What do you expect will happen? What challenges do you anticipate? What does success look like in your mental model?"></textarea>
+            </div>
+        </div>
+
+        <!-- STEP 3: Define Reference Class -->
+        <div class="section">
+            <h2>Step 3: Define Your Reference Class</h2>
+            
+            <p>A reference class is a set of situations that share important structural features with yours. The key word is <strong>structural</strong>: features that actually drive outcomes, not surface-level similarities.</p>
+            
+            <div class="warning-box">
+                <strong>The common trap:</strong> It's natural to reach for obvious categories — "other projects by my organization" or "similar products in our industry." These aren't wrong, but they may miss structural factors that actually determine outcomes. A PhD thesis might share more structural DNA with "solo creative projects with distant deadlines and ambiguous success criteria" than with "academic work."
+            </div>
+            
+            <button class="collapsible">Understanding "bucket errors" in reference class selection</button>
+            <div class="collapsible-content">
+                <div class="collapsible-content-inner">
+                    <p>A <strong>bucket error</strong> occurs when we group things together that appear similar but differ in ways that matter for outcomes — or separate things that appear different but share crucial dynamics.</p>
+                    
+                    <p>For example: "technology startups" might seem like a coherent reference class, but a B2B SaaS company and a hardware robotics company have wildly different risk profiles, capital requirements, and timeline dynamics. Conversely, "PhD completion" and "writing a novel" might seem very different but share structural features: solo work, distant deadlines, intrinsic motivation requirements, scope creep vulnerability.</p>
+                    
+                    <p>The goal isn't to reject surface-level categories — they often do capture something real. The goal is to examine whether they capture what <em>drives outcomes</em>, and to complement them with classes that capture structural factors you might otherwise miss.</p>
+                    
+                    <p><strong>Further reading:</strong></p>
+                    <ul>
+                        <li><a href="https://www.lesswrong.com/posts/EEv9JeuY5xfuDDSgF/flinching-away-from-truth-is-often-about-protecting-the" target="_blank">Flinching Away from Truth</a> — Anna Salamon on how we avoid examining our categories</li>
+                        <li><a href="https://www.lesswrong.com/posts/veN86cBhoe7mBxXLk/categories-and-carving-reality-at-its-joints" target="_blank">Carving Reality at Its Joints</a> — On finding categories that reflect real structure</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3>Deep Structure Questions</h3>
+            <p>Consider which of these factors are load-bearing for your situation:</p>
+            
+            <div class="deep-questions">
+                <div class="deep-question">
+                    <strong>Coordination complexity</strong>
+                    <span>How many people/teams must synchronize?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Feedback loop speed</strong>
+                    <span>How quickly do you learn if you're on track?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Novelty level</strong>
+                    <span>Known playbook or uncharted territory?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Reversibility</strong>
+                    <span>Can you course-correct, or do early decisions lock you in?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Incentive alignment</strong>
+                    <span>Do all parties benefit from the same outcomes?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Measurability</strong>
+                    <span>Can you tell success from failure? When?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Dependency structure</strong>
+                    <span>What must happen before what?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Selection effects</strong>
+                    <span>Who attempts this? What gets reported?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Resource fungibility</strong>
+                    <span>Can you reallocate if something fails?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Information timing</strong>
+                    <span>When do you learn crucial facts?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Competitive dynamics</strong>
+                    <span>Others working on this? With or against you?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Path dependence</strong>
+                    <span>Do early choices constrain later options?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Expertise transfer</strong>
+                    <span>How much does outside knowledge apply?</span>
+                </div>
+                <div class="deep-question">
+                    <strong>Motivation structure</strong>
+                    <span>What sustains effort over time?</span>
+                </div>
+            </div>
+            
+            <button class="collapsible" style="margin-top: 20px;">Get help finding reference classes (Claude prompt template)</button>
+            <div class="collapsible-content">
+                <div class="collapsible-content-inner">
+                    <p>Copy this prompt and fill in the blanks. Use it with Claude or another capable AI assistant to brainstorm reference classes:</p>
+                    <div class="prompt-template">I'm trying to forecast: <span class="prompt-blank">[YOUR SUCCESS STATE]</span>
+
+Key structural features of my situation:
+- Coordination complexity: <span class="prompt-blank">[low/medium/high — brief description]</span>
+- Feedback loop speed: <span class="prompt-blank">[how quickly I learn if on track]</span>
+- Novelty level: <span class="prompt-blank">[executing known playbook vs. uncharted territory]</span>
+- Other relevant factors: <span class="prompt-blank">[anything else that seems load-bearing]</span>
+
+Help me identify 3-5 reference classes that share these structural features, even if they come from different domains. For each, suggest:
+1. What makes it structurally similar
+2. Where I might find base rate data
+3. What typical outcomes look like
+
+Avoid purely surface-level matches unless they genuinely share the structural dynamics above.</div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 25px;">This Run's Reference Class</h3>
+            
+            <label for="className">Reference class name:</label>
+            <input type="text" id="className" placeholder="e.g., 'Solo creative projects with ambiguous scope and distant deadlines'">
+            
+            <label for="classRationale">Why is this class structurally similar to your situation?</label>
+            <textarea id="classRationale" placeholder="What structural features does this class share with your situation? Which of the deep structure questions above does it capture?"></textarea>
+            
+            <p class="small-text" style="margin-top: 15px;">Even 2-3 cases can be valuable. The exercise of identifying structural similarities and examining real outcomes forces you to articulate assumptions you might otherwise leave unexamined.</p>
+        </div>
+
+        <!-- STEP 4: Add Cases -->
+        <div class="section">
+            <h2>Step 4: Gather Cases</h2>
+            <p id="step4Description">Add cases from your reference class with their expected vs. actual outcomes.</p>
+            
+            <div id="casesContainer"></div>
+            <button class="secondary" onclick="addCase()">+ Add Case</button>
+        </div>
+
+        <!-- STEP 5: Analyze -->
+        <div class="section" id="analysisSection" style="display: none;">
+            <h2 id="step5Heading">Step 5: Analyze Base Rates</h2>
+            <button onclick="analyzeBaseRates()" id="analyzeButton">Calculate Base Rates</button>
+            
+            <div id="statisticsDisplay" style="display: none;"></div>
+        </div>
+
+        <!-- STEP 6: Adjustments (quantitative only) -->
+        <div class="section" id="adjustmentSection" style="display: none;">
+            <h2>Step 6: Situation-Specific Adjustments</h2>
+            
+            <div class="warning-box">
+                <strong>Use adjustments sparingly.</strong> Research consistently shows that adjustments from base rates tend to make predictions <em>worse</em>, not better — they're often a backdoor for the inside view to reassert itself. Make adjustments only for factors you have strong, specific evidence for.
+            </div>
+            
+            <div class="slider-control">
+                <label>Complexity relative to reference class: <strong id="complexityValue">Similar</strong></label>
+                <input type="range" class="slider" id="complexitySlider" min="-50" max="50" value="0" oninput="updateSliders()">
+                <div class="slider-labels">
+                    <span>Simpler (−50%)</span>
+                    <span>Similar</span>
+                    <span>More complex (+50%)</span>
+                </div>
+            </div>
+            
+            <div class="slider-control">
+                <label>Team experience: <strong id="experienceValue">Similar</strong></label>
+                <input type="range" class="slider" id="experienceSlider" min="-30" max="30" value="0" oninput="updateSliders()">
+                <div class="slider-labels">
+                    <span>More experienced (−30%)</span>
+                    <span>Similar</span>
+                    <span>Less experienced (+30%)</span>
+                </div>
+            </div>
+            
+            <div class="slider-control">
+                <label>Known risk factors: <strong id="riskValue">Similar</strong></label>
+                <input type="range" class="slider" id="riskSlider" min="-20" max="40" value="0" oninput="updateSliders()">
+                <div class="slider-labels">
+                    <span>Fewer risks (−20%)</span>
+                    <span>Similar</span>
+                    <span>More risks (+40%)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="predictionSection" style="display: none;">
+            <div class="section">
+                <h2 id="resultsHeading">Step 7: Results for This Reference Class</h2>
+                
+                <div id="quantitativeResults">
+                    <div class="prediction-result">
+                        <div>Reference-Class Adjusted Estimate</div>
+                        <div class="prediction-value" id="predictionValue">--</div>
+                        <div class="confidence-interval" id="confidenceInterval">--</div>
+                    </div>
+                    
+                    <div id="calibrationComparison" style="margin-top: 20px;"></div>
+                </div>
+                
+                <div id="qualitativeResults" style="display: none;">
+                    <h3>Collected Patterns</h3>
+                    <div id="qualitativePatterns"></div>
+                </div>
+                
+                <div id="warningSection"></div>
+            </div>
+            
+            <div class="philosophy-box">
+                <strong>What's next?</strong> Run this exercise again with a different reference class. Your situation likely has multiple valid structural framings — "government IT projects," "social movements," "organizational change initiatives" might all illuminate different aspects of the same endeavor. The divergence between framings often reveals more than any single forecast.
+            </div>
+            
+            <div class="insight-box">
+                <strong>The deeper value:</strong> You may find that the most valuable part of this exercise is noticing assumptions you hadn't examined — factors you'd have glossed over while designing a project or conceptualizing a problem space. The base rate numbers are useful, but the structured examination of your own thinking may be more useful still.
+            </div>
+            
+            <label for="synthesisNotes">Notes for synthesis (what did this reference class reveal?):</label>
+            <textarea id="synthesisNotes" placeholder="What did you learn from this framing? What failure modes emerged? How does this compare to other reference classes you've examined?"></textarea>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="exportAnalysis()">Export This Analysis</button>
+                <button class="secondary" onclick="resetForNewClass()">Start New Reference Class</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cases = [];
+        let caseIdCounter = 0;
+        let currentMetricType = 'duration';
+        let baseRates = null;
+        
+        function updateMetricUI() {
+            currentMetricType = document.getElementById('metricType').value;
+            const unitContainer = document.getElementById('unitContainer');
+            const insideViewQuantitative = document.getElementById('insideViewQuantitative');
+            const insideViewQualitative = document.getElementById('insideViewQualitative');
+            const step4Description = document.getElementById('step4Description');
+            const step5Heading = document.getElementById('step5Heading');
+            const analyzeButton = document.getElementById('analyzeButton');
+            
+            if (currentMetricType === 'qualitative') {
+                unitContainer.style.display = 'none';
+                insideViewQuantitative.style.display = 'none';
+                insideViewQualitative.style.display = 'block';
+                step4Description.textContent = 'Add cases from your reference class. Describe what happened and key patterns observed.';
+                step5Heading.textContent = 'Step 5: Explore Case Outcomes';
+                analyzeButton.textContent = 'Review Collected Cases';
+            } else {
+                unitContainer.style.display = 'block';
+                insideViewQuantitative.style.display = 'block';
+                insideViewQualitative.style.display = 'none';
+                step4Description.textContent = 'Add cases from your reference class with their expected vs. actual outcomes.';
+                step5Heading.textContent = 'Step 5: Analyze Base Rates';
+                analyzeButton.textContent = 'Calculate Base Rates';
+                
+                const unitInput = document.getElementById('metricUnit');
+                const unitSpan = document.getElementById('insideViewUnit');
+                const defaults = { duration: 'months', cost: '$K', performance: '% or score' };
+                unitInput.value = defaults[currentMetricType] || '';
+                unitSpan.textContent = unitInput.value;
+            }
+            
+            renderCases();
+        }
+        
+        function addCase() {
+            const caseId = 'case_' + caseIdCounter++;
+            cases.push({
+                id: caseId,
+                name: '',
+                expected: null,
+                actual: null,
+                notes: ''
+            });
+            renderCases();
+            document.getElementById('analysisSection').style.display = 'block';
+        }
+        
+        function removeCase(caseId) {
+            cases = cases.filter(c => c.id !== caseId);
+            renderCases();
+            if (cases.length === 0) {
+                document.getElementById('analysisSection').style.display = 'none';
+            }
+        }
+        
+        function updateCase(caseId, field, value) {
+            const caseData = cases.find(c => c.id === caseId);
+            if (caseData) {
+                if (field === 'expected' || field === 'actual') {
+                    caseData[field] = value ? parseFloat(value) : null;
+                } else {
+                    caseData[field] = value;
+                }
+            }
+            renderCases();
+        }
+        
+        function calculateDeviation(caseData) {
+            if (caseData.expected && caseData.actual) {
+                const deviation = ((caseData.actual - caseData.expected) / caseData.expected) * 100;
+                const sign = deviation >= 0 ? '+' : '';
+                return `${sign}${deviation.toFixed(1)}%`;
+            }
+            return '--';
+        }
+        
+        function renderCases() {
+            const container = document.getElementById('casesContainer');
+            const unit = document.getElementById('metricUnit').value;
+            const isQualitative = currentMetricType === 'qualitative';
+            
+            if (cases.length === 0) {
+                container.innerHTML = '<p class="small-text">No cases yet. Add cases from your reference class.</p>';
+                return;
+            }
+            
+            container.innerHTML = cases.map((c, index) => `
+                <div class="case-card">
+                    <div class="case-header">
+                        <strong>Case ${index + 1}</strong>
+                        <button class="secondary danger" onclick="removeCase('${c.id}')" style="margin: 0; padding: 4px 10px;">Remove</button>
+                    </div>
+                    <input type="text" value="${c.name}" 
+                           onchange="updateCase('${c.id}', 'name', this.value)"
+                           placeholder="Case name (e.g., '2019 Website Redesign')" style="margin-bottom: 10px;">
+                    ${isQualitative ? `
+                        <label class="small-text">What happened? Key outcomes and patterns:</label>
+                        <textarea onchange="updateCase('${c.id}', 'notes', this.value)"
+                                  placeholder="Describe outcomes, timelines, failure modes, success factors...">${c.notes || ''}</textarea>
+                    ` : `
+                        <div class="case-fields">
+                            <div>
+                                <label class="small-text">Expected (${unit}):</label>
+                                <input type="number" value="${c.expected || ''}" 
+                                       onchange="updateCase('${c.id}', 'expected', this.value)"
+                                       placeholder="What was planned?">
+                            </div>
+                            <div>
+                                <label class="small-text">Actual (${unit}):</label>
+                                <input type="number" value="${c.actual || ''}" 
+                                       onchange="updateCase('${c.id}', 'actual', this.value)"
+                                       placeholder="What happened?">
+                            </div>
+                            <div>
+                                <label class="small-text">Deviation:</label>
+                                <input type="text" readonly value="${calculateDeviation(c)}" 
+                                       style="background: #f3f4f6;">
+                            </div>
+                        </div>
+                        <label class="small-text" style="margin-top: 10px;">Notes (optional):</label>
+                        <input type="text" value="${c.notes || ''}" 
+                               onchange="updateCase('${c.id}', 'notes', this.value)"
+                               placeholder="Context, caveats, what drove the outcome...">
+                    `}
+                </div>
+            `).join('');
+        }
+        
+        function analyzeBaseRates() {
+            if (currentMetricType === 'qualitative') {
+                analyzeQualitative();
+            } else {
+                analyzeQuantitative();
+            }
+        }
+        
+        function analyzeQuantitative() {
+            const validCases = cases.filter(c => c.expected && c.actual);
+            
+            if (validCases.length < 2) {
+                alert('Please add at least 2 cases with expected and actual values.');
+                return;
+            }
+            
+            const deviations = validCases.map(c => (c.actual - c.expected) / c.expected);
+            
+            baseRates = {
+                n: validCases.length,
+                mean: deviations.reduce((a, b) => a + b, 0) / deviations.length,
+                median: calculateMedian(deviations),
+                p10: calculatePercentile(deviations, 0.1),
+                p90: calculatePercentile(deviations, 0.9),
+                stdDev: calculateStdDev(deviations)
+            };
+            
+            displayQuantitativeStats();
+            document.getElementById('adjustmentSection').style.display = 'block';
+            document.getElementById('predictionSection').style.display = 'block';
+            document.getElementById('quantitativeResults').style.display = 'block';
+            document.getElementById('qualitativeResults').style.display = 'none';
+            document.getElementById('resultsHeading').textContent = 'Step 7: Results for This Reference Class';
+            
+            calculatePrediction();
+        }
+        
+        function analyzeQualitative() {
+            const validCases = cases.filter(c => c.notes && c.notes.trim());
+            
+            if (validCases.length < 1) {
+                alert('Please add at least one case with qualitative notes.');
+                return;
+            }
+            
+            displayQualitativePatterns(validCases);
+            document.getElementById('adjustmentSection').style.display = 'none';
+            document.getElementById('predictionSection').style.display = 'block';
+            document.getElementById('quantitativeResults').style.display = 'none';
+            document.getElementById('qualitativeResults').style.display = 'block';
+            document.getElementById('resultsHeading').textContent = 'Step 6: Pattern Review';
+        }
+        
+        function displayQuantitativeStats() {
+            const container = document.getElementById('statisticsDisplay');
+            const className = document.getElementById('className').value || 'this reference class';
+            
+            container.innerHTML = `
+                <div class="statistics-box">
+                    <h3 style="margin-top: 0; color: #1e40af;">Base Rates: ${className}</h3>
+                    <p class="small-text">${baseRates.n} cases analyzed</p>
+                    
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Median Deviation</div>
+                            <div class="stat-value">${(baseRates.median * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Mean Deviation</div>
+                            <div class="stat-value">${(baseRates.mean * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">10th Percentile</div>
+                            <div class="stat-value">${(baseRates.p10 * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">90th Percentile</div>
+                            <div class="stat-value">${(baseRates.p90 * 100).toFixed(1)}%</div>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 15px; color: #374151;">
+                        <strong>Interpretation:</strong> In this reference class, outcomes typically deviated from expectations by 
+                        <strong>${(baseRates.median * 100).toFixed(0)}%</strong> (median). 
+                        ${baseRates.median > 0 ? 'Endeavors tended to take longer or cost more than expected.' : 
+                          baseRates.median < 0 ? 'Endeavors tended to finish earlier or cost less than expected.' : 
+                          'Endeavors roughly matched expectations.'}
+                    </p>
+                </div>
+            `;
+            
+            container.style.display = 'block';
+        }
+        
+        function displayQualitativePatterns(validCases) {
+            const container = document.getElementById('qualitativePatterns');
+            const className = document.getElementById('className').value || 'this reference class';
+            
+            container.innerHTML = `
+                <p>You've collected ${validCases.length} case(s) from <strong>${className}</strong>:</p>
+                
+                ${validCases.map(c => `
+                    <div class="case-card">
+                        <strong>${c.name || 'Unnamed case'}</strong>
+                        <p style="margin-top: 8px; color: #374151;">${c.notes}</p>
+                    </div>
+                `).join('')}
+                
+                <div class="insight-box" style="margin-top: 20px;">
+                    <strong>Next step:</strong> Look for patterns across these cases. What failure modes recur? What factors distinguished successes from failures? Consider copying these notes to a Claude chat for help synthesizing patterns.
+                </div>
+            `;
+        }
+        
+        function updateSliders() {
+            const complexity = parseInt(document.getElementById('complexitySlider').value);
+            const experience = parseInt(document.getElementById('experienceSlider').value);
+            const risk = parseInt(document.getElementById('riskSlider').value);
+            
+            document.getElementById('complexityValue').textContent = 
+                complexity === 0 ? 'Similar' : (complexity > 0 ? `+${complexity}%` : `${complexity}%`);
+            document.getElementById('experienceValue').textContent = 
+                experience === 0 ? 'Similar' : (experience > 0 ? `+${experience}%` : `${experience}%`);
+            document.getElementById('riskValue').textContent = 
+                risk === 0 ? 'Similar' : (risk > 0 ? `+${risk}%` : `${risk}%`);
+            
+            calculatePrediction();
+        }
+        
+        function calculatePrediction() {
+            const insideView = parseFloat(document.getElementById('insideViewEstimate').value);
+            if (!insideView || !baseRates) return;
+            
+            const complexity = parseInt(document.getElementById('complexitySlider').value) / 100;
+            const experience = parseInt(document.getElementById('experienceSlider').value) / 100;
+            const risk = parseInt(document.getElementById('riskSlider').value) / 100;
+            
+            const totalAdjustment = 1 + complexity + experience + risk;
+            const adjustedDeviation = baseRates.median * totalAdjustment;
+            const prediction = insideView * (1 + adjustedDeviation);
+            
+            const lower = insideView * (1 + baseRates.p10 * totalAdjustment);
+            const upper = insideView * (1 + baseRates.p90 * totalAdjustment);
+            
+            const unit = document.getElementById('metricUnit').value;
+            document.getElementById('predictionValue').textContent = `${prediction.toFixed(1)} ${unit}`;
+            document.getElementById('confidenceInterval').textContent = 
+                `80% range: ${lower.toFixed(1)} – ${upper.toFixed(1)} ${unit}`;
+            
+            // Calibration comparison
+            const calibrationDiv = document.getElementById('calibrationComparison');
+            const diff = ((prediction - insideView) / insideView * 100).toFixed(0);
+            
+            calibrationDiv.innerHTML = `
+                <div class="philosophy-box">
+                    <strong>Inside view vs. this reference class:</strong><br>
+                    You estimated <strong>${insideView} ${unit}</strong>. 
+                    This reference class suggests <strong>${prediction.toFixed(1)} ${unit}</strong> 
+                    (${diff > 0 ? '+' : ''}${diff}% from your estimate).
+                    ${Math.abs(diff) > 30 ? '<br><br>This is a substantial difference. Consider which view has better information — and whether your inside view is capturing something real or succumbing to optimism bias.' : ''}
+                </div>
+            `;
+            
+            // Warnings
+            const warningSection = document.getElementById('warningSection');
+            if (adjustedDeviation > 0.5) {
+                warningSection.innerHTML = `
+                    <div class="warning-box">
+                        <strong>High deviation warning:</strong> This reference class shows typical deviations of 
+                        ${(adjustedDeviation * 100).toFixed(0)}% from expectations. Consider breaking this into 
+                        smaller phases with intermediate checkpoints, or building significant buffer into your plans.
+                    </div>
+                `;
+            } else {
+                warningSection.innerHTML = '';
+            }
+        }
+        
+        function calculateMedian(arr) {
+            const sorted = [...arr].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        }
+        
+        function calculatePercentile(arr, p) {
+            const sorted = [...arr].sort((a, b) => a - b);
+            const index = Math.max(0, Math.ceil(p * sorted.length) - 1);
+            return sorted[index];
+        }
+        
+        function calculateStdDev(arr) {
+            const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+            const variance = arr.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / arr.length;
+            return Math.sqrt(variance);
+        }
+        
+        function exportAnalysis() {
+            const successState = document.getElementById('successState').value;
+            const className = document.getElementById('className').value;
+            const classRationale = document.getElementById('classRationale').value;
+            const insideView = document.getElementById('insideViewEstimate').value;
+            const unit = document.getElementById('metricUnit').value;
+            const synthesisNotes = document.getElementById('synthesisNotes').value;
+            
+            let report = `REFERENCE CLASS FORECASTING ANALYSIS\n`;
+            report += `${'='.repeat(50)}\n\n`;
+            report += `Success State:\n${successState || 'Not specified'}\n\n`;
+            report += `Inside View Estimate: ${insideView || 'Not specified'} ${unit}\n\n`;
+            
+            report += `REFERENCE CLASS: ${className || 'Unnamed'}\n${'-'.repeat(40)}\n`;
+            report += `Rationale: ${classRationale || 'Not specified'}\n\n`;
+            
+            report += `Cases:\n`;
+            cases.forEach((c, i) => {
+                if (currentMetricType === 'qualitative') {
+                    report += `  ${i + 1}. ${c.name || 'Unnamed'}: ${c.notes || 'No notes'}\n`;
+                } else {
+                    const dev = c.expected && c.actual ? 
+                        ` (${((c.actual - c.expected) / c.expected * 100).toFixed(1)}% deviation)` : '';
+                    report += `  ${i + 1}. ${c.name || 'Unnamed'}: Expected ${c.expected || '?'}, Actual ${c.actual || '?'}${dev}\n`;
+                }
+            });
+            
+            if (baseRates) {
+                report += `\nBASE RATES\n${'-'.repeat(40)}\n`;
+                report += `Median deviation: ${(baseRates.median * 100).toFixed(1)}%\n`;
+                report += `Mean deviation: ${(baseRates.mean * 100).toFixed(1)}%\n`;
+                report += `80% range: ${(baseRates.p10 * 100).toFixed(1)}% to ${(baseRates.p90 * 100).toFixed(1)}%\n`;
+            }
+            
+            const prediction = document.getElementById('predictionValue').textContent;
+            if (prediction !== '--') {
+                report += `\nFORECAST FROM THIS CLASS\n${'-'.repeat(40)}\n`;
+                report += `${prediction}\n`;
+                report += `${document.getElementById('confidenceInterval').textContent}\n`;
+            }
+            
+            if (synthesisNotes) {
+                report += `\nNOTES\n${'-'.repeat(40)}\n`;
+                report += synthesisNotes + '\n';
+            }
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const safeName = (className || 'reference_class').replace(/[^a-z0-9]/gi, '_').substring(0, 30);
+            a.href = url;
+            a.download = `rcf_${safeName}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function resetForNewClass() {
+            // Keep success state and inside view, clear reference class specific data
+            document.getElementById('className').value = '';
+            document.getElementById('classRationale').value = '';
+            document.getElementById('synthesisNotes').value = '';
+            cases = [];
+            baseRates = null;
+            
+            // Reset sliders
+            document.getElementById('complexitySlider').value = 0;
+            document.getElementById('experienceSlider').value = 0;
+            document.getElementById('riskSlider').value = 0;
+            updateSliders();
+            
+            // Hide results sections
+            document.getElementById('analysisSection').style.display = 'none';
+            document.getElementById('adjustmentSection').style.display = 'none';
+            document.getElementById('predictionSection').style.display = 'none';
+            document.getElementById('statisticsDisplay').style.display = 'none';
+            
+            renderCases();
+            
+            // Scroll to step 3
+            document.getElementById('className').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Initialize collapsibles
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        });
+        
+        // Update unit display when changed
+        document.getElementById('metricUnit').addEventListener('input', function() {
+            document.getElementById('insideViewUnit').textContent = this.value;
+            renderCases();
+        });
+        
+        // Initialize
+        renderCases();
+    </script>
+</body>
+</html>

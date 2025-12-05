@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHP Geometric Mean Aggregator (Group Criteria Prioritization Tool)</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 5px; font-size: 1.6em; }
+        .subtitle { color: #555; margin-bottom: 30px; font-size: 1.1em; }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 6px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary {
+            background: #718096;
+            font-size: 14px;
+            padding: 6px 12px;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .info {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            color: #234e52;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .guide {
+            background: #fff8dc;
+            border: 1px solid #d4a800;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #5c4600;
+        }
+        .evaluator-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .evaluator-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+        }
+        .evaluator-card h4 {
+            margin: 0 0 15px 0;
+            color: #2c5282;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .comparison-input {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+        .comparison-label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .comparison-control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .comparison-slider-container {
+            position: relative;
+            padding: 0 10px;
+        }
+        .comparison-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #3182ce 0%, #e2e8f0 50%, #38a169 100%);
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        .comparison-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #2c5282;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .comparison-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #2c5282;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #555;
+            margin-top: 5px;
+        }
+        .slider-labels span {
+            max-width: 80px;
+            text-align: center;
+        }
+        .slider-labels span:first-child { text-align: left; }
+        .slider-labels span:last-child { text-align: right; }
+        .comparison-value {
+            text-align: center;
+            font-weight: 600;
+            color: #2c5282;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 6px;
+            background: #e8f4f8;
+            border-radius: 4px;
+        }
+        .matrix-display {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            color: #333;
+        }
+        th {
+            background: #f0f0f0;
+            font-weight: bold;
+            color: #333;
+        }
+        .diagonal-cell {
+            background: #e0e0e0;
+            color: #666;
+        }
+        .aggregated-cell {
+            background: #e8f4f8;
+            font-weight: bold;
+            color: #333;
+        }
+        .results-section {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .weight-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #cbd5e0;
+        }
+        .weight-display:last-of-type {
+            border-bottom: none;
+        }
+        .weight-bar-container {
+            flex: 1;
+            margin: 0 15px;
+        }
+        .weight-bar {
+            height: 24px;
+            background: linear-gradient(90deg, #2c5282, #4a90a4);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .warning {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #276749;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .formula-display {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            color: #333;
+        }
+        
+        /* Collapsible sections */
+        .collapsible {
+            cursor: pointer;
+            padding: 12px;
+            background: #e8e8e8;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+        }
+        .collapsible:hover { background: #ddd; }
+        .collapsible::after {
+            content: '▼';
+            font-size: 12px;
+            transition: transform 0.2s;
+            color: #555;
+        }
+        .collapsible.active::after {
+            transform: rotate(180deg);
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: white;
+            border-radius: 4px;
+        }
+        .collapsible-content.show {
+            max-height: 2000px;
+        }
+        .collapsible-inner {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            color: #333;
+            background: #fafafa;
+        }
+        .collapsible-inner h3 {
+            color: #2c5282;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .collapsible-inner p {
+            color: #333;
+            margin: 10px 0;
+        }
+        .collapsible-inner ul {
+            color: #333;
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .collapsible-inner li {
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .example-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .example-box h4 {
+            color: #2c5282;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .example-box p, .example-box li {
+            color: #333;
+        }
+        
+        .scale-reference {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
+            margin: 15px 0;
+        }
+        .scale-item {
+            padding: 8px 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+        }
+        .scale-item strong {
+            color: #2c5282;
+        }
+        
+        .consistency-tips {
+            background: #faf5ff;
+            border: 1px solid #d6bcfa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .consistency-tips h4 {
+            color: #553c9a;
+            margin: 0 0 10px 0;
+        }
+        .consistency-tips ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .consistency-tips li {
+            margin-bottom: 8px;
+            color: #44337a;
+        }
+        
+        .evaluator-consistency {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        .consistency-good { background: #c6f6d5; color: #276749; }
+        .consistency-ok { background: #fef3c7; color: #92400e; }
+        .consistency-bad { background: #fed7d7; color: #c53030; }
+        
+        .export-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .export-status.success { background: #c6f6d5; color: #276749; }
+        .export-status.error { background: #fed7d7; color: #c53030; }
+        
+        /* Discrepancy chart styles */
+        .discrepancy-section {
+            background: #fff;
+            border: 2px solid #fcd34d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .discrepancy-section h3 {
+            color: #92400e;
+            margin: 0 0 10px 0;
+        }
+        .discrepancy-section > p {
+            font-size: 14px;
+            color: #5a4d41;
+            margin-bottom: 15px;
+        }
+        .discrepancy-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .discrepancy-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .discrepancy-label {
+            min-width: 140px;
+            font-size: 13px;
+            color: #333;
+        }
+        .discrepancy-bar-container {
+            flex: 1;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .discrepancy-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .discrepancy-low { background: #48bb78; }
+        .discrepancy-medium { background: #ecc94b; }
+        .discrepancy-high { background: #f56565; }
+        .discrepancy-value {
+            min-width: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            text-align: right;
+        }
+        
+        /* Interpretation guide box */
+        .interpretation-guide {
+            background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%);
+            border: 2px solid #4a90a4;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .interpretation-guide h4 {
+            color: #2c5282;
+            margin: 0 0 12px 0;
+            font-size: 16px;
+        }
+        .interpretation-guide p {
+            color: #2d3748;
+            margin: 8px 0;
+        }
+        .interpretation-guide .example-interpretation {
+            background: white;
+            border: 1px solid #bee3f8;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .interpretation-guide .example-interpretation h5 {
+            color: #2c5282;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .interpretation-guide .ai-prompt {
+            background: #f7fafc;
+            border: 1px dashed #a0aec0;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        .interpretation-guide .ai-prompt strong {
+            color: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AHP Geometric Mean Aggregator</h1>
+        <p class="subtitle">Group Criteria Prioritization Tool</p>
+        
+        <!-- Technical context for those who want it -->
+        <button class="collapsible" onclick="toggleCollapsible(this)">
+            What is this tool? (AHP & Geometric Mean explained)
+        </button>
+        <div class="collapsible-content">
+            <div class="collapsible-inner">
+                <h3>The Analytic Hierarchy Process (AHP)</h3>
+                <p>AHP is a structured method for making decisions with multiple factors. Instead of trying to weigh everything at once, you compare criteria <em>two at a time</em>, asking: "Which of these two matters more, and by how much?"</p>
+                
+                <div class="example-box">
+                    <h4>📋 Example: Hiring a Software Developer</h4>
+                    <p>Your team needs to decide what matters most: <strong>Technical Skills</strong>, <strong>Communication</strong>, <strong>Cultural Fit</strong>, or <strong>Experience</strong>.</p>
+                    <p>Instead of everyone arguing about percentages, each evaluator systematically compares pairs:</p>
+                    <ul>
+                        <li>"Is Technical Skills more important than Communication? How much more?"</li>
+                        <li>"Is Cultural Fit more important than Experience? How much more?"</li>
+                        <li>...and so on for all pairs</li>
+                    </ul>
+                    <p>The math then converts these comparisons into consistent percentage weights.</p>
+                </div>
+                
+                <h3>Why Geometric Mean for Groups?</h3>
+                <p>When multiple people provide comparisons, we need to combine them fairly. <strong>Geometric mean</strong> (multiplying values and taking the Nth root) is the mathematically correct choice because:</p>
+                <ul>
+                    <li><strong>Preserves reciprocity:</strong> If person A says "X is 3× more important than Y", that implies "Y is ⅓ as important as X". Geometric mean maintains this relationship; arithmetic mean breaks it.</li>
+                    <li><strong>Reduces outlier impact:</strong> One extreme opinion doesn't dominate the group result.</li>
+                    <li><strong>Pareto optimal:</strong> The aggregated result respects each individual's preferences as much as mathematically possible.</li>
+                </ul>
+                
+                <div class="formula-display">
+                    <strong>The Formula:</strong> Group value = (Person₁ × Person₂ × ... × PersonN)^(1/N)
+                </div>
+            </div>
+        </div>
+
+        <!-- Practical guidance -->
+        <div class="info">
+            <strong>In practical terms:</strong> This tool helps groups agree on priorities. Each person independently compares pairs of criteria (e.g., "Is Cost more important than Quality?"), then the tool mathematically combines everyone's views into final weights that respect the group's collective wisdom.
+        </div>
+
+        <div class="guide">
+            <strong>🎯 Quick Start:</strong>
+            <ol style="margin: 10px 0 0 20px;">
+                <li>Enter the criteria your group is weighing</li>
+                <li>Set how many evaluators will participate</li>
+                <li>Each evaluator slides to indicate their preference for each pair</li>
+                <li>Calculate to see the combined group weights</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>Step 1: Setup Criteria and Evaluators</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Criteria (comma-separated):</label>
+                    <input type="text" id="criteriaInput" style="width: 100%;" 
+                           placeholder="Cost, Quality, Time, Risk" 
+                           value="Cost, Quality, Time, Risk">
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">These are the factors you're trying to prioritise</div>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Number of evaluators:</label>
+                    <input type="number" id="evaluatorCount" value="3" min="2" max="10" style="width: 80px;">
+                    <button class="secondary" onclick="setupMatrix()">Setup Comparisons</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="inputSection" style="display:none;">
+            <h2>Step 2: Enter Pairwise Comparisons</h2>
+            
+            <div class="consistency-tips">
+                <h4>💡 Staying Consistent (The Mental Algorithm)</h4>
+                <p style="margin-bottom: 10px; color: #44337a;">Before rating, think through your rough priority order. Then check your comparisons follow this logic:</p>
+                <ul>
+                    <li><strong>Transitivity:</strong> If you say A > B and B > C, then A should be > C</li>
+                    <li><strong>Proportionality:</strong> If A is "strongly" more important than B, and B is "moderately" more important than C, then A should be "very strongly" or "extremely" more important than C</li>
+                    <li><strong>Quick sanity check:</strong> Rank your criteria mentally (1st, 2nd, 3rd...), then verify your pairwise ratings match that ordering</li>
+                </ul>
+            </div>
+
+            <button class="collapsible" onclick="toggleCollapsible(this)">
+                Understanding the Scale
+            </button>
+            <div class="collapsible-content">
+                <div class="collapsible-inner">
+                    <p>The slider ranges from -16 to +16 for fine-grained control. The middle (0) means both criteria are equally important.</p>
+                    <div class="scale-reference">
+                        <div class="scale-item"><strong>0:</strong> Equal (1:1)</div>
+                        <div class="scale-item"><strong>±1-2:</strong> Slightly (1.5-2:1)</div>
+                        <div class="scale-item"><strong>±3-4:</strong> Somewhat (2.5-3:1)</div>
+                        <div class="scale-item"><strong>±5-6:</strong> Moderately (3.5-4:1)</div>
+                        <div class="scale-item"><strong>±7-8:</strong> Notably (4.5-5:1)</div>
+                        <div class="scale-item"><strong>±9-10:</strong> Strongly (5.5-6:1)</div>
+                        <div class="scale-item"><strong>±11-12:</strong> Very strongly (6.5-7:1)</div>
+                        <div class="scale-item"><strong>±13-14:</strong> Extremely (7.5-8:1)</div>
+                        <div class="scale-item"><strong>±15-16:</strong> Absolutely (8.5-9:1)</div>
+                    </div>
+                    <p style="margin-top: 10px;"><strong>Direction:</strong> Sliding left favours the first criterion; sliding right favours the second. The display below each slider shows exactly what your position means.</p>
+                </div>
+            </div>
+
+            <div id="evaluatorInputs" class="evaluator-inputs"></div>
+        </div>
+
+        <div class="section" id="aggregationSection" style="display:none;">
+            <h2>Step 3: Calculate Group Consensus</h2>
+            <button onclick="calculateAggregation()">Calculate Combined Weights</button>
+            
+            <div id="aggregationResults" style="display:none;">
+                
+                <!-- Discrepancy chart FIRST for visual impact -->
+                <div id="discrepancySection" class="discrepancy-section" style="display:none;">
+                    <h3>📊 Evaluator Agreement by Comparison</h3>
+                    <p>This chart shows where evaluators agreed or disagreed. Longer bars = more disagreement. Consider discussing high-disagreement comparisons to understand different perspectives.</p>
+                    <div id="discrepancyChart" class="discrepancy-chart"></div>
+                </div>
+                
+                <div id="outlierWarnings"></div>
+                
+                <h3 style="margin-top: 25px;">Aggregated Comparison Matrix</h3>
+                <p style="font-size: 14px; color: #555;">Values show relative importance: 2.00 means the row criterion is twice as important as the column. Values below 1 (like 0.50) mean the column criterion is more important.</p>
+                <div class="matrix-display">
+                    <table id="aggregatedMatrix"></table>
+                </div>
+                
+                <div class="formula-display">
+                    <strong>How values were combined:</strong> Each cell = (Evaluator₁ × Evaluator₂ × ... × EvaluatorN)^(1/N)
+                </div>
+                
+                <div class="results-section">
+                    <h3>Final Priority Weights</h3>
+                    <p style="font-size: 14px; color: #555; margin-bottom: 15px;">These percentages represent the group's combined priorities. Higher = more important.</p>
+                    <div id="finalWeights"></div>
+                </div>
+                
+                <!-- Interpretation guidance -->
+                <div class="interpretation-guide">
+                    <h4>📖 How to Interpret These Results</h4>
+                    <p>The weights above represent your group's synthesized priorities. Here's how to translate them into practical decision-making:</p>
+                    
+                    <div class="example-interpretation">
+                        <h5>Example Interpretation</h5>
+                        <p>Suppose you're hiring a developer and your results show: <strong>Quality = 40%, Risk = 30%, Cost = 20%, Time = 10%</strong></p>
+                        <p>This means your group has agreed that:</p>
+                        <ul style="margin: 10px 0 0 20px; color: #2d3748;">
+                            <li><strong>Quality evidence is ~2× more important than Cost</strong> – when evaluating candidates, portfolio/code samples should weigh roughly twice as heavily as salary expectations</li>
+                            <li><strong>Risk mitigation matters more than speed</strong> – it's worth taking extra time (3:1 ratio) to reduce the chance of a bad hire</li>
+                            <li><strong>Budget is a real constraint but not the primary driver</strong> – don't automatically eliminate candidates who cost more if they score highly on Quality and Risk</li>
+                            <li><strong>Time pressure is acknowledged but deprioritized</strong> – the group accepts that getting this right matters more than filling the role quickly</li>
+                        </ul>
+                    </div>
+                    
+                    <p><strong>Key insight:</strong> These weights should guide how you weight evidence during your actual decision. If two candidates are close, the one who scores better on higher-weighted criteria should win.</p>
+                    
+                    <div class="ai-prompt">
+                        <strong>💡 Want AI help analyzing your results?</strong> Click "Export for Claude Analysis" below, then paste the output into Claude with a question like: "Based on these priority weights, what should we pay attention to when making our decision? Are there any surprising patterns or potential blind spots?"
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="secondary" onclick="exportResults()">📥 Export Results</button>
+                    <button class="secondary" onclick="exportForClaude()">🤖 Export for Claude Analysis</button>
+                </div>
+                <div id="exportStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let criteria = [];
+        let numEvaluators = 0;
+        let evaluatorComparisons = {};
+
+        function toggleCollapsible(element) {
+            element.classList.toggle('active');
+            const content = element.nextElementSibling;
+            content.classList.toggle('show');
+        }
+
+        function setupMatrix() {
+            const criteriaText = document.getElementById('criteriaInput').value;
+            criteria = criteriaText.split(',').map(c => c.trim()).filter(c => c);
+            numEvaluators = parseInt(document.getElementById('evaluatorCount').value);
+            
+            if (criteria.length < 2) {
+                alert('Please enter at least 2 criteria');
+                return;
+            }
+            
+            if (numEvaluators < 2) {
+                alert('Please have at least 2 evaluators for group aggregation');
+                return;
+            }
+            
+            // Initialize evaluator comparisons (using slider values -16 to 16)
+            evaluatorComparisons = {};
+            for (let e = 0; e < numEvaluators; e++) {
+                evaluatorComparisons[e] = {};
+                for (let i = 0; i < criteria.length; i++) {
+                    for (let k = i + 1; k < criteria.length; k++) {
+                        evaluatorComparisons[e][`${i}_${k}`] = 0; // Start at equal (0 = 1:1)
+                    }
+                }
+            }
+            
+            renderEvaluatorInputs();
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('aggregationSection').style.display = 'block';
+        }
+
+        function sliderToAHP(sliderValue) {
+            // Convert -16 to 16 slider to AHP 1/9 to 9 scale
+            // 0 = 1 (equal)
+            // Each 2 slider units = 1 AHP unit
+            if (sliderValue === 0) return 1;
+            
+            const ahpDelta = Math.abs(sliderValue) / 2;
+            const ahpValue = 1 + ahpDelta;
+            
+            if (sliderValue < 0) {
+                return ahpValue; // First criterion more important
+            } else {
+                return 1 / ahpValue; // Second criterion more important
+            }
+        }
+
+        function getComparisonDescription(sliderValue, crit1, crit2) {
+            const absVal = Math.abs(sliderValue);
+            let intensity = '';
+            if (absVal === 0) intensity = 'equally important';
+            else if (absVal <= 2) intensity = 'slightly more important';
+            else if (absVal <= 4) intensity = 'somewhat more important';
+            else if (absVal <= 6) intensity = 'moderately more important';
+            else if (absVal <= 8) intensity = 'notably more important';
+            else if (absVal <= 10) intensity = 'strongly more important';
+            else if (absVal <= 12) intensity = 'very strongly more important';
+            else if (absVal <= 14) intensity = 'extremely more important';
+            else intensity = 'absolutely more important';
+            
+            if (sliderValue === 0) {
+                return `${crit1} and ${crit2} are ${intensity}`;
+            } else if (sliderValue < 0) {
+                return `${crit1} is ${intensity}`;
+            } else {
+                return `${crit2} is ${intensity}`;
+            }
+        }
+
+        function getShortDescription(sliderValue, crit1, crit2) {
+            const ahpValue = sliderToAHP(sliderValue);
+            if (sliderValue === 0) {
+                return `Equal (1:1)`;
+            } else if (sliderValue < 0) {
+                const ratio = ahpValue.toFixed(1);
+                return `${crit1} (${ratio}:1)`;
+            } else {
+                const ratio = (1/ahpValue).toFixed(1);
+                return `${crit2} (${ratio}:1)`;
+            }
+        }
+
+        function renderEvaluatorInputs() {
+            const container = document.getElementById('evaluatorInputs');
+            container.innerHTML = '';
+            
+            for (let e = 0; e < numEvaluators; e++) {
+                const evaluatorCard = document.createElement('div');
+                evaluatorCard.className = 'evaluator-card';
+                evaluatorCard.innerHTML = `
+                    <h4>
+                        Evaluator ${e + 1}
+                        <span id="consistency_${e}" class="evaluator-consistency"></span>
+                    </h4>
+                `;
+                
+                for (let i = 0; i < criteria.length; i++) {
+                    for (let k = i + 1; k < criteria.length; k++) {
+                        const compDiv = document.createElement('div');
+                        compDiv.className = 'comparison-input';
+                        compDiv.innerHTML = `
+                            <div class="comparison-label">${criteria[i]} vs ${criteria[k]}</div>
+                            <div class="comparison-control">
+                                <div class="comparison-slider-container">
+                                    <input type="range" class="comparison-slider" 
+                                           min="-16" max="16" value="0" step="1"
+                                           id="slider_${e}_${i}_${k}"
+                                           oninput="updateComparison(${e}, ${i}, ${k}, this.value)">
+                                </div>
+                                <div class="slider-labels">
+                                    <span>${criteria[i]} ←</span>
+                                    <span>Equal</span>
+                                    <span>→ ${criteria[k]}</span>
+                                </div>
+                                <div class="comparison-value" id="value_${e}_${i}_${k}">
+                                    Equal (1:1)
+                                </div>
+                            </div>
+                        `;
+                        evaluatorCard.appendChild(compDiv);
+                    }
+                }
+                
+                container.appendChild(evaluatorCard);
+            }
+        }
+
+        function updateComparison(evalIdx, i, k, value) {
+            const sliderValue = parseInt(value);
+            evaluatorComparisons[evalIdx][`${i}_${k}`] = sliderValue;
+            
+            // Update display
+            const displayDiv = document.getElementById(`value_${evalIdx}_${i}_${k}`);
+            displayDiv.textContent = getShortDescription(sliderValue, criteria[i], criteria[k]);
+            
+            // Update consistency indicator
+            updateEvaluatorConsistency(evalIdx);
+        }
+
+        function updateEvaluatorConsistency(evalIdx) {
+            const n = criteria.length;
+            const matrix = buildEvaluatorMatrix(evalIdx);
+            const weights = calculateWeightsFromMatrix(matrix);
+            const cr = calculateConsistencyRatio(matrix, weights);
+            
+            const indicator = document.getElementById(`consistency_${evalIdx}`);
+            if (cr <= 0.05) {
+                indicator.className = 'evaluator-consistency consistency-good';
+                indicator.textContent = 'Consistent ✓';
+            } else if (cr <= 0.1) {
+                indicator.className = 'evaluator-consistency consistency-ok';
+                indicator.textContent = 'Acceptable';
+            } else {
+                indicator.className = 'evaluator-consistency consistency-bad';
+                indicator.textContent = 'Check ratings';
+            }
+        }
+
+        function buildEvaluatorMatrix(evalIdx) {
+            const n = criteria.length;
+            const matrix = Array(n).fill().map(() => Array(n).fill(1));
+            
+            for (let i = 0; i < n; i++) {
+                for (let k = i + 1; k < n; k++) {
+                    const sliderVal = evaluatorComparisons[evalIdx][`${i}_${k}`];
+                    const ahpVal = sliderToAHP(sliderVal);
+                    matrix[i][k] = ahpVal;
+                    matrix[k][i] = 1 / ahpVal;
+                }
+            }
+            
+            return matrix;
+        }
+
+        function calculateWeightsFromMatrix(matrix) {
+            const n = matrix.length;
+            const weights = [];
+            
+            for (let i = 0; i < n; i++) {
+                let product = 1;
+                for (let j = 0; j < n; j++) {
+                    product *= matrix[i][j];
+                }
+                weights[i] = Math.pow(product, 1 / n);
+            }
+            
+            const sum = weights.reduce((a, b) => a + b, 0);
+            return weights.map(w => w / sum);
+        }
+
+        function calculateAggregation() {
+            const n = criteria.length;
+            const aggregatedMatrix = Array(n).fill().map(() => Array(n).fill(1));
+            const discrepancies = [];
+            
+            // Calculate geometric mean for each cell and track discrepancies
+            for (let i = 0; i < n; i++) {
+                for (let k = i + 1; k < n; k++) {
+                    const values = [];
+                    
+                    // Collect all evaluator values for this comparison
+                    for (let e = 0; e < numEvaluators; e++) {
+                        const sliderVal = evaluatorComparisons[e][`${i}_${k}`];
+                        const ahpVal = sliderToAHP(sliderVal);
+                        values.push(ahpVal);
+                    }
+                    
+                    // Calculate geometric mean
+                    const product = values.reduce((acc, val) => acc * val, 1);
+                    const geomMean = Math.pow(product, 1 / numEvaluators);
+                    
+                    aggregatedMatrix[i][k] = geomMean;
+                    aggregatedMatrix[k][i] = 1 / geomMean;
+                    
+                    // Calculate discrepancy (coefficient of variation of log values)
+                    const logValues = values.map(v => Math.log(v));
+                    const logMean = logValues.reduce((a, b) => a + b, 0) / logValues.length;
+                    const logVariance = logValues.reduce((sum, v) => sum + Math.pow(v - logMean, 2), 0) / logValues.length;
+                    const logStdDev = Math.sqrt(logVariance);
+                    
+                    discrepancies.push({
+                        comparison: `${criteria[i]} vs ${criteria[k]}`,
+                        crit1: criteria[i],
+                        crit2: criteria[k],
+                        stdDev: logStdDev,
+                        values: values,
+                        geomMean: geomMean
+                    });
+                }
+            }
+            
+            // Display results
+            displayDiscrepancyChart(discrepancies);
+            displayAggregatedMatrix(aggregatedMatrix);
+            calculateWeights(aggregatedMatrix);
+            
+            document.getElementById('aggregationResults').style.display = 'block';
+        }
+
+        function displayDiscrepancyChart(discrepancies) {
+            // Sort by discrepancy (highest first)
+            const sorted = [...discrepancies].sort((a, b) => b.stdDev - a.stdDev);
+            
+            // Only show if there's meaningful disagreement somewhere
+            const maxDisc = Math.max(...discrepancies.map(d => d.stdDev));
+            if (maxDisc < 0.1) {
+                document.getElementById('discrepancySection').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('discrepancySection').style.display = 'block';
+            
+            const chart = document.getElementById('discrepancyChart');
+            chart.innerHTML = sorted.map(d => {
+                const barWidth = Math.min((d.stdDev / 1.5) * 100, 100);
+                let barClass = 'discrepancy-low';
+                if (d.stdDev > 0.5) barClass = 'discrepancy-high';
+                else if (d.stdDev > 0.25) barClass = 'discrepancy-medium';
+                
+                return `
+                    <div class="discrepancy-row">
+                        <div class="discrepancy-label">${d.comparison}</div>
+                        <div class="discrepancy-bar-container">
+                            <div class="discrepancy-bar ${barClass}" style="width: ${barWidth}%;"></div>
+                        </div>
+                        <div class="discrepancy-value">${d.stdDev.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Add legend
+            chart.innerHTML += `
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                    <strong>Disagreement level:</strong>
+                    <span style="display: inline-block; width: 12px; height: 12px; background: #48bb78; border-radius: 2px; margin-left: 15px;"></span> Low (<0.25)
+                    <span style="display: inline-block; width: 12px; height: 12px; background: #ecc94b; border-radius: 2px; margin-left: 15px;"></span> Medium (0.25-0.5)
+                    <span style="display: inline-block; width: 12px; height: 12px; background: #f56565; border-radius: 2px; margin-left: 15px;"></span> High (>0.5)
+                </div>
+            `;
+        }
+
+        function displayAggregatedMatrix(matrix) {
+            const table = document.getElementById('aggregatedMatrix');
+            const n = matrix.length;
+            
+            let html = '<tr><th></th>';
+            criteria.forEach(c => html += `<th>${c}</th>`);
+            html += '</tr>';
+            
+            for (let i = 0; i < n; i++) {
+                html += `<tr><th>${criteria[i]}</th>`;
+                for (let j = 0; j < n; j++) {
+                    if (i === j) {
+                        html += '<td class="diagonal-cell">1.00</td>';
+                    } else {
+                        const value = matrix[i][j];
+                        html += `<td class="aggregated-cell">${value.toFixed(2)}</td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            
+            table.innerHTML = html;
+        }
+
+        function calculateWeights(matrix) {
+            const n = matrix.length;
+            const normalizedWeights = calculateWeightsFromMatrix(matrix);
+            
+            // Display weights
+            const container = document.getElementById('finalWeights');
+            container.innerHTML = '';
+            
+            const sortedIndices = [...Array(n).keys()].sort((a, b) => 
+                normalizedWeights[b] - normalizedWeights[a]
+            );
+            
+            const maxWeight = Math.max(...normalizedWeights);
+            
+            sortedIndices.forEach((idx, rank) => {
+                const percentage = (normalizedWeights[idx] * 100).toFixed(1);
+                const barWidth = (normalizedWeights[idx] / maxWeight) * 100;
+                const div = document.createElement('div');
+                div.className = 'weight-display';
+                div.innerHTML = `
+                    <strong style="min-width: 120px;">${criteria[idx]}</strong>
+                    <div class="weight-bar-container">
+                        <div class="weight-bar" style="width: ${barWidth}%;"></div>
+                    </div>
+                    <strong style="min-width: 60px; text-align: right;">${percentage}%</strong>
+                `;
+                container.appendChild(div);
+            });
+            
+            // Check overall consistency
+            const cr = calculateConsistencyRatio(matrix, normalizedWeights);
+            
+            if (cr <= 0.05) {
+                container.innerHTML += `
+                    <div class="success">
+                        <strong>Excellent consistency:</strong> Consistency Ratio = ${cr.toFixed(3)} (target: ≤ 0.10)
+                        <br>The aggregated comparisons are highly consistent with each other.
+                    </div>
+                `;
+            } else if (cr <= 0.1) {
+                container.innerHTML += `
+                    <div class="success">
+                        <strong>Acceptable consistency:</strong> Consistency Ratio = ${cr.toFixed(3)} (target: ≤ 0.10)
+                        <br>The aggregated comparisons pass the standard consistency threshold.
+                    </div>
+                `;
+            } else {
+                container.innerHTML += `
+                    <div class="warning">
+                        <strong>Consistency concern:</strong> Consistency Ratio = ${cr.toFixed(3)} (target: ≤ 0.10)
+                        <br>The aggregated comparisons show some logical inconsistency. This often happens when combining divergent views. Consider reviewing areas of disagreement.
+                    </div>
+                `;
+            }
+        }
+
+        function calculateConsistencyRatio(matrix, weights) {
+            const n = matrix.length;
+            let lambdaMax = 0;
+            
+            for (let i = 0; i < n; i++) {
+                let sum = 0;
+                for (let j = 0; j < n; j++) {
+                    sum += matrix[i][j] * weights[j];
+                }
+                lambdaMax += sum / weights[i];
+            }
+            lambdaMax /= n;
+            
+            const ci = (lambdaMax - n) / (n - 1);
+            const ri = [0, 0, 0.58, 0.90, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49][n] || 1.49;
+            
+            return ri > 0 ? ci / ri : 0;
+        }
+
+        function showExportStatus(message, isSuccess) {
+            const statusDiv = document.getElementById('exportStatus');
+            statusDiv.innerHTML = `<div class="export-status ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+            setTimeout(() => { statusDiv.innerHTML = ''; }, 5000);
+        }
+
+        function exportResults() {
+            try {
+                const n = criteria.length;
+                let csv = 'Group Decision Aggregation Results\n';
+                csv += '================================\n\n';
+                
+                csv += 'CRITERIA: ' + criteria.join(', ') + '\n';
+                csv += 'EVALUATORS: ' + numEvaluators + '\n\n';
+                
+                csv += 'AGGREGATED COMPARISON MATRIX\n';
+                csv += '(Row vs Column - values > 1 mean row is more important)\n';
+                csv += ',' + criteria.join(',') + '\n';
+                
+                const table = document.getElementById('aggregatedMatrix');
+                const rows = table.getElementsByTagName('tr');
+                for (let i = 1; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    const header = rows[i].getElementsByTagName('th')[0].textContent;
+                    csv += header + ',';
+                    for (let j = 0; j < cells.length; j++) {
+                        csv += cells[j].textContent + ',';
+                    }
+                    csv += '\n';
+                }
+                
+                csv += '\n\nINDIVIDUAL EVALUATOR COMPARISONS\n';
+                for (let e = 0; e < numEvaluators; e++) {
+                    csv += `\nEvaluator ${e + 1}:\n`;
+                    for (let i = 0; i < n; i++) {
+                        for (let k = i + 1; k < n; k++) {
+                            const sliderVal = evaluatorComparisons[e][`${i}_${k}`];
+                            const ahpVal = sliderToAHP(sliderVal);
+                            const desc = getComparisonDescription(sliderVal, criteria[i], criteria[k]);
+                            csv += `  ${criteria[i]} vs ${criteria[k]}: ${desc} (AHP: ${ahpVal.toFixed(2)})\n`;
+                        }
+                    }
+                }
+                
+                const blob = new Blob([csv], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'group_decision_weights.txt';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showExportStatus('✓ Results downloaded as group_decision_weights.txt', true);
+            } catch (error) {
+                showExportStatus('✗ Export failed: ' + error.message, false);
+                console.error('Export error:', error);
+            }
+        }
+
+        function exportForClaude() {
+            try {
+                const n = criteria.length;
+                let text = "=== GROUP DECISION ANALYSIS ===\n\n";
+                
+                text += "CONTEXT:\n";
+                text += "We used the Analytic Hierarchy Process (AHP) with geometric mean aggregation ";
+                text += "to combine " + numEvaluators + " evaluators' views on prioritising: " + criteria.join(', ') + "\n\n";
+                
+                text += "INDIVIDUAL EVALUATOR RATINGS:\n";
+                for (let e = 0; e < numEvaluators; e++) {
+                    text += `\nEvaluator ${e + 1}:\n`;
+                    for (let i = 0; i < n; i++) {
+                        for (let k = i + 1; k < n; k++) {
+                            const sliderVal = evaluatorComparisons[e][`${i}_${k}`];
+                            const desc = getComparisonDescription(sliderVal, criteria[i], criteria[k]);
+                            text += `  ${criteria[i]} vs ${criteria[k]}: ${desc}\n`;
+                        }
+                    }
+                }
+                
+                text += "\nAGGREGATED RESULTS:\n";
+                const table = document.getElementById('aggregatedMatrix');
+                text += "(Comparison matrix after geometric mean aggregation)\n";
+                text += ',' + criteria.join(',') + '\n';
+                const rows = table.getElementsByTagName('tr');
+                for (let i = 1; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    const header = rows[i].getElementsByTagName('th')[0].textContent;
+                    text += header + ',';
+                    for (let j = 0; j < cells.length; j++) {
+                        text += cells[j].textContent + ',';
+                    }
+                    text += '\n';
+                }
+                
+                text += "\nFINAL WEIGHTS:\n";
+                const weightsContainer = document.getElementById('finalWeights');
+                const weightDivs = weightsContainer.querySelectorAll('.weight-display');
+                weightDivs.forEach(div => {
+                    const name = div.querySelector('strong:first-child').textContent;
+                    const value = div.querySelector('strong:last-child').textContent;
+                    text += `  ${name}: ${value}\n`;
+                });
+                
+                text += "\nQUESTIONS FOR ANALYSIS:\n";
+                text += "1. What do these priorities suggest about our group's values?\n";
+                text += "2. Are there any concerning patterns in the individual ratings?\n";
+                text += "3. How might these weights influence our final decision?\n";
+                text += "4. What are the practical implications - what should we pay more/less attention to?\n";
+                
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showExportStatus('✓ Copied to clipboard! Paste into Claude for analysis.', true);
+                    }).catch((err) => {
+                        console.log('Clipboard failed, using download fallback:', err);
+                        downloadAsFile(text, 'claude_analysis.txt');
+                    });
+                } else {
+                    downloadAsFile(text, 'claude_analysis.txt');
+                }
+            } catch (error) {
+                showExportStatus('✗ Export failed: ' + error.message, false);
+                console.error('Export error:', error);
+            }
+        }
+        
+        function downloadAsFile(text, filename) {
+            try {
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showExportStatus('✓ Downloaded as ' + filename + '. Open and paste contents into Claude.', true);
+            } catch (error) {
+                showExportStatus('✗ Download failed: ' + error.message, false);
+                console.error('Download error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Value-Focused Thinking</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 10px; }
+        h2 { color: #2c5282; margin-bottom: 15px; font-size: 1.3em; }
+        h3 { color: #2c5282; margin: 0 0 12px 0; }
+        .subtitle { color: #555; margin-bottom: 25px; }
+        
+        /* Load Previous Banner */
+        .load-banner {
+            background: #f0f7ff;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 12px 18px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .load-banner-text {
+            font-size: 14px;
+            color: #1565c0;
+        }
+        .load-banner button {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        
+        .example-box {
+            background: #fffaf0;
+            border: 1px solid #e8a838;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .example-box h4 {
+            color: #8b5a00;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .example-box p {
+            margin: 0 0 10px 0;
+            color: #5c4a1f;
+            font-size: 14px;
+        }
+        .example-box p:last-child { margin-bottom: 0; }
+        
+        .resource-link {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .resource-link a {
+            color: #166534;
+            font-weight: 600;
+        }
+        
+        .discipline-box {
+            background: #f8f5ff;
+            border: 1px solid #d4c4f0;
+            padding: 18px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .discipline-box h4 {
+            color: #5b3d99;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+        .discipline-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #4a3a6a;
+        }
+        .discipline-box li {
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .discipline-box li:last-child { margin-bottom: 0; }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .section-help {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        /* Value Chain Styles */
+        .value-chains-container {
+            margin: 20px 0;
+        }
+        
+        .value-chain {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .value-chain.complete {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+        
+        .chain-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chain-title {
+            font-weight: 600;
+            color: #2c5282;
+        }
+        
+        .value-item {
+            background: #f8f8f8;
+            border-left: 4px solid #2c5282;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .value-item::before {
+            content: '↓ WHY?';
+            position: absolute;
+            left: 15px;
+            top: -18px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #718096;
+            background: #fafafa;
+            padding: 0 5px;
+        }
+        
+        .value-item:first-child::before {
+            content: 'STARTING POINT';
+        }
+        
+        .value-item.fundamental {
+            background: #f0fdf4;
+            border-left-color: #059669;
+        }
+        
+        .value-item.fundamental::before {
+            content: '★ FUNDAMENTAL';
+            color: #059669;
+        }
+        
+        .value-level {
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .value-input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .value-text {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 50px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .value-text:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        .fundamental-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #555;
+        }
+        .fundamental-check input {
+            width: auto;
+        }
+        
+        /* Tree Builder Styles */
+        .tree-container {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .tree-level {
+            margin-left: 0;
+        }
+        
+        .tree-level.nested {
+            margin-left: 30px;
+            border-left: 2px solid #cbd5e0;
+            padding-left: 20px;
+        }
+        
+        .tree-node {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .tree-node.fundamental {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: #059669;
+        }
+        
+        .tree-node.pathway {
+            background: #f0f7ff;
+            border-color: #3b82f6;
+        }
+        
+        .tree-node.option {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+        
+        .node-type {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .node-type.fundamental { color: #059669; }
+        .node-type.pathway { color: #3b82f6; }
+        .node-type.option { color: #d97706; }
+        
+        .node-content {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .node-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .add-child-btn {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: #e2e8f0;
+            color: #475569;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-child-btn:hover {
+            background: #cbd5e0;
+        }
+        .add-child-btn.pathway { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .add-child-btn.option { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        
+        .intervention-prompt {
+            background: #fffbeb;
+            border: 1px dashed #f59e0b;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0 10px 30px;
+            font-size: 13px;
+            color: #92400e;
+        }
+        
+        /* Tree Diagram Render */
+        .diagram-container {
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        
+        .diagram-title {
+            font-weight: 600;
+            color: #2c5282;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        
+        .diagram-tree {
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            white-space: pre;
+            color: #333;
+        }
+        
+        .diagram-node-fundamental { color: #059669; font-weight: 600; }
+        .diagram-node-pathway { color: #2563eb; }
+        .diagram-node-option { color: #d97706; font-weight: 500; }
+        
+        /* Alternatives Section */
+        .alternatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .alternative-card {
+            background: white;
+            border: 2px solid #f59e0b;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        
+        .alt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .alt-name {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .alt-description {
+            width: 100%;
+            min-height: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .alt-values {
+            width: 100%;
+            min-height: 50px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            background: #f8f8f8;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        /* Alternatives Summary View */
+        .alternatives-summary {
+            background: white;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-title {
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .summary-table th {
+            background: #fef3c7;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #92400e;
+            border-bottom: 2px solid #fcd34d;
+        }
+        
+        .summary-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        
+        .summary-table tr:hover {
+            background: #fffbeb;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 8px;
+        }
+        button:hover { background: #1a365d; }
+        button.add-btn { background: #059669; font-size: 13px; padding: 8px 14px; }
+        button.add-btn:hover { background: #047857; }
+        button.secondary { background: #718096; }
+        button.secondary:hover { background: #4a5568; }
+        button.danger { background: #c53030; font-size: 11px; padding: 4px 8px; }
+        button.danger:hover { background: #9b2c2c; }
+        button.render-btn { background: #7c3aed; font-size: 13px; }
+        button.render-btn:hover { background: #6d28d9; }
+        
+        /* Synthesis Section */
+        .synthesis-box {
+            background: #f0fdf4;
+            border: 2px solid #059669;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .synthesis-box h3 {
+            color: #059669;
+            margin-bottom: 12px;
+        }
+        
+        .sharing-suggestion {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #92400e;
+        }
+        
+        /* Related Tools Section */
+        .related-tools {
+            background: #f8f5ff;
+            border: 1px solid #d4c4f0;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .related-tools h3 {
+            color: #5b3d99;
+            margin-bottom: 15px;
+        }
+        
+        .tool-recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        
+        .tool-rec {
+            background: white;
+            border: 1px solid #e0d6f0;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .tool-rec-name {
+            font-weight: 600;
+            color: #5b3d99;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        
+        .tool-rec-why {
+            font-size: 13px;
+            color: #555;
+        }
+        
+        /* Actions Bar */
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            margin-top: 20px;
+            align-items: center;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            color: #666;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        .legend-dot.fundamental { background: #059669; }
+        .legend-dot.pathway { background: #3b82f6; }
+        .legend-dot.option { background: #f59e0b; }
+        
+        /* Terminology Help */
+        .terminology-help {
+            background: #f0f7ff;
+            border: 1px solid #90caf9;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .terminology-help strong {
+            color: #1565c0;
+        }
+        
+        /* Copy success indicator */
+        .copy-success {
+            color: #059669;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Value-Focused Thinking</h1>
+        <p class="subtitle">Begin with what matters. Let values generate possibilities.</p>
+        
+        <div class="load-banner">
+            <span class="load-banner-text">📂 Continuing previous work? Load your saved analysis:</span>
+            <button onclick="document.getElementById('loadInput').click()" class="secondary" style="margin: 0;">Load Previous (.json)</button>
+            <input type="file" id="loadInput" class="file-input" accept=".json" onchange="loadAnalysis(event)">
+        </div>
+        
+        <div class="intro-box">
+            <p><strong>The Core Insight:</strong> Most decision-making is passive. Options appear available, reasonable, commonly chosen—so we adopt them without truly assessing whether they're right for what we care about achieving. Value-Focused Thinking (developed by Ralph Keeney) inverts this: start with what you fundamentally value, then let those values generate alternatives you might never have considered.</p>
+            
+            <p><strong>How it works:</strong> You take any surface-level goal and ask "Why is this important?" repeatedly until you hit bedrock—something that matters for its own sake. Then you trace back down, asking "What else could achieve this?" at each level. This reveals intervention points and alternatives that pure option-comparison would miss.</p>
+            
+            <p><strong>When to use this:</strong> This tool is valuable even (perhaps especially) when things seem obvious. If the path forward feels evidently clear, that's precisely when to pause and question whether you're optimizing for the right thing. Use this for career decisions, organizational strategy, product design, policy—anywhere you suspect the real question isn't "which option?" but "have I even considered the right options?" or "am I solving the right problem?"</p>
+            
+            <div class="example-box">
+                <h4>💡 Resistance to Handwashing: When the "Obvious" Solution Fails</h4>
+                <p>In the 1840s, physician Ignaz Semmelweis discovered that doctors washing hands between patients dramatically reduced maternal mortality. The "obvious" response: mandate handwashing. Instead, the medical establishment rejected him—doctors were gentlemen, and gentlemen's hands couldn't carry disease. Semmelweis died in an asylum.</p>
+                <p>The failure wasn't scientific; it was values-level. Semmelweis answered "How do we reduce deaths?" but the establishment was implicitly optimizing for "How do we maintain physician status and authority?" Had he traced the value chain—patient survival → effective medical practice → physician credibility → institutional trust—he might have found pathways that didn't threaten identity. Framing handwashing as enhancing professional competence rather than admitting fault. Building evidence through trusted intermediaries. The intervention point wasn't hygiene; it was ego.</p>
+                <p>The best lever is often several steps removed from where you first look.</p>
+            </div>
+            
+            <div class="resource-link">
+                <strong>🔗 Complementary resource:</strong> The distinction between <em>intrinsic</em> values (fundamental, ends in themselves) and <em>instrumental</em> values (means to other ends) is central to this tool. 
+                <a href="https://programs.clearerthinking.org/intrinsic_values_test.html" target="_blank">Clearer Thinking's Intrinsic Values Test</a> can help you identify what you truly value for its own sake.
+            </div>
+        </div>
+        
+        <div class="discipline-box">
+            <h4>🎯 The VFT Discipline</h4>
+            <ul>
+                <li><strong>Resist premature solutions.</strong> If you're already attached to an answer, you're doing this backward.</li>
+                <li><strong>Keep asking "why?"</strong> Most people stop 2-3 levels too soon. Fundamental values are often surprisingly simple and surprisingly deep.</li>
+                <li><strong>Distinguish means from ends.</strong> "We need a new IT system" is a means. What end does it serve? What else might serve that end?</li>
+                <li><strong>Generate before evaluating.</strong> The goal is expanding the solution space first. Judgment comes later.</li>
+                <li><strong>Look for non-obvious leverage points.</strong> Sometimes the most powerful intervention is several levels removed from the obvious problem.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Step 1: Name the Surface Problem</h2>
+            <p class="section-help">
+                What decision or need are you starting with? This is where conventional analysis begins—and usually ends. We're going deeper.
+            </p>
+            <textarea id="surfaceProblem" 
+                      style="min-height: 80px;" 
+                      placeholder="e.g., 'We need to choose between three vendors for our new CRM system' or 'I'm deciding whether to take the job offer in Seattle'"></textarea>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Discover Fundamental Values</h2>
+            <p class="section-help">
+                Take your surface problem and ask "Why is this important?" Each answer reveals a deeper value. Keep going until you reach something that matters for its own sake—not because it leads to something else. You can explore multiple parallel value chains if your situation touches different fundamental concerns.
+            </p>
+            
+            <div class="value-chains-container" id="valueChainsContainer">
+                <!-- Value chains rendered here -->
+            </div>
+            
+            <button onclick="addValueChain()" class="add-btn">+ Start New Value Chain</button>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Build the Pathways Network</h2>
+            <p class="section-help">
+                Now work in both directions. For each fundamental value, ask: "What are different ways to pursue this?" 
+                These become <strong>pathways</strong>—categories of approach. For each pathway, you can add sub-pathways or <strong>concrete options</strong> (specific actions you could take).
+                At each level, ask: <em>what else might serve as a lever here that I haven't considered?</em>
+            </p>
+            
+            <div class="terminology-help">
+                <strong>Pathway</strong> = A category or approach that serves the parent goal. (e.g., "Improve team communication")<br>
+                <strong>Concrete Option</strong> = A specific, actionable choice you could make. (e.g., "Implement weekly standups")<br>
+                <em>Note: Fundamental values are pursued through pathways. Concrete options live at the pathway level—specific ways to execute an approach.</em>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot fundamental"></div> Fundamental Value</div>
+                <div class="legend-item"><div class="legend-dot pathway"></div> Pathway (approach/lever)</div>
+                <div class="legend-item"><div class="legend-dot option"></div> Concrete Option</div>
+            </div>
+            
+            <div class="tree-container" id="treeContainer">
+                <div class="empty-state">
+                    Complete Step 2 first—identify at least one fundamental value to begin building your network.
+                </div>
+            </div>
+            
+            <button onclick="renderDiagram()" class="render-btn" style="margin-top: 15px;">📊 Render Tree Diagram</button>
+            
+            <div id="diagramContainer" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 4: Harvest Alternatives</h2>
+            <p class="section-help">
+                Review your network above. What alternatives have emerged that you wouldn't have considered otherwise? 
+                Capture the most promising ones here with notes on how they serve your fundamental values.
+            </p>
+            
+            <div class="alternatives-grid" id="alternatives">
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    Add alternatives as they emerge from your network exploration.
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <button onclick="addAlternative()" class="add-btn">+ Add Alternative</button>
+                <button onclick="renderAlternativesSummary()" class="render-btn">📋 Show Summary Table</button>
+            </div>
+            
+            <div id="alternativesSummaryContainer" style="display: none;"></div>
+        </div>
+
+        <div class="synthesis-box">
+            <h3>Synthesis: What Has This Revealed?</h3>
+            <p class="section-help" style="margin-bottom: 12px;">
+                Step back. What do you see now that you didn't before? Are there alternatives here that weren't on your radar? 
+                Has the framing of the original problem shifted?
+            </p>
+            <textarea id="synthesis" 
+                      style="min-height: 120px;" 
+                      placeholder="Capture your key insights: new alternatives discovered, reframing of the original problem, surprising connections between values, leverage points you hadn't considered..."></textarea>
+            
+            <div class="sharing-suggestion">
+                💬 <strong>Consider sharing your synthesis</strong> with one or two people you trust. Fresh eyes can help stress-test your alternatives, spot blind spots in your value chain, or generate options you haven't considered. Sometimes the most valuable input comes from someone outside your frame.
+            </div>
+        </div>
+
+        <div class="related-tools">
+            <h3>🔗 Related Tools in the Navigator</h3>
+            <p style="font-size: 14px; color: #555; margin-bottom: 15px;">
+                Value-Focused Thinking often works well in combination with these approaches:
+            </p>
+            <div class="tool-recommendations">
+                <div class="tool-rec">
+                    <div class="tool-rec-name">Multi-Criteria Decision Analysis (MCDA)</div>
+                    <div class="tool-rec-why">Once VFT has generated alternatives, use MCDA to systematically evaluate them against your criteria. Especially valuable for decisions involving multiple stakeholders with different priorities.</div>
+                </div>
+                <div class="tool-rec">
+                    <div class="tool-rec-name">Key Assumptions Check</div>
+                    <div class="tool-rec-why">Test whether your value chain contains hidden assumptions. Are you sure that pathway actually serves that end?</div>
+                </div>
+                <div class="tool-rec">
+                    <div class="tool-rec-name">Polarity Mapping</div>
+                    <div class="tool-rec-why">If you're discovering tensions between fundamental values (e.g., growth vs. sustainability), these may be polarities to manage rather than problems to solve.</div>
+                </div>
+                <div class="tool-rec">
+                    <div class="tool-rec-name">Pre-mortem Analysis</div>
+                    <div class="tool-rec-why">Before committing to an alternative, imagine it failed. Work backward to identify what you might be missing.</div>
+                </div>
+                <div class="tool-rec">
+                    <div class="tool-rec-name">Goal Factoring (CFAR)</div>
+                    <div class="tool-rec-why">A complementary technique: decompose goals to understand true motivations. Useful when values feel tangled.</div>
+                </div>
+                <div class="tool-rec">
+                    <div class="tool-rec-name">Epistemological Diversity Mapping</div>
+                    <div class="tool-rec-why">For group VFT sessions: map different ways of knowing on your team to ensure the value discovery isn't biased by one perspective.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-bar">
+            <button onclick="saveAnalysis()">💾 Save (.json)</button>
+            <button onclick="copyReportToClipboard()" class="secondary">📋 Copy Report to Clipboard</button>
+            <span id="copySuccess" class="copy-success" style="display: none;">✓ Copied!</span>
+            <button onclick="clearAll()" class="danger" style="margin-left: auto;">Clear All</button>
+        </div>
+    </div>
+
+    <script>
+        // Data structures
+        let valueChains = [];
+        let networkNodes = [];
+        let alternatives = [];
+        let nextChainId = 1;
+        let nextValueId = 1;
+        let nextNodeId = 1;
+        let nextAltId = 1;
+
+        // ========== VALUE CHAINS ==========
+        
+        function addValueChain() {
+            const chain = {
+                id: nextChainId++,
+                levels: [{
+                    id: nextValueId++,
+                    text: '',
+                    isFundamental: false
+                }]
+            };
+            valueChains.push(chain);
+            renderValueChains();
+        }
+
+        function addValueLevel(chainId) {
+            const chain = valueChains.find(c => c.id === chainId);
+            if (!chain) return;
+            
+            const lastLevel = chain.levels[chain.levels.length - 1];
+            if (lastLevel && lastLevel.isFundamental) {
+                alert('This chain has reached a fundamental value. Start a new chain to explore different value branches.');
+                return;
+            }
+            
+            chain.levels.push({
+                id: nextValueId++,
+                text: '',
+                isFundamental: false
+            });
+            renderValueChains();
+        }
+
+        function removeValueLevel(chainId, levelId) {
+            const chain = valueChains.find(c => c.id === chainId);
+            if (!chain) return;
+            
+            if (chain.levels.length === 1) {
+                valueChains = valueChains.filter(c => c.id !== chainId);
+            } else {
+                chain.levels = chain.levels.filter(l => l.id !== levelId);
+            }
+            renderValueChains();
+            renderTree();
+        }
+
+        function updateValueLevel(chainId, levelId, field, value) {
+            const chain = valueChains.find(c => c.id === chainId);
+            if (!chain) return;
+            
+            const level = chain.levels.find(l => l.id === levelId);
+            if (level) {
+                level[field] = value;
+                
+                if (field === 'isFundamental') {
+                    renderValueChains();
+                    renderTree();
+                }
+            }
+        }
+
+        function renderValueChains() {
+            const container = document.getElementById('valueChainsContainer');
+            
+            if (valueChains.length === 0) {
+                container.innerHTML = '<div class="empty-state">Click "Start New Value Chain" to begin exploring your values.</div>';
+                return;
+            }
+
+            container.innerHTML = valueChains.map(chain => {
+                const hasFundamental = chain.levels.some(l => l.isFundamental);
+                
+                return `
+                    <div class="value-chain ${hasFundamental ? 'complete' : ''}">
+                        <div class="chain-header">
+                            <span class="chain-title">Value Chain #${valueChains.indexOf(chain) + 1} ${hasFundamental ? '✓' : ''}</span>
+                            <button class="danger" onclick="removeEntireChain(${chain.id})">Remove Chain</button>
+                        </div>
+                        
+                        ${chain.levels.map((level, index) => {
+                            const isLast = index === chain.levels.length - 1;
+                            
+                            return `
+                                <div class="value-item ${level.isFundamental ? 'fundamental' : ''}">
+                                    <div class="value-level">Level ${index + 1}</div>
+                                    <div class="value-input-row">
+                                        <textarea class="value-text"
+                                                  placeholder="${index === 0 ? 'Start with your surface objective or need...' : 'Why is the previous level important? What deeper value does it serve?'}"
+                                                  onchange="updateValueLevel(${chain.id}, ${level.id}, 'text', this.value)">${level.text}</textarea>
+                                        ${chain.levels.length > 1 ? `<button class="danger" onclick="removeValueLevel(${chain.id}, ${level.id})">✕</button>` : ''}
+                                    </div>
+                                    ${isLast ? `
+                                        <label class="fundamental-check">
+                                            <input type="checkbox" 
+                                                   ${level.isFundamental ? 'checked' : ''}
+                                                   onchange="updateValueLevel(${chain.id}, ${level.id}, 'isFundamental', this.checked)">
+                                            This is fundamental—it matters for its own sake, not as a means to something else
+                                        </label>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                        
+                        ${!hasFundamental ? `
+                            <button onclick="addValueLevel(${chain.id})" class="add-btn" style="margin-top: 10px;">+ Ask "Why?" Again</button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeEntireChain(chainId) {
+            if (confirm('Remove this entire value chain?')) {
+                valueChains = valueChains.filter(c => c.id !== chainId);
+                renderValueChains();
+                renderTree();
+            }
+        }
+
+        // ========== TREE / NETWORK ==========
+        
+        function renderTree() {
+            const container = document.getElementById('treeContainer');
+            
+            const fundamentals = [];
+            valueChains.forEach(chain => {
+                const fundLevel = chain.levels.find(l => l.isFundamental);
+                if (fundLevel && fundLevel.text.trim()) {
+                    fundamentals.push({
+                        chainId: chain.id,
+                        levelId: fundLevel.id,
+                        text: fundLevel.text,
+                        type: 'fundamental'
+                    });
+                }
+            });
+            
+            if (fundamentals.length === 0) {
+                container.innerHTML = '<div class="empty-state">Complete Step 2 first—identify at least one fundamental value to begin building your network.</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            fundamentals.forEach(fund => {
+                const nodeKey = `fund_${fund.chainId}_${fund.levelId}`;
+                
+                html += `
+                    <div class="tree-node fundamental">
+                        <div class="node-type fundamental">Fundamental Value</div>
+                        <div class="node-content">${escapeHtml(fund.text)}</div>
+                        <div class="node-actions">
+                            <button class="add-child-btn pathway" onclick="addNetworkNode('${nodeKey}', 'pathway')">+ Add Pathway</button>
+                        </div>
+                        ${renderInterventionPrompt(fund.text)}
+                    </div>
+                    ${renderChildren(nodeKey, 1)}
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function renderChildren(parentKey, depth) {
+            const children = networkNodes.filter(n => n.parentKey === parentKey);
+            if (children.length === 0) return '';
+            
+            let html = `<div class="tree-level nested">`;
+            
+            children.forEach(child => {
+                const childKey = `node_${child.id}`;
+                const typeClass = child.type === 'pathway' ? 'pathway' : 'option';
+                const typeLabel = child.type === 'pathway' ? 'Pathway' : 'Concrete Option';
+                
+                html += `
+                    <div class="tree-node ${typeClass}">
+                        <div class="node-type ${typeClass}">${typeLabel}</div>
+                        <div class="node-content">
+                            <input type="text" 
+                                   value="${escapeHtml(child.text)}" 
+                                   placeholder="${child.type === 'pathway' ? 'An approach that could pursue the parent goal...' : 'A specific action you could take...'}"
+                                   onchange="updateNetworkNode(${child.id}, this.value)"
+                                   style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px;">
+                        </div>
+                        <div class="node-actions">
+                            ${child.type === 'pathway' ? `
+                                <button class="add-child-btn pathway" onclick="addNetworkNode('${childKey}', 'pathway')">+ Sub-Pathway</button>
+                                <button class="add-child-btn option" onclick="addNetworkNode('${childKey}', 'option')">+ Concrete Option</button>
+                            ` : ''}
+                            <button class="danger" onclick="removeNetworkNode(${child.id})">Remove</button>
+                        </div>
+                        ${child.type === 'pathway' ? renderInterventionPrompt(child.text) : ''}
+                    </div>
+                    ${renderChildren(childKey, depth + 1)}
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderInterventionPrompt(parentText) {
+            if (!parentText || parentText.length < 5) return '';
+            const truncated = parentText.length > 50 ? parentText.substring(0, 50) + '...' : parentText;
+            return `
+                <div class="intervention-prompt">
+                    💭 What else could pursue "${truncated}"? What's a non-obvious lever?
+                </div>
+            `;
+        }
+
+        function addNetworkNode(parentKey, type) {
+            networkNodes.push({
+                id: nextNodeId++,
+                parentKey: parentKey,
+                type: type,
+                text: ''
+            });
+            renderTree();
+        }
+
+        function updateNetworkNode(id, text) {
+            const node = networkNodes.find(n => n.id === id);
+            if (node) {
+                node.text = text;
+            }
+        }
+
+        function removeNetworkNode(id) {
+            const toRemove = [id];
+            let queue = [`node_${id}`];
+            
+            while (queue.length > 0) {
+                const parentKey = queue.shift();
+                networkNodes.forEach(n => {
+                    if (n.parentKey === parentKey) {
+                        toRemove.push(n.id);
+                        queue.push(`node_${n.id}`);
+                    }
+                });
+            }
+            
+            networkNodes = networkNodes.filter(n => !toRemove.includes(n.id));
+            renderTree();
+        }
+
+        // ========== TREE DIAGRAM RENDER ==========
+        
+        function renderDiagram() {
+            const container = document.getElementById('diagramContainer');
+            
+            const fundamentals = [];
+            valueChains.forEach(chain => {
+                const fundLevel = chain.levels.find(l => l.isFundamental);
+                if (fundLevel && fundLevel.text.trim()) {
+                    fundamentals.push({
+                        chainId: chain.id,
+                        levelId: fundLevel.id,
+                        text: fundLevel.text
+                    });
+                }
+            });
+            
+            if (fundamentals.length === 0) {
+                alert('Add at least one fundamental value in Step 2 first.');
+                return;
+            }
+            
+            let diagram = '';
+            
+            fundamentals.forEach((fund, fundIdx) => {
+                const nodeKey = `fund_${fund.chainId}_${fund.levelId}`;
+                diagram += buildDiagramBranch(fund.text, 'fundamental', nodeKey, 0, fundIdx === fundamentals.length - 1);
+            });
+            
+            container.innerHTML = `
+                <div class="diagram-container">
+                    <div class="diagram-title">📊 Pathways Network Diagram</div>
+                    <div class="diagram-tree">${diagram}</div>
+                </div>
+            `;
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function buildDiagramBranch(text, type, nodeKey, depth, isLast) {
+            const indent = '│   '.repeat(depth);
+            const connector = isLast ? '└── ' : '├── ';
+            const prefix = depth === 0 ? '' : indent.slice(0, -4) + connector;
+            
+            let typeMarker = '';
+            let cssClass = '';
+            if (type === 'fundamental') {
+                typeMarker = '★ ';
+                cssClass = 'diagram-node-fundamental';
+            } else if (type === 'pathway') {
+                typeMarker = '◆ ';
+                cssClass = 'diagram-node-pathway';
+            } else {
+                typeMarker = '● ';
+                cssClass = 'diagram-node-option';
+            }
+            
+            const displayText = text || '(empty)';
+            let result = `<span class="${cssClass}">${prefix}${typeMarker}${escapeHtml(displayText)}</span>\n`;
+            
+            const children = networkNodes.filter(n => n.parentKey === nodeKey);
+            children.forEach((child, idx) => {
+                const childKey = `node_${child.id}`;
+                const childIsLast = idx === children.length - 1;
+                result += buildDiagramBranch(child.text, child.type, childKey, depth + 1, childIsLast);
+            });
+            
+            return result;
+        }
+
+        // ========== ALTERNATIVES ==========
+        
+        function addAlternative() {
+            alternatives.push({
+                id: nextAltId++,
+                name: '',
+                description: '',
+                valueAlignment: ''
+            });
+            renderAlternatives();
+        }
+
+        function removeAlternative(id) {
+            alternatives = alternatives.filter(a => a.id !== id);
+            renderAlternatives();
+        }
+
+        function updateAlternative(id, field, value) {
+            const alt = alternatives.find(a => a.id === id);
+            if (alt) alt[field] = value;
+        }
+
+        function renderAlternatives() {
+            const container = document.getElementById('alternatives');
+            
+            if (alternatives.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">Add alternatives as they emerge from your network exploration.</div>';
+                return;
+            }
+
+            container.innerHTML = alternatives.map(a => `
+                <div class="alternative-card">
+                    <div class="alt-header">
+                        <input type="text" 
+                               class="alt-name"
+                               value="${escapeHtml(a.name)}"
+                               placeholder="Alternative name"
+                               onchange="updateAlternative(${a.id}, 'name', this.value)">
+                        <button class="danger" onclick="removeAlternative(${a.id})">✕</button>
+                    </div>
+                    <textarea class="alt-description"
+                              placeholder="Describe this alternative..."
+                              onchange="updateAlternative(${a.id}, 'description', this.value)">${escapeHtml(a.description)}</textarea>
+                    <textarea class="alt-values"
+                              placeholder="Which fundamental values does this serve? How?"
+                              onchange="updateAlternative(${a.id}, 'valueAlignment', this.value)">${escapeHtml(a.valueAlignment)}</textarea>
+                </div>
+            `).join('');
+        }
+
+        function renderAlternativesSummary() {
+            const container = document.getElementById('alternativesSummaryContainer');
+            
+            const filledAlts = alternatives.filter(a => a.name && a.name.trim());
+            
+            if (filledAlts.length === 0) {
+                alert('Add at least one named alternative first.');
+                return;
+            }
+            
+            let tableRows = filledAlts.map((a, idx) => `
+                <tr>
+                    <td><strong>${idx + 1}</strong></td>
+                    <td><strong>${escapeHtml(a.name)}</strong></td>
+                    <td>${escapeHtml(a.description) || '<span style="color: #999;">—</span>'}</td>
+                    <td>${escapeHtml(a.valueAlignment) || '<span style="color: #999;">—</span>'}</td>
+                </tr>
+            `).join('');
+            
+            container.innerHTML = `
+                <div class="alternatives-summary">
+                    <div class="summary-title">📋 Alternatives Summary</div>
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">#</th>
+                                <th style="width: 150px;">Alternative</th>
+                                <th>Description</th>
+                                <th>Values Served</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ========== SAVE / LOAD / EXPORT ==========
+        
+        function saveAnalysis() {
+            const data = {
+                version: '2.0',
+                surfaceProblem: document.getElementById('surfaceProblem').value,
+                valueChains: valueChains,
+                networkNodes: networkNodes,
+                alternatives: alternatives,
+                synthesis: document.getElementById('synthesis').value,
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `value_focused_thinking_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyReportToClipboard() {
+            const report = generateReport();
+            
+            navigator.clipboard.writeText(report).then(() => {
+                const successEl = document.getElementById('copySuccess');
+                successEl.style.display = 'inline';
+                setTimeout(() => { successEl.style.display = 'none'; }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = report;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                const successEl = document.getElementById('copySuccess');
+                successEl.style.display = 'inline';
+                setTimeout(() => { successEl.style.display = 'none'; }, 2000);
+            });
+        }
+        
+        function generateReport() {
+            let report = 'VALUE-FOCUSED THINKING ANALYSIS\n';
+            report += '='.repeat(50) + '\n\n';
+            
+            const surface = document.getElementById('surfaceProblem').value;
+            if (surface) {
+                report += 'SURFACE PROBLEM:\n' + surface + '\n\n';
+                report += '-'.repeat(50) + '\n\n';
+            }
+            
+            if (valueChains.length > 0) {
+                report += 'VALUE CHAINS:\n\n';
+                valueChains.forEach((chain, chainIdx) => {
+                    report += `Chain ${chainIdx + 1}:\n`;
+                    chain.levels.forEach((level, levelIdx) => {
+                        const prefix = level.isFundamental ? '  ★ FUNDAMENTAL: ' : `  Level ${levelIdx + 1}: `;
+                        report += prefix + (level.text || '(empty)') + '\n';
+                    });
+                    report += '\n';
+                });
+                report += '-'.repeat(50) + '\n\n';
+            }
+            
+            if (networkNodes.length > 0) {
+                report += 'PATHWAYS NETWORK:\n\n';
+                
+                const fundamentals = [];
+                valueChains.forEach(chain => {
+                    const fundLevel = chain.levels.find(l => l.isFundamental);
+                    if (fundLevel && fundLevel.text.trim()) {
+                        fundamentals.push({
+                            nodeKey: `fund_${chain.id}_${fundLevel.id}`,
+                            text: fundLevel.text
+                        });
+                    }
+                });
+                
+                fundamentals.forEach(fund => {
+                    report += `★ ${fund.text}\n`;
+                    report += buildTextTree(fund.nodeKey, '  ');
+                });
+                
+                report += '\n' + '-'.repeat(50) + '\n\n';
+            }
+            
+            if (alternatives.length > 0) {
+                report += 'HARVESTED ALTERNATIVES:\n\n';
+                alternatives.filter(a => a.name).forEach((a, i) => {
+                    report += `${i + 1}. ${a.name}\n`;
+                    if (a.description) report += `   Description: ${a.description}\n`;
+                    if (a.valueAlignment) report += `   Values served: ${a.valueAlignment}\n`;
+                    report += '\n';
+                });
+                report += '-'.repeat(50) + '\n\n';
+            }
+            
+            const synthesis = document.getElementById('synthesis').value;
+            if (synthesis) {
+                report += 'SYNTHESIS:\n\n' + synthesis + '\n\n';
+            }
+            
+            report += '-'.repeat(50) + '\n';
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+            report += '\nQUESTIONS FOR FURTHER ANALYSIS:\n';
+            report += '• Are there any fundamental values missing from this analysis?\n';
+            report += '• Which alternatives best serve multiple values simultaneously?\n';
+            report += '• What assumptions underlie the pathway connections?\n';
+            report += '• Are there leverage points that could address the surface problem more directly?';
+            
+            return report;
+        }
+        
+        function buildTextTree(parentKey, indent) {
+            let result = '';
+            const children = networkNodes.filter(n => n.parentKey === parentKey);
+            
+            children.forEach(child => {
+                const marker = child.type === 'pathway' ? '◆' : '●';
+                const label = child.type === 'pathway' ? 'Pathway' : 'Option';
+                result += `${indent}${marker} [${label}] ${child.text || '(empty)'}\n`;
+                result += buildTextTree(`node_${child.id}`, indent + '  ');
+            });
+            
+            return result;
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    document.getElementById('surfaceProblem').value = data.surfaceProblem || '';
+                    document.getElementById('synthesis').value = data.synthesis || '';
+                    
+                    if (data.valueChains) {
+                        valueChains = data.valueChains;
+                    } else if (data.valueChain) {
+                        // Convert v1 format
+                        valueChains = [{
+                            id: 1,
+                            levels: data.valueChain.map((v, i) => ({
+                                id: i + 1,
+                                text: v.text || '',
+                                isFundamental: v.isFundamental || false
+                            }))
+                        }];
+                    } else {
+                        valueChains = [];
+                    }
+                    
+                    networkNodes = data.networkNodes || [];
+                    alternatives = data.alternatives || [];
+                    
+                    nextChainId = Math.max(...valueChains.map(c => c.id), 0) + 1;
+                    nextValueId = Math.max(...valueChains.flatMap(c => c.levels.map(l => l.id)), 0) + 1;
+                    nextNodeId = Math.max(...networkNodes.map(n => n.id), 0) + 1;
+                    nextAltId = Math.max(...alternatives.map(a => a.id), 0) + 1;
+                    
+                    renderValueChains();
+                    renderTree();
+                    renderAlternatives();
+                    
+                    document.getElementById('diagramContainer').style.display = 'none';
+                    document.getElementById('alternativesSummaryContainer').style.display = 'none';
+                    
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAll() {
+            if (confirm('Clear all data and start fresh?')) {
+                document.getElementById('surfaceProblem').value = '';
+                document.getElementById('synthesis').value = '';
+                valueChains = [];
+                networkNodes = [];
+                alternatives = [];
+                nextChainId = 1;
+                nextValueId = 1;
+                nextNodeId = 1;
+                nextAltId = 1;
+                renderValueChains();
+                renderTree();
+                renderAlternatives();
+                document.getElementById('diagramContainer').style.display = 'none';
+                document.getElementById('alternativesSummaryContainer').style.display = 'none';
+            }
+        }
+
+        // Utility
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Initialize
+        renderValueChains();
+        renderTree();
+        renderAlternatives();
+    </script>
+</body>
+</html>

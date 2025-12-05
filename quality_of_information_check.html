@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality of Information Check</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 8px; }
+        h2 { color: #2c5282; margin-bottom: 15px; font-size: 1.25em; }
+        h3 { color: #2c5282; margin: 0 0 12px 0; font-size: 1.1em; }
+        h4 { color: #2c5282; margin: 0 0 8px 0; font-size: 1em; }
+        
+        .subtitle { color: #444; margin-bottom: 20px; }
+        
+        /* Load banner */
+        .load-banner {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .load-banner p {
+            margin: 0;
+            color: #1565c0;
+            font-size: 14px;
+        }
+        .load-banner-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Intro/philosophy box */
+        .intro-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-left: 4px solid #0d9488;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; font-size: 14px; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: #0f766e; }
+        
+        /* Example box */
+        .example-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border: 1px solid #5eead4;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .example-box h4 {
+            color: #0f766e;
+            margin: 0 0 12px 0;
+            font-size: 14px;
+        }
+        .example-box p, .example-box li {
+            margin: 0 0 8px 0;
+            color: #115e59;
+            font-size: 14px;
+        }
+        .example-box ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        /* Collapsible details */
+        details {
+            margin-top: 15px;
+        }
+        details summary {
+            cursor: pointer;
+            color: #0d9488;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        details summary:hover {
+            color: #0f766e;
+        }
+        
+        /* Section styling */
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        /* Source cards */
+        .source-card {
+            background: white;
+            border: 2px solid #d0d0d0;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+        .source-card.high-quality {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #fff 100%);
+        }
+        .source-card.questionable {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
+        }
+        .source-card.unreliable {
+            border-color: #9f5849;
+            background: linear-gradient(135deg, #fef2f2 0%, #fff 100%);
+        }
+        
+        .source-name {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #2c5282;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+        }
+        .source-name:focus {
+            outline: none;
+            border-color: #0d9488;
+        }
+        
+        .quality-metric {
+            background: #f8f8f8;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        .metric-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+        .radio-option:hover {
+            background: #e5e7eb;
+        }
+        .radio-option input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .notes-area {
+            width: 100%;
+            min-height: 60px;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-top: 12px;
+            resize: vertical;
+        }
+        .notes-area:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        .score-display {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border: 2px solid #d0d0d0;
+            margin-top: 15px;
+        }
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        .score-label {
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+        }
+        
+        /* Compact dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 700px) {
+            .dashboard { grid-template-columns: repeat(2, 1fr); }
+        }
+        .metric-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .metric-card-label {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        .metric-card-value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .high { color: #059669; }
+        .medium { color: #d97706; }
+        .low { color: #9f5849; }
+        
+        /* Guidance box */
+        .guidance-box {
+            background: linear-gradient(135deg, #f8f5ff 0%, #f3e8ff 100%);
+            border-left: 4px solid #7c5cad;
+            padding: 18px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .guidance-box h4 {
+            color: #5b4180;
+            margin: 0 0 12px 0;
+            font-size: 14px;
+        }
+        .guidance-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #333;
+            font-size: 14px;
+        }
+        .guidance-box li {
+            margin-bottom: 8px;
+        }
+        
+        /* Next steps box */
+        .next-steps-box {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+            border: 1px solid #7dd3fc;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 25px;
+        }
+        .next-steps-box h4 {
+            color: #0369a1;
+            margin: 0 0 12px 0;
+            font-size: 14px;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 14px;
+        }
+        .next-steps-box li {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .next-steps-box li strong {
+            color: #0369a1;
+        }
+        
+        /* Further reading */
+        .reading-box {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .reading-box h4 {
+            color: #444;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .reading-box p {
+            margin: 0;
+            font-size: 14px;
+            color: #444;
+        }
+        
+        /* Analysis render */
+        .analysis-render {
+            background: white;
+            border: 2px solid #0d9488;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        .analysis-render h3 {
+            color: #0f766e;
+            margin: 0 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #99f6e4;
+        }
+        .render-source {
+            background: #f8fffe;
+            border: 1px solid #99f6e4;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .render-source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .render-source-name {
+            font-weight: 600;
+            color: #0f766e;
+            font-size: 14px;
+        }
+        .render-quality-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-high { background: #d1fae5; color: #065f46; }
+        .badge-questionable { background: #fef3c7; color: #92400e; }
+        .badge-unreliable { background: #fee2e2; color: #991b1b; }
+        .render-scores {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 13px;
+        }
+        @media (max-width: 500px) {
+            .render-scores { grid-template-columns: 1fr; }
+        }
+        .render-score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            background: white;
+            border-radius: 4px;
+        }
+        .render-score-label { color: #555; }
+        .render-score-value { font-weight: 600; color: #333; }
+        .render-notes {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #444;
+            font-style: italic;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 18px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.add-btn { 
+            background: #0d9488; 
+            font-size: 13px; 
+            padding: 8px 14px; 
+        }
+        button.add-btn:hover { background: #0f766e; }
+        button.secondary { background: #6b7280; }
+        button.secondary:hover { background: #4b5563; }
+        button.remove-btn { 
+            background: #6b7280; 
+            font-size: 12px; 
+            padding: 6px 10px; 
+        }
+        button.remove-btn:hover { background: #4b5563; }
+        button.view-btn {
+            background: #0d9488;
+            padding: 12px 24px;
+            font-size: 15px;
+        }
+        button.view-btn:hover { background: #0f766e; }
+        button.close-btn {
+            background: #6b7280;
+            font-size: 13px;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .toolbar-note {
+            width: 100%;
+            font-size: 12px;
+            color: #555;
+            margin-top: 8px;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #555;
+        }
+        
+        /* Utility */
+        .hidden { display: none !important; }
+        .mt-20 { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quality of Information Check</h1>
+        <p class="subtitle">Evaluate the substrate on which your knowledge rests.</p>
+        
+        <!-- Load Banner -->
+        <div class="load-banner">
+            <p>Have a previous analysis? Load it to continue working.</p>
+            <div class="load-banner-buttons">
+                <button class="secondary" onclick="document.getElementById('loadInput').click()">📂 Load Previous (.json)</button>
+                <button class="secondary" onclick="loadExample()">📋 Load Example</button>
+                <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadCheck(event)">
+            </div>
+        </div>
+        
+        <!-- Philosophy/Intro -->
+        <div class="intro-box">
+            <p><strong>The foundation of analysis:</strong> All conclusions rest on information. But information is not truth—it's a signal, filtered through sources with varying reliability. We rarely question the substrate: a claim is either believed or dismissed, with little examination of the path by which it reached us.</p>
+            
+            <p>This tool makes explicit what remains implicit: <em>How do we know what we claim to know?</em></p>
+            
+            <p><strong>A note on credibility:</strong> Track record can mislead. A source might be consistently "right" because they're genuinely insightful—or because they've echoed consensus that happened to be correct. The deeper question isn't just <em>"Has this source been accurate?"</em> but <em>"Can you assess whether their underlying reasoning is sound?"</em> Do they demonstrate genuine grasp of the domain, or are they pattern-matching conclusions to what others believe? Even top-rated experts and prestigious journals get it completely wrong often enough. Tetlock's forecasting research found that many confident experts perform barely better than chance—while "superforecasters" succeed through intellectual humility and constant self-correction, not superior access or credentials.</p>
+            
+            <p><strong>A deeper layer:</strong> Your assessment of any source's reliability is bounded by your own understanding. If you lack expertise in a domain, you may not be able to distinguish genuine insight from confident-sounding nonsense. The source might be wrong in ways you can't detect—or right for reasons you can't verify. This creates a recursion: you might seek help from others, but how do you know whose judgment to trust? You can't escape this entirely—at some point, every chain of verification terminates in judgment. But you can apply rigor to the question of <em>who</em> to trust: Does this person have a track record of being right in ways that weren't obvious at the time? Do they show their reasoning, or just their conclusions? Do they update when proven wrong, or defend their errors? Are they willing to say "I don't know"? Trust people who've earned it through demonstrated calibration and transparent reasoning—not credentials, confidence, or social proof.</p>
+            
+            <details>
+                <summary>📖 Worked Example: Evaluating Sources for a Strategic Decision</summary>
+                <div class="example-box">
+                    <h4>Scenario: Should we expand to a second site?</h4>
+                    <p>You're evaluating three information sources informing your decision:</p>
+                    <ul>
+                        <li><strong>Industry analyst report:</strong> Credibility medium (decent track record, but often echoes consensus); Bias medium (paid by clients who benefit from optimistic forecasts); Timeliness current; Corroboration unverified. <em>Quality: 1.25 — Questionable. Useful for market sizing, but treat predictions skeptically.</em></li>
+                        <li><strong>Internal financial model:</strong> Credibility high (built by your team, assumptions transparent); Bias low (no external incentive); Timeliness current; Corroboration N/A (unique to you). <em>Quality: 1.75 — High. But only as good as its assumptions—cross-check inputs.</em></li>
+                        <li><strong>Competitor's public statements:</strong> Credibility low (incentive to mislead); Bias high (strategic communications); Timeliness current; Corroboration contradicted by their actions. <em>Quality: 0.5 — Unreliable. Useful only as a signal of what they want you to believe.</em></li>
+                    </ul>
+                    <p><strong>Insight:</strong> The "authoritative" analyst report is actually your weakest source. Your internal model—humble, transparent, yours—is strongest. The competitor's statements are information about their strategy, not truth about the market.</p>
+                </div>
+            </details>
+        </div>
+        
+        <!-- Guidance Box -->
+        <div class="guidance-box">
+            <h4>🧭 Dimensions to Consider</h4>
+            <ul>
+                <li><strong>Credibility:</strong> Has the source been right before? How often wrong? Do they demonstrate genuine understanding or just pattern-match to consensus?</li>
+                <li><strong>Bias & motivation:</strong> What does the source gain from this claim? Who funds them? What's their incentive structure?</li>
+                <li><strong>Primary vs. secondary:</strong> Are they reporting what they observed directly, or what someone told them?</li>
+                <li><strong>Timeliness:</strong> When was this information current? Has context shifted since then?</li>
+                <li><strong>Corroboration:</strong> Do independent sources agree? Where do they diverge, and why?</li>
+                <li><strong>Previously dismissed:</strong> Is there information you ignored because it contradicted your preferred narrative? Go find it.</li>
+            </ul>
+        </div>
+        
+        <!-- Sources Section -->
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">Information Sources</h3>
+                <button onclick="addSource()" class="add-btn">+ Add Source</button>
+            </div>
+            <div id="sources"></div>
+        </div>
+        
+        <!-- Dashboard (compact, below sources) -->
+        <div class="section" id="dashboardSection">
+            <h3>Summary</h3>
+            <div class="dashboard" id="dashboard"></div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="view-btn" onclick="showAnalysis()" id="viewAnalysisBtn" disabled>View Your Analysis</button>
+            </div>
+        </div>
+        
+        <!-- Analysis Render (hidden by default) -->
+        <div id="analysisRender" class="hidden"></div>
+        
+        <!-- Next Steps (hidden until sources scored) -->
+        <div id="nextStepsSection" class="hidden">
+            <div class="next-steps-box">
+                <h4>What to Do With This Analysis</h4>
+                <ul>
+                    <li><strong>For high-quality sources:</strong> These form your evidential bedrock. But stay humble—even strong sources can be wrong. What would falsify their claims?</li>
+                    <li><strong>For questionable sources:</strong> Don't discard them, but weight them appropriately. What additional verification would raise your confidence? Can you find independent corroboration?</li>
+                    <li><strong>For unreliable sources:</strong> Ask what they're useful for. A biased source still tells you what that actor wants you to believe—which is itself information.</li>
+                    <li><strong>Cross-check your foundations:</strong> Use the <em>Key Assumptions Check</em> tool to see whether weak sources underpin critical assumptions in your analysis.</li>
+                    <li><strong>Calibrate your claims:</strong> If your information base is weaker than you'd like, consider the <em>Reference Class Forecasting</em> tool to anchor predictions in historical base rates rather than relying on potentially shaky sources.</li>
+                    <li><strong>For deeper analysis:</strong> Copy your assessment and paste it into a Claude conversation for critical review of your source evaluations.</li>
+                </ul>
+            </div>
+            
+            <div class="reading-box">
+                <h4>📚 Further Reading</h4>
+                <p style="margin-bottom: 12px;"><strong>Philip Tetlock's <em>Superforecasting</em> (2015)</strong> — Explores how ordinary people can outpredict credentialed experts by practicing epistemic humility, updating beliefs incrementally, and distinguishing genuine insight from confident consensus-echoing.</p>
+                
+                <p style="margin-bottom: 12px;"><strong>Mellers, Tetlock &amp; Arkes, "Forecasting tournaments, epistemic humility and attitude depolarization" (2019, <em>Cognition</em>)</strong> — Empirical research on the connection between forecasting skill and intellectual humility. Superforecasters aren't just more accurate—they're more open to revising their views.</p>
+                
+                <p style="margin-bottom: 0;"><strong>Sherman Kent and CIA intelligence analysis</strong> — Kent, "the father of intelligence analysis," anticipated the dangers of confirmatory bias, the importance of allowing dissent, and the need for precision in probability estimates. Yet he also fell prey to scientific hubris. The Cuban Missile Crisis failure is instructive: after the CIA failed to predict Soviet missiles in Cuba, Kent argued their misestimate "got an ex post facto validation" because what they predicted would be "sound judgment on the part of the Politburo." In other words, they were right about what the Soviets <em>should</em> have done, just wrong about what they <em>did</em> do. This is the danger of reasoning from "what would be rational" rather than empirically testing your model. (See "Beacon and Warning: Sherman Kent, Scientific Hubris, and the CIA's Office of National Estimates," <em>Texas National Security Review</em>, 2018)</p>
+            </div>
+            
+            <!-- Claude Template Prompt -->
+            <div class="reading-box" style="margin-top: 15px;">
+                <details>
+                    <summary style="color: #2c5282; font-weight: 600; cursor: pointer;">🤖 Claude Analysis Template — Click to expand, copy, and paste with your results</summary>
+                    <div style="margin-top: 15px; padding: 15px; background: #f8f8f8; border-radius: 6px; border: 1px solid #e0e0e0;">
+                        <p style="font-size: 13px; color: #444; margin-bottom: 12px;"><em>Copy this prompt and paste it into a new Claude conversation along with your exported analysis (use the "Copy Report" button above).</em></p>
+                        <div style="background: white; border: 1px solid #d0d0d0; border-radius: 4px; padding: 15px; font-family: monospace; font-size: 13px; white-space: pre-wrap; color: #333;" id="claudeTemplate">I've completed a Quality of Information Check for a decision I'm working on. I've assessed several information sources across four dimensions: credibility, bias, timeliness, and corroboration.
+
+I'd like you to help me stress-test this assessment with rigorous, critical thinking. Please:
+
+1. Challenge my ratings: Where might I be too generous? Too harsh? What would change my assessment?
+
+2. Probe for blind spots: Are there obvious sources I've neglected—especially ones that might contradict my preferred conclusions? What types of sources am I systematically over- or under-weighting?
+
+3. Assess my own limitations: For sources I've rated highly, do I actually have the domain expertise to evaluate their reasoning quality? Or am I trusting credentials and consensus without being able to verify the underlying logic?
+
+4. Identify the weakest links: Which sources am I most reliant on for my conclusions? If those turned out to be wrong, how would it change my analysis?
+
+5. Suggest verification strategies: For my most questionable sources, what specific steps could I take to raise my confidence (or appropriately lower it)?
+
+Please be direct and challenging rather than reassuring. I'd rather discover problems now than later.
+
+Here's my analysis:
+
+[PASTE YOUR COPIED REPORT HERE]</div>
+                        <button onclick="copyTemplate()" class="secondary" style="margin-top: 12px; font-size: 13px;">📋 Copy Template</button>
+                    </div>
+                </details>
+            </div>
+        </div>
+        
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button onclick="saveCheck()">💾 Save Analysis</button>
+            <button onclick="copyToClipboard()" class="secondary">📋 Copy Report</button>
+            <button onclick="clearAll()" class="secondary">🔄 Clear All</button>
+            <div class="toolbar-note">
+                <strong>Save</strong> downloads a .json file you can reload later. <strong>Copy Report</strong> copies human-readable text (with Claude prompt) to your clipboard for docs or conversations.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sources = [];
+        let nextId = 1;
+
+        function addSource() {
+            sources.push({
+                id: nextId++,
+                name: '',
+                credibility: null,
+                bias: null,
+                timeliness: null,
+                corroboration: null,
+                notes: ''
+            });
+            renderSources();
+            updateDashboard();
+        }
+
+        function removeSource(id) {
+            sources = sources.filter(s => s.id !== id);
+            renderSources();
+            updateDashboard();
+        }
+
+        function updateSource(id, field, value) {
+            const source = sources.find(s => s.id === id);
+            if (source) {
+                source[field] = value;
+                renderSources();
+                updateDashboard();
+            }
+        }
+
+        function calculateQuality(source) {
+            const scores = [source.credibility, source.bias, source.timeliness, source.corroboration];
+            const validScores = scores.filter(s => s !== null);
+            if (validScores.length === 0) return null;
+            return validScores.reduce((sum, s) => sum + s, 0) / validScores.length;
+        }
+
+        function getQualityClass(avgScore) {
+            if (avgScore === null) return '';
+            if (avgScore >= 1.5) return 'high-quality';
+            if (avgScore >= 0.8) return 'questionable';
+            return 'unreliable';
+        }
+
+        function getQualityLabel(avgScore) {
+            if (avgScore === null) return 'Not assessed';
+            if (avgScore >= 1.5) return 'High Quality';
+            if (avgScore >= 0.8) return 'Questionable';
+            return 'Unreliable';
+        }
+
+        function getBadgeClass(avgScore) {
+            if (avgScore === null) return '';
+            if (avgScore >= 1.5) return 'badge-high';
+            if (avgScore >= 0.8) return 'badge-questionable';
+            return 'badge-unreliable';
+        }
+
+        const credibilityLabels = {
+            2: 'High — Consistently accurate, demonstrated expertise',
+            1: 'Medium — Generally reliable, some track record',
+            0: 'Low — Unproven, frequently wrong, or unreliable'
+        };
+        const biasLabels = {
+            2: 'Low bias — Independent, no clear incentive to distort',
+            1: 'Some bias — Partial stake, manageable conflicts',
+            0: 'High bias — Strong incentive to shape narrative'
+        };
+        const timelinessLabels = {
+            2: 'Current — Recent and context hasn\'t changed',
+            1: 'Recent — Some time passed, mostly still relevant',
+            0: 'Outdated — Old data, context has shifted significantly'
+        };
+        const corroborationLabels = {
+            2: 'Corroborated — Multiple independent sources agree',
+            1: 'Unverified — Single source, not yet contradicted',
+            0: 'Contradicted — Other sources dispute this claim'
+        };
+
+        function renderSources() {
+            const container = document.getElementById('sources');
+            
+            if (sources.length === 0) {
+                container.innerHTML = '<div class="empty-state">Add sources to begin your quality assessment.</div>';
+                return;
+            }
+
+            container.innerHTML = sources.map(s => {
+                const quality = calculateQuality(s);
+                const qualityClass = getQualityClass(quality);
+                const qualityScore = quality !== null ? quality.toFixed(2) : '—';
+                
+                return `
+                    <div class="source-card ${qualityClass}">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <input type="text" 
+                                   class="source-name" 
+                                   value="${escapeHtml(s.name)}"
+                                   placeholder="Source name (e.g., 'Industry analyst report', 'Internal team assessment')"
+                                   onchange="updateSource(${s.id}, 'name', this.value)"
+                                   style="flex: 1; margin-right: 12px;">
+                            <button class="remove-btn" onclick="removeSource(${s.id})">✕ Remove</button>
+                        </div>
+
+                        <div class="quality-metric">
+                            <div class="metric-label">CREDIBILITY: Historical accuracy & demonstrated expertise</div>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="credibility-${s.id}" ${s.credibility === 2 ? 'checked' : ''} onchange="updateSource(${s.id}, 'credibility', 2)">
+                                    High — Consistently accurate, demonstrated expertise (2)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="credibility-${s.id}" ${s.credibility === 1 ? 'checked' : ''} onchange="updateSource(${s.id}, 'credibility', 1)">
+                                    Medium — Generally reliable, some track record (1)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="credibility-${s.id}" ${s.credibility === 0 ? 'checked' : ''} onchange="updateSource(${s.id}, 'credibility', 0)">
+                                    Low — Unproven, frequently wrong, or unreliable (0)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="quality-metric">
+                            <div class="metric-label">BIAS: Independence & motivation</div>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="bias-${s.id}" ${s.bias === 2 ? 'checked' : ''} onchange="updateSource(${s.id}, 'bias', 2)">
+                                    Low bias — Independent, no clear incentive to distort (2)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bias-${s.id}" ${s.bias === 1 ? 'checked' : ''} onchange="updateSource(${s.id}, 'bias', 1)">
+                                    Some bias — Partial stake, manageable conflicts (1)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="bias-${s.id}" ${s.bias === 0 ? 'checked' : ''} onchange="updateSource(${s.id}, 'bias', 0)">
+                                    High bias — Strong incentive to shape narrative (0)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="quality-metric">
+                            <div class="metric-label">TIMELINESS: Recency & continued relevance</div>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="timeliness-${s.id}" ${s.timeliness === 2 ? 'checked' : ''} onchange="updateSource(${s.id}, 'timeliness', 2)">
+                                    Current — Recent and context hasn't changed (2)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="timeliness-${s.id}" ${s.timeliness === 1 ? 'checked' : ''} onchange="updateSource(${s.id}, 'timeliness', 1)">
+                                    Recent — Some time passed, mostly still relevant (1)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="timeliness-${s.id}" ${s.timeliness === 0 ? 'checked' : ''} onchange="updateSource(${s.id}, 'timeliness', 0)">
+                                    Outdated — Old data, context has shifted significantly (0)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="quality-metric">
+                            <div class="metric-label">CORROBORATION: Agreement with independent sources</div>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="corroboration-${s.id}" ${s.corroboration === 2 ? 'checked' : ''} onchange="updateSource(${s.id}, 'corroboration', 2)">
+                                    Corroborated — Multiple independent sources agree (2)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="corroboration-${s.id}" ${s.corroboration === 1 ? 'checked' : ''} onchange="updateSource(${s.id}, 'corroboration', 1)">
+                                    Unverified — Single source, not yet contradicted (1)
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="corroboration-${s.id}" ${s.corroboration === 0 ? 'checked' : ''} onchange="updateSource(${s.id}, 'corroboration', 0)">
+                                    Contradicted — Other sources dispute this claim (0)
+                                </label>
+                            </div>
+                        </div>
+
+                        <textarea class="notes-area"
+                                  placeholder="Notes: What specific claims does this source support? Any concerns about reasoning quality, consensus-echoing, or blind spots?"
+                                  onchange="updateSource(${s.id}, 'notes', this.value)">${escapeHtml(s.notes)}</textarea>
+
+                        <div class="score-display">
+                            <div class="score-value">${qualityScore}</div>
+                            <div class="score-label">Quality Score (0–2 scale) · ${getQualityLabel(quality)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateDashboard() {
+            const dashboard = document.getElementById('dashboard');
+            const viewBtn = document.getElementById('viewAnalysisBtn');
+            const nextSteps = document.getElementById('nextStepsSection');
+            
+            if (sources.length === 0) {
+                dashboard.innerHTML = '<p style="color: #555; grid-column: 1/-1; text-align: center; font-size: 14px;">Add sources to see summary metrics</p>';
+                viewBtn.disabled = true;
+                nextSteps.classList.add('hidden');
+                hideAnalysis();
+                return;
+            }
+
+            const scoredSources = sources.filter(s => calculateQuality(s) !== null);
+            const high = scoredSources.filter(s => calculateQuality(s) >= 1.5).length;
+            const questionable = scoredSources.filter(s => {
+                const q = calculateQuality(s);
+                return q >= 0.8 && q < 1.5;
+            }).length;
+            const unreliable = scoredSources.filter(s => calculateQuality(s) < 0.8).length;
+
+            dashboard.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-card-label">Total Sources</div>
+                    <div class="metric-card-value">${sources.length}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">High Quality</div>
+                    <div class="metric-card-value high">${high}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Questionable</div>
+                    <div class="metric-card-value medium">${questionable}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Unreliable</div>
+                    <div class="metric-card-value low">${unreliable}</div>
+                </div>
+            `;
+
+            // Enable view button if at least one source is scored
+            viewBtn.disabled = scoredSources.length === 0;
+            
+            // Show next steps if sources are scored
+            if (scoredSources.length > 0) {
+                nextSteps.classList.remove('hidden');
+            } else {
+                nextSteps.classList.add('hidden');
+            }
+        }
+
+        function showAnalysis() {
+            const container = document.getElementById('analysisRender');
+            const scoredSources = sources.filter(s => calculateQuality(s) !== null);
+            
+            if (scoredSources.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            let html = `
+                <div class="analysis-render">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="border: none; padding: 0; margin: 0;">Your Information Quality Assessment</h3>
+                        <button class="close-btn" onclick="hideAnalysis()">✕ Close</button>
+                    </div>
+                    <div style="border-bottom: 2px solid #99f6e4; margin: 15px 0;"></div>
+            `;
+
+            sources.forEach((s, idx) => {
+                const quality = calculateQuality(s);
+                const qualityLabel = getQualityLabel(quality);
+                const badgeClass = getBadgeClass(quality);
+                
+                html += `
+                    <div class="render-source">
+                        <div class="render-source-header">
+                            <span class="render-source-name">${idx + 1}. ${escapeHtml(s.name) || '(Unnamed source)'}</span>
+                            <span class="render-quality-badge ${badgeClass}">${qualityLabel}${quality !== null ? ' · ' + quality.toFixed(2) : ''}</span>
+                        </div>
+                        <div class="render-scores">
+                            <div class="render-score-item">
+                                <span class="render-score-label">Credibility</span>
+                                <span class="render-score-value">${s.credibility !== null ? credibilityLabels[s.credibility].split('—')[0].trim() : '—'}</span>
+                            </div>
+                            <div class="render-score-item">
+                                <span class="render-score-label">Bias</span>
+                                <span class="render-score-value">${s.bias !== null ? biasLabels[s.bias].split('—')[0].trim() : '—'}</span>
+                            </div>
+                            <div class="render-score-item">
+                                <span class="render-score-label">Timeliness</span>
+                                <span class="render-score-value">${s.timeliness !== null ? timelinessLabels[s.timeliness].split('—')[0].trim() : '—'}</span>
+                            </div>
+                            <div class="render-score-item">
+                                <span class="render-score-label">Corroboration</span>
+                                <span class="render-score-value">${s.corroboration !== null ? corroborationLabels[s.corroboration].split('—')[0].trim() : '—'}</span>
+                            </div>
+                        </div>
+                        ${s.notes ? `<div class="render-notes">"${escapeHtml(s.notes)}"</div>` : ''}
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function hideAnalysis() {
+            document.getElementById('analysisRender').classList.add('hidden');
+        }
+
+        function saveCheck() {
+            const data = {
+                version: '2.0',
+                sources: sources,
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `information_quality_check_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            const scoredSources = sources.filter(s => calculateQuality(s) !== null);
+            
+            let report = 'QUALITY OF INFORMATION CHECK\n';
+            report += '='.repeat(50) + '\n\n';
+            
+            if (sources.length === 0) {
+                report += '(No sources assessed)\n';
+            } else {
+                sources.forEach((s, i) => {
+                    const quality = calculateQuality(s);
+                    const qualityLabel = getQualityLabel(quality);
+                    
+                    report += `SOURCE ${i + 1}: ${s.name || '(Unnamed)'}\n`;
+                    report += `Quality: ${quality !== null ? quality.toFixed(2) : 'N/A'} — ${qualityLabel}\n`;
+                    report += `  Credibility: ${s.credibility !== null ? s.credibility + '/2' : 'Not assessed'}\n`;
+                    report += `  Bias: ${s.bias !== null ? s.bias + '/2' : 'Not assessed'}\n`;
+                    report += `  Timeliness: ${s.timeliness !== null ? s.timeliness + '/2' : 'Not assessed'}\n`;
+                    report += `  Corroboration: ${s.corroboration !== null ? s.corroboration + '/2' : 'Not assessed'}\n`;
+                    if (s.notes) report += `  Notes: ${s.notes}\n`;
+                    report += '\n';
+                });
+
+                const high = scoredSources.filter(s => calculateQuality(s) >= 1.5).length;
+                const questionable = scoredSources.filter(s => { const q = calculateQuality(s); return q >= 0.8 && q < 1.5; }).length;
+                const unreliable = scoredSources.filter(s => calculateQuality(s) < 0.8).length;
+
+                report += '-'.repeat(50) + '\n';
+                report += `SUMMARY: ${high} high-quality, ${questionable} questionable, ${unreliable} unreliable\n\n`;
+            }
+
+            report += '='.repeat(50) + '\n';
+            report += 'REQUEST FOR CRITICAL REVIEW\n';
+            report += '-'.repeat(50) + '\n';
+            report += 'Please review this information quality assessment with rigorous, critical thinking:\n\n';
+            report += '1. Have I rated any sources too generously? What would lower my assessment?\n';
+            report += '2. For sources I rated as "credible" — are they genuinely insightful, or just echoing consensus that happened to be right?\n';
+            report += '3. For low-quality sources, should I be weighting them at all? Or are they useful for something other than truth (e.g., revealing what an actor wants me to believe)?\n';
+            report += '4. What corroborating evidence would strengthen my weakest sources?\n';
+            report += '5. Are there obvious sources I\'ve neglected to include — especially ones that might contradict my preferred conclusions?\n';
+            report += '6. Given this information base, how confident should I actually be in any conclusions I draw from it?\n\n';
+            report += 'Please be direct and challenging rather than reassuring.\n';
+            report += '\nGenerated: ' + new Date().toLocaleString();
+
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Report copied to clipboard! Paste into a conversation for critical review.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = report;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Report copied to clipboard!');
+            });
+        }
+
+        function loadCheck(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    sources = data.sources || [];
+                    nextId = Math.max(...sources.map(s => s.id), 0) + 1;
+                    renderSources();
+                    updateDashboard();
+                    hideAnalysis();
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function loadExample() {
+            sources = [
+                {
+                    id: 1,
+                    name: 'Industry analyst report (McKinsey)',
+                    credibility: 1,
+                    bias: 1,
+                    timeliness: 2,
+                    corroboration: 1,
+                    notes: 'Useful for market sizing. But their predictions often echo consensus — hard to tell if they have genuine insight or are pattern-matching to conventional wisdom.'
+                },
+                {
+                    id: 2,
+                    name: 'Internal team financial model',
+                    credibility: 2,
+                    bias: 2,
+                    timeliness: 2,
+                    corroboration: 1,
+                    notes: 'Assumptions are transparent and we built it ourselves. Quality depends on input assumptions — need to stress-test those separately.'
+                },
+                {
+                    id: 3,
+                    name: 'Competitor press release',
+                    credibility: 0,
+                    bias: 0,
+                    timeliness: 2,
+                    corroboration: 0,
+                    notes: 'Contradicted by their actual hiring patterns and CapEx. Useful as a signal of what narrative they want to project, not as truth about the market.'
+                }
+            ];
+            nextId = 4;
+            renderSources();
+            updateDashboard();
+            hideAnalysis();
+        }
+
+        function clearAll() {
+            if (sources.length === 0) return;
+            if (confirm('Clear all sources and start fresh?')) {
+                sources = [];
+                nextId = 1;
+                renderSources();
+                updateDashboard();
+                hideAnalysis();
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function copyTemplate() {
+            const template = document.getElementById('claudeTemplate').innerText;
+            navigator.clipboard.writeText(template).then(() => {
+                alert('Template copied! Paste it into a Claude conversation along with your analysis.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = template;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Template copied!');
+            });
+        }
+
+        // Initialize
+        renderSources();
+        updateDashboard();
+    </script>
+</body>
+</html>

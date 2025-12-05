@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team A/Team B Analysis</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f0fdfa 0%, #f5f5f5 100%);
+            color: #1a202c;
+            font-size: 15px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        h1 { 
+            color: #2c5282; 
+            margin-bottom: 8px;
+            font-size: 1.9em;
+        }
+        
+        .subtitle { 
+            color: #555; 
+            margin-bottom: 20px; 
+            font-size: 1.1em;
+        }
+        
+        /* Load Banner */
+        .load-banner {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .load-banner p {
+            margin: 0;
+            color: #234e52;
+            font-size: 14px;
+        }
+        
+        .load-banner-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Philosophy/Intro Box */
+        .philosophy-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-left: 4px solid #0d9488;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+        }
+        
+        .philosophy-box p {
+            margin: 0 0 12px 0;
+            color: #234e52;
+        }
+        
+        .philosophy-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .quote {
+            font-style: italic;
+            color: #285e61;
+            border-left: 3px solid #38b2ac;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        
+        .quote-attribution {
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 5px;
+        }
+        
+        /* Sections */
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .section h3 {
+            color: #2c5282;
+            margin-bottom: 10px;
+            font-size: 1.15em;
+        }
+        
+        .section-help {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #0d9488;
+        }
+        
+        /* Principles Box */
+        .principles-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .principles-box h4 {
+            color: #0d9488;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+        
+        .principles-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #234e52;
+        }
+        
+        .principles-box li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .principles-box li:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Teams Container */
+        .teams-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .teams-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .team-card {
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .team-card.team-a {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+        }
+        
+        .team-card.team-b {
+            border-color: #059669;
+            background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+        }
+        
+        .team-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+        }
+        
+        .team-a .team-header {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        
+        .team-b .team-header {
+            color: #059669;
+            border-bottom-color: #059669;
+        }
+        
+        .team-section {
+            margin-bottom: 15px;
+        }
+        
+        .team-section-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .team-a .team-section-label {
+            color: #2563eb;
+        }
+        
+        .team-b .team-section-label {
+            color: #047857;
+        }
+        
+        .team-section-help {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        /* Evidence List */
+        .evidence-list {
+            margin-top: 10px;
+        }
+        
+        .evidence-item {
+            background: white;
+            border-left: 3px solid #718096;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .evidence-item-row {
+            display: flex;
+            gap: 10px;
+            align-items: start;
+        }
+        
+        .evidence-textarea {
+            flex: 1;
+            min-height: 50px;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .no-evidence {
+            color: #718096;
+            font-size: 14px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        /* Assessment Section */
+        .assessment-section {
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .assessment-section h3 {
+            color: #2c5282;
+            margin-bottom: 8px;
+        }
+        
+        .assessment-intro {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 700px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .comparison-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .comparison-label {
+            font-weight: 600;
+            color: #2c5282;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 18px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #1a365d;
+        }
+        
+        button.secondary {
+            background: #718096;
+        }
+        
+        button.secondary:hover {
+            background: #4a5568;
+        }
+        
+        button.add-btn {
+            background: #718096;
+            font-size: 13px;
+            padding: 8px 14px;
+        }
+        
+        button.remove-btn {
+            background: #6b7280;
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+        
+        button.remove-btn:hover {
+            background: #4b5563;
+        }
+        
+        button.primary-action {
+            background: #0d9488;
+        }
+        
+        button.primary-action:hover {
+            background: #0f766e;
+        }
+        
+        /* Team Workflow */
+        .workflow-section {
+            background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 100%);
+            border: 1px solid #d8b4fe;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .workflow-section h4 {
+            color: #7c3aed;
+            margin-bottom: 12px;
+        }
+        
+        .workflow-section p {
+            font-size: 14px;
+            color: #5b21b6;
+            margin-bottom: 15px;
+        }
+        
+        .workflow-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .workflow-buttons button {
+            background: #7c3aed;
+        }
+        
+        .workflow-buttons button:hover {
+            background: #6d28d9;
+        }
+        
+        .workflow-buttons button.secondary {
+            background: #a78bfa;
+        }
+        
+        /* What To Do Section */
+        .next-steps-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+        
+        .next-steps-box h4 {
+            color: #0d9488;
+            margin-bottom: 12px;
+        }
+        
+        .next-steps-box ul {
+            padding-left: 20px;
+            color: #234e52;
+        }
+        
+        .next-steps-box li {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        /* Resources */
+        .resources-box {
+            margin-top: 20px;
+        }
+        
+        .resources-toggle {
+            background: none;
+            border: none;
+            color: #0d9488;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+        }
+        
+        .resources-toggle:hover {
+            color: #0f766e;
+        }
+        
+        .resources-content {
+            margin-top: 12px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .resources-content ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .resources-content li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .resources-content a {
+            color: #2c5282;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .toolbar-help {
+            font-size: 13px;
+            color: #718096;
+            margin-left: auto;
+        }
+        
+        /* Rendered Analysis View */
+        .analysis-view {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border: 2px solid #0d9488;
+            border-radius: 12px;
+        }
+        
+        .analysis-view.visible {
+            display: block;
+        }
+        
+        .analysis-view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .analysis-view-header h3 {
+            color: #0d9488;
+            margin: 0;
+        }
+        
+        .analysis-teams-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        @media (max-width: 900px) {
+            .analysis-teams-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .analysis-team-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid;
+        }
+        
+        .analysis-team-card.team-a {
+            border-color: #3b82f6;
+        }
+        
+        .analysis-team-card.team-b {
+            border-color: #059669;
+        }
+        
+        .analysis-team-card h4 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .analysis-team-card.team-a h4 {
+            color: #3b82f6;
+        }
+        
+        .analysis-team-card.team-b h4 {
+            color: #059669;
+        }
+        
+        .analysis-section-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #4a5568;
+            margin: 15px 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .analysis-content {
+            font-size: 14px;
+            color: #1a202c;
+            white-space: pre-wrap;
+        }
+        
+        .analysis-evidence-item {
+            background: #f8fafc;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border-left: 3px solid #718096;
+            font-size: 14px;
+        }
+        
+        .analysis-assessment {
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .analysis-assessment h4 {
+            color: #2c5282;
+            margin-bottom: 15px;
+        }
+        
+        .analysis-assessment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 700px) {
+            .analysis-assessment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .analysis-assessment-item {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .analysis-assessment-item h5 {
+            color: #2c5282;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Team A/Team B Analysis</h1>
+        <p class="subtitle">"That which can be destroyed by the truth should be." — P.C. Hodgell</p>
+        
+        <!-- Load Banner -->
+        <div class="load-banner">
+            <p>Have a previous analysis? Load it to continue your work.</p>
+            <div class="load-banner-buttons">
+                <button onclick="document.getElementById('loadInput').click()" class="secondary">📂 Load Previous (.json)</button>
+                <button onclick="loadExample()" class="secondary">📋 Load Example</button>
+                <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadAnalysis(event)">
+            </div>
+        </div>
+        
+        <!-- Philosophy/Intro -->
+        <div class="philosophy-box">
+            <p><strong>⚖️ The Adversarial Method:</strong> Truth emerges not from consensus but from contest. 
+            When two competing explanations merit serious consideration, we assign teams of equal capability to <em>steelman</em> each position — 
+            that is, to argue the strongest possible version of each hypothesis, not a weakened caricature. 
+            Each team argues not from preference but from rigor: what evidence supports this? What logic leads here?</p>
+            
+            <p>This method works best when you're genuinely willing to discover that one hypothesis is stronger — even if you secretly hope the other wins. 
+            If you notice discomfort as evidence accumulates against your favored position, that's often diagnostic. 
+            By forcing genuine competition, we prevent the dominant narrative from steamrolling alternatives.</p>
+        </div>
+        
+        <!-- The Question -->
+        <div class="section">
+            <h3>The Question</h3>
+            <p class="section-help">
+                What are you trying to understand? Be specific. Not "Should we expand?" but "Should we open a second site in the next 18 months given current funding and team capacity?"
+            </p>
+            <textarea id="question" 
+                      style="min-height: 80px;" 
+                      placeholder="e.g., 'Is the observed decline in user engagement due to recent product changes (feature complexity) or external seasonal factors?' — Include timeframes, conditions, and observable outcomes where possible."></textarea>
+        </div>
+        
+        <!-- Principles Box (moved up) -->
+        <div class="principles-box">
+            <h4>⚔️ Team A/Team B Principles</h4>
+            <ul>
+                <li><strong>Equal treatment:</strong> Both teams get equal time, resources, and audience attention</li>
+                <li><strong>Steelman, don't strawman:</strong> Each team argues the strongest possible version of their hypothesis</li>
+                <li><strong>Assign against preference:</strong> Often, assign analysts to the hypothesis they don't initially favor</li>
+                <li><strong>Outside assessment matters:</strong> Those not on either team provide the final evaluation</li>
+                <li><strong>Document logic explicitly:</strong> Vague arguments are weak arguments made visible</li>
+                <li><strong>Identify resolution criteria:</strong> What would prove one side right? That's your next research target</li>
+            </ul>
+        </div>
+        
+        <!-- Team Workflow -->
+        <div class="workflow-section">
+            <h4>🔀 Team Workflow</h4>
+            <p>For real adversarial analysis, teams should work independently without seeing each other's arguments. 
+            Define both hypotheses below, then generate templates that give each team the full context of what they're arguing for and against.</p>
+            
+            <div style="margin: 15px 0;">
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 14px; font-weight: 600; color: #5b21b6; display: block; margin-bottom: 5px;">Hypothesis A (one sentence):</label>
+                    <input type="text" id="hypothesisASummary" placeholder="e.g., 'The engagement decline is caused by our UI redesign'" style="width: 100%; padding: 10px; border: 1px solid #d8b4fe; border-radius: 4px; font-size: 14px;">
+                </div>
+                <div>
+                    <label style="font-size: 14px; font-weight: 600; color: #5b21b6; display: block; margin-bottom: 5px;">Hypothesis B (one sentence):</label>
+                    <input type="text" id="hypothesisBSummary" placeholder="e.g., 'The engagement decline is caused by a new competitor'" style="width: 100%; padding: 10px; border: 1px solid #d8b4fe; border-radius: 4px; font-size: 14px;">
+                </div>
+            </div>
+            
+            <div class="workflow-buttons">
+                <button onclick="generateTeamTemplates()">📄 Generate Team Templates (.md)</button>
+                <button onclick="document.getElementById('importTeamA').click()" class="secondary">📥 Import Team A</button>
+                <button onclick="document.getElementById('importTeamB').click()" class="secondary">📥 Import Team B</button>
+                <input type="file" id="importTeamA" accept=".md,.txt" style="display: none;" onchange="importTeam('A', event)">
+                <input type="file" id="importTeamB" accept=".md,.txt" style="display: none;" onchange="importTeam('B', event)">
+            </div>
+        </div>
+        
+        <!-- Teams -->
+        <div class="teams-container">
+            <!-- Team A -->
+            <div class="team-card team-a">
+                <div class="team-header">🔵 TEAM A</div>
+                
+                <div class="team-section">
+                    <div class="team-section-label">Hypothesis A</div>
+                    <div class="team-section-help">State precisely what you're claiming. Include conditions and observable outcomes.</div>
+                    <textarea id="hypothesisA" 
+                              style="min-height: 80px;" 
+                              placeholder="e.g., 'The engagement decline is primarily caused by the new navigation system, which increased user friction. If we revert to the previous design, engagement will recover within 4 weeks.'"></textarea>
+                </div>
+
+                <div class="team-section">
+                    <div class="team-section-label">Supporting Evidence</div>
+                    <div class="team-section-help">What specific observations support this? Name the data, the incident, the pattern.</div>
+                    <div id="evidenceA" class="evidence-list"></div>
+                    <button onclick="addEvidence('A')" class="add-btn">+ Add Evidence</button>
+                </div>
+
+                <div class="team-section">
+                    <div class="team-section-label">Logical Chain</div>
+                    <div class="team-section-help">How does the evidence lead to this conclusion?</div>
+                    <textarea id="logicA" 
+                              style="min-height: 100px;" 
+                              placeholder="Articulate the reasoning that connects each piece of evidence to your hypothesis. Make the inferential steps explicit."></textarea>
+                </div>
+
+                <div class="team-section">
+                    <div class="team-section-label">Weaknesses & Gaps</div>
+                    <div class="team-section-help">Where is this hypothesis vulnerable? What could falsify it?</div>
+                    <textarea id="weaknessesA" 
+                              style="min-height: 80px;" 
+                              placeholder="What evidence would make you abandon this hypothesis? What are you uncertain about?"></textarea>
+                </div>
+            </div>
+
+            <!-- Team B -->
+            <div class="team-card team-b">
+                <div class="team-header">🟢 TEAM B</div>
+                
+                <div class="team-section">
+                    <div class="team-section-label">Hypothesis B</div>
+                    <div class="team-section-help">State precisely what this hypothesis claims. Include conditions and observable outcomes.</div>
+                    <textarea id="hypothesisB" 
+                              style="min-height: 80px;" 
+                              placeholder="e.g., 'The engagement decline is primarily seasonal, correlating with summer holidays. The product changes had minimal impact, and engagement will naturally recover in September.'"></textarea>
+                </div>
+
+                <div class="team-section">
+                    <div class="team-section-label">Supporting Evidence</div>
+                    <div class="team-section-help">What specific observations support this? Name the data, the incident, the pattern.</div>
+                    <div id="evidenceB" class="evidence-list"></div>
+                    <button onclick="addEvidence('B')" class="add-btn">+ Add Evidence</button>
+                </div>
+
+                <div class="team-section">
+                    <div class="team-section-label">Logical Chain</div>
+                    <div class="team-section-help">How does the evidence lead to this conclusion?</div>
+                    <textarea id="logicB" 
+                              style="min-height: 100px;" 
+                              placeholder="Articulate the reasoning that connects each piece of evidence to your hypothesis. Make the inferential steps explicit."></textarea>
+                </div>
+
+                <div class="team-section">
+                    <div class="team-section-label">Weaknesses & Gaps</div>
+                    <div class="team-section-help">Where is this hypothesis vulnerable? What could falsify it?</div>
+                    <textarea id="weaknessesB" 
+                              style="min-height: 80px;" 
+                              placeholder="What evidence would make you abandon this hypothesis? What are you uncertain about?"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Outside Assessment -->
+        <div class="assessment-section">
+            <h3>Outside Assessment</h3>
+            <p class="assessment-intro">
+                Step outside both teams. Evaluate the arguments with fresh eyes — ideally by someone who didn't argue either side.
+            </p>
+            
+            <div class="assessor-tools" style="background: #f0fdfa; border: 1px solid #81e6d9; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                <p style="margin: 0 0 12px 0; font-size: 14px; color: #234e52;">
+                    <strong>💡 Tools for assessors:</strong> Consider using the <em>Quality of Information Check</em> to evaluate the evidence cited by each team (source credibility, methodology, biases), and the <em>Key Assumptions Check</em> to surface hidden premises in each team's reasoning that may not have been made explicit.
+                </p>
+                <p style="margin: 0 0 12px 0; font-size: 14px; color: #234e52;">
+                    <strong>🤖 No outside assessor available?</strong> If you don't have a neutral third party, Claude can serve as an impartial assessor. The prompt below packages both teams' arguments for rigorous external evaluation.
+                </p>
+                <button onclick="copyAssessorPrompt()" class="secondary" style="font-size: 13px;">📋 Copy Claude Assessor Prompt</button>
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <div class="comparison-label">Evidence Quality (Team A)</div>
+                    <textarea style="min-height: 70px;" 
+                              id="evidenceQualityA"
+                              placeholder="How strong is Team A's evidence? Is it direct or circumstantial? How reliable are the sources?"></textarea>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Evidence Quality (Team B)</div>
+                    <textarea style="min-height: 70px;" 
+                              id="evidenceQualityB"
+                              placeholder="How strong is Team B's evidence? Is it direct or circumstantial? How reliable are the sources?"></textarea>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Logical Rigor (Team A)</div>
+                    <textarea style="min-height: 70px;" 
+                              id="logicRigorA"
+                              placeholder="How sound is Team A's reasoning? Are there gaps, leaps, or hidden assumptions?"></textarea>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Logical Rigor (Team B)</div>
+                    <textarea style="min-height: 70px;" 
+                              id="logicRigorB"
+                              placeholder="How sound is Team B's reasoning? Are there gaps, leaps, or hidden assumptions?"></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <div class="comparison-label">Missing Information</div>
+                <p class="section-help" style="margin: 8px 0;">What's the single cheapest piece of information that would decisively favor one side?</p>
+                <textarea style="min-height: 80px;" 
+                          id="missingInfo"
+                          placeholder="What data would resolve this? What experiment could you run? What question could you ask?"></textarea>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <div class="comparison-label">Preliminary Conclusion</div>
+                <p class="section-help" style="margin: 8px 0;">Based on current evidence, which hypothesis is stronger? Why?</p>
+                <textarea style="min-height: 100px;" 
+                          id="conclusion"
+                          placeholder="Articulate your assessment. Include confidence level (e.g., 60/40 for A) and conditions under which your assessment might change."></textarea>
+            </div>
+        </div>
+
+        <!-- View Analysis Button -->
+        <div style="margin-top: 25px; text-align: center;">
+            <button onclick="showAnalysisView()" class="primary-action" style="padding: 12px 30px; font-size: 15px;">
+                📊 View Your Analysis
+            </button>
+        </div>
+
+        <!-- Rendered Analysis View -->
+        <div id="analysisView" class="analysis-view">
+            <div class="analysis-view-header">
+                <h3>📊 Team A/Team B Analysis Summary</h3>
+                <button onclick="hideAnalysisView()" class="secondary">✕ Close</button>
+            </div>
+            
+            <div id="analysisQuestion" style="margin-bottom: 20px; padding: 15px; background: #f0fdfa; border-radius: 8px;">
+                <strong style="color: #0d9488;">The Question:</strong>
+                <div id="analysisQuestionText" class="analysis-content" style="margin-top: 8px;"></div>
+            </div>
+            
+            <div class="analysis-teams-grid" id="analysisTeamsGrid">
+                <!-- Populated by JS -->
+            </div>
+            
+            <div class="analysis-assessment" id="analysisAssessment">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- What To Do With This -->
+        <div class="next-steps-box">
+            <h4>What To Do With This Analysis</h4>
+            <ul>
+                <li><strong>If one hypothesis wins clearly:</strong> What actions follow? What would need to be true for you to act on it confidently?</li>
+                <li><strong>If uncertainty remains:</strong> Pursue the "missing information" you identified. What's the cheapest test you can run?</li>
+                <li><strong>Into your process:</strong> Add the resolution criteria to your project dashboard or review cadence. Return when new evidence emerges.</li>
+                <li><strong>Companion tools:</strong> Consider <em>Key Assumptions Check</em> to test the premises underlying each hypothesis, <em>Pre-mortem</em> to stress-test the winning hypothesis, or <em>Reference Class Forecasting</em> to calibrate against similar cases.</li>
+                <li><strong>Continue with Claude:</strong> Use the prompt below to continue your analysis with Claude, who can challenge your reasoning, identify blind spots, and probe weaknesses you may have missed. (The prompt will also work with other AI assistants if needed.)
+                    <div style="margin-top: 10px;">
+                        <button onclick="copyFullAnalysisPrompt()" class="primary-action" style="font-size: 13px;">📋 Copy Full Analysis Prompt for Claude</button>
+                    </div>
+                </li>
+            </ul>
+            
+            <div class="resources-box">
+                <button class="resources-toggle" onclick="toggleResources()">📚 Optional Resources ▼</button>
+                <div id="resourcesContent" class="resources-content" style="display: none;">
+                    <ul>
+                        <li><a href="https://conceptually.org/concepts/of-strawmen-and-steelwomen" target="_blank">Steelman vs Strawman</a> — Why arguing against the strongest version of the opposing view leads to better outcomes</li>
+                        <li><a href="https://www.lesswrong.com/w/ideological-turing-tests" target="_blank">The Ideological Turing Test</a> (Bryan Caplan) — Can you argue your opponent's position convincingly enough that neutral observers can't tell you apart from a true believer? If not, you may not understand it well enough to reject it</li>
+                        <li><a href="https://www.rationality.org/resources/updates/2016/double-crux" target="_blank">Double Crux</a> (CFAR) — A complementary technique for finding the core of a disagreement, developed by Julia Galef, Eli Tyre, and others</li>
+                        <li><a href="https://www.lesswrong.com/posts/hNztRARB52Riy36Kz/the-basic-double-crux-pattern" target="_blank">The Basic Double Crux Pattern</a> (Eli Tyre) — Practical guide to operationalizing collaborative truth-seeking</li>
+                        <li><a href="https://www.penguinrandomhouse.com/books/555240/the-scout-mindset-by-julia-galef/" target="_blank">The Scout Mindset</a> (Julia Galef) — Book on why some people see things clearly while others don't; advocates for truth-seeking ("scout mindset") over winning arguments ("soldier mindset")</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button onclick="saveAnalysis()">💾 Save Analysis</button>
+            <button onclick="exportReport()" class="secondary">📄 Export Report</button>
+            <button onclick="copyToClipboard()" class="secondary">📋 Copy to Clipboard</button>
+            <button onclick="clearAll()" class="remove-btn">✕ Clear All</button>
+            <span class="toolbar-help">Save = .json (for reloading) · Export = .txt (for sharing)</span>
+        </div>
+    </div>
+
+    <script>
+        let evidenceA = [];
+        let evidenceB = [];
+        let nextIdA = 1;
+        let nextIdB = 1;
+
+        // ==================== UTILITY ====================
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // ==================== EVIDENCE ====================
+
+        function addEvidence(team) {
+            if (team === 'A') {
+                evidenceA.push({ id: nextIdA++, text: '' });
+                renderEvidence('A');
+            } else {
+                evidenceB.push({ id: nextIdB++, text: '' });
+                renderEvidence('B');
+            }
+        }
+
+        function removeEvidence(team, id) {
+            if (team === 'A') {
+                evidenceA = evidenceA.filter(e => e.id !== id);
+                renderEvidence('A');
+            } else {
+                evidenceB = evidenceB.filter(e => e.id !== id);
+                renderEvidence('B');
+            }
+        }
+
+        function updateEvidence(team, id, value) {
+            const evidence = team === 'A' ? evidenceA.find(e => e.id === id) : evidenceB.find(e => e.id === id);
+            if (evidence) evidence.text = value;
+        }
+
+        function renderEvidence(team) {
+            const container = document.getElementById(`evidence${team}`);
+            const evidence = team === 'A' ? evidenceA : evidenceB;
+            
+            if (evidence.length === 0) {
+                container.innerHTML = '<div class="no-evidence">No evidence added yet. What observations support this hypothesis?</div>';
+                return;
+            }
+
+            container.innerHTML = evidence.map(e => `
+                <div class="evidence-item">
+                    <div class="evidence-item-row">
+                        <textarea class="evidence-textarea"
+                                  placeholder="Describe a specific piece of evidence..."
+                                  onchange="updateEvidence('${team}', ${e.id}, this.value)">${escapeHtml(e.text)}</textarea>
+                        <button class="remove-btn" onclick="removeEvidence('${team}', ${e.id})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== TEAM TEMPLATES ====================
+
+        function generateTeamTemplates() {
+            const question = document.getElementById('question').value || '[Question not yet defined]';
+            const hypA = document.getElementById('hypothesisASummary').value || '[Hypothesis A not yet defined]';
+            const hypB = document.getElementById('hypothesisBSummary').value || '[Hypothesis B not yet defined]';
+            
+            if (!document.getElementById('question').value) {
+                alert('Please define the Question before generating templates.');
+                return;
+            }
+            
+            if (!document.getElementById('hypothesisASummary').value || !document.getElementById('hypothesisBSummary').value) {
+                alert('Please define both Hypothesis A and Hypothesis B summaries before generating templates.');
+                return;
+            }
+            
+            const templateA = `# TEAM A WORKSHEET
+## Adversarial Analysis
+
+---
+
+## THE QUESTION
+${question}
+
+---
+
+## THE TWO HYPOTHESES
+
+**Hypothesis A (YOUR ASSIGNMENT):** ${hypA}
+
+**Hypothesis B (the opposing team's assignment):** ${hypB}
+
+---
+
+Your task is to build the strongest possible case for **Hypothesis A**. Argue as if you genuinely believe it — marshal the best evidence, construct the tightest logic, and anticipate counterarguments. The goal is not to "win" but to give this hypothesis its best day in court.
+
+---
+
+## Your Detailed Case for Hypothesis A
+
+*Expand on the hypothesis. Add specificity, conditions, timeframes, and observable predictions.*
+
+
+
+---
+
+## Supporting Evidence
+*What specific observations support Hypothesis A? Name the data, the incident, the pattern. Be concrete.*
+
+1. 
+
+2. 
+
+3. 
+
+---
+
+## Logical Chain
+*How does the evidence lead to this conclusion? Make the inferential steps explicit. Where are you making assumptions?*
+
+
+
+---
+
+## Weaknesses & Gaps
+*Where is Hypothesis A vulnerable? What evidence would falsify it? What are you uncertain about?*
+
+
+
+---
+
+## What Would Change Your Mind?
+*If you learned X, you would abandon Hypothesis A. What is X?*
+
+
+
+---
+
+*Generated by Team A/Team B Analysis Tool*
+`;
+
+            const templateB = `# TEAM B WORKSHEET
+## Adversarial Analysis
+
+---
+
+## THE QUESTION
+${question}
+
+---
+
+## THE TWO HYPOTHESES
+
+**Hypothesis A (the opposing team's assignment):** ${hypA}
+
+**Hypothesis B (YOUR ASSIGNMENT):** ${hypB}
+
+---
+
+Your task is to build the strongest possible case for **Hypothesis B**. Argue as if you genuinely believe it — marshal the best evidence, construct the tightest logic, and anticipate counterarguments. The goal is not to "win" but to give this hypothesis its best day in court.
+
+---
+
+## Your Detailed Case for Hypothesis B
+
+*Expand on the hypothesis. Add specificity, conditions, timeframes, and observable predictions.*
+
+
+
+---
+
+## Supporting Evidence
+*What specific observations support Hypothesis B? Name the data, the incident, the pattern. Be concrete.*
+
+1. 
+
+2. 
+
+3. 
+
+---
+
+## Logical Chain
+*How does the evidence lead to this conclusion? Make the inferential steps explicit. Where are you making assumptions?*
+
+
+
+---
+
+## Weaknesses & Gaps
+*Where is Hypothesis B vulnerable? What evidence would falsify it? What are you uncertain about?*
+
+
+
+---
+
+## What Would Change Your Mind?
+*If you learned X, you would abandon Hypothesis B. What is X?*
+
+
+
+---
+
+*Generated by Team A/Team B Analysis Tool*
+`;
+
+            // Download Team A
+            const blobA = new Blob([templateA], { type: 'text/markdown' });
+            const urlA = URL.createObjectURL(blobA);
+            const aA = document.createElement('a');
+            aA.href = urlA;
+            aA.download = 'team_a_worksheet.md';
+            aA.click();
+            URL.revokeObjectURL(urlA);
+            
+            // Download Team B after short delay
+            setTimeout(() => {
+                const blobB = new Blob([templateB], { type: 'text/markdown' });
+                const urlB = URL.createObjectURL(blobB);
+                const aB = document.createElement('a');
+                aB.href = urlB;
+                aB.download = 'team_b_worksheet.md';
+                aB.click();
+                URL.revokeObjectURL(urlB);
+            }, 500);
+            
+            alert('Two template files downloading:\n• team_a_worksheet.md\n• team_b_worksheet.md\n\nEach template includes the question and both hypotheses so teams have full context.\n\nDistribute to teams for independent work, then import when complete.');
+        }
+
+        function importTeam(team, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target.result;
+                parseAndPopulateTeam(team, content);
+                alert(`Team ${team} worksheet imported successfully!`);
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function parseAndPopulateTeam(team, content) {
+            // Simple markdown parsing for the new template format
+            const sections = {
+                hypothesis: '',
+                evidence: [],
+                logic: '',
+                weaknesses: ''
+            };
+            
+            // Extract detailed hypothesis (handles both old "Your Hypothesis" and new "Your Detailed Case" formats)
+            const hypMatch = content.match(/## (?:Your Hypothesis|Your Detailed Case for Hypothesis [AB])[\s\S]*?\n\n([\s\S]*?)(?=\n---|\n## )/);
+            if (hypMatch) sections.hypothesis = hypMatch[1].trim();
+            
+            // Extract evidence (numbered list items)
+            const evMatch = content.match(/## Supporting Evidence[\s\S]*?\n\n([\s\S]*?)(?=\n---|\n## )/);
+            if (evMatch) {
+                const evLines = evMatch[1].split('\n').filter(line => line.match(/^\d+\.\s*.+/));
+                sections.evidence = evLines.map(line => line.replace(/^\d+\.\s*/, '').trim()).filter(e => e);
+            }
+            
+            // Extract logic
+            const logicMatch = content.match(/## Logical Chain[\s\S]*?\n\n([\s\S]*?)(?=\n---|\n## )/);
+            if (logicMatch) sections.logic = logicMatch[1].trim();
+            
+            // Extract weaknesses
+            const weakMatch = content.match(/## Weaknesses & Gaps[\s\S]*?\n\n([\s\S]*?)(?=\n---|\n## |$)/);
+            if (weakMatch) sections.weaknesses = weakMatch[1].replace(/\n\n\*Generated by.*$/, '').trim();
+            
+            // Populate fields
+            document.getElementById(`hypothesis${team}`).value = sections.hypothesis;
+            document.getElementById(`logic${team}`).value = sections.logic;
+            document.getElementById(`weaknesses${team}`).value = sections.weaknesses;
+            
+            // Populate evidence
+            if (team === 'A') {
+                evidenceA = sections.evidence.map((text, i) => ({ id: nextIdA++, text }));
+                renderEvidence('A');
+            } else {
+                evidenceB = sections.evidence.map((text, i) => ({ id: nextIdB++, text }));
+                renderEvidence('B');
+            }
+        }
+
+        // ==================== ANALYSIS VIEW ====================
+
+        function showAnalysisView() {
+            const view = document.getElementById('analysisView');
+            
+            // Question
+            const question = document.getElementById('question').value;
+            document.getElementById('analysisQuestionText').textContent = question || '(No question defined)';
+            
+            // Teams
+            const teamsHtml = `
+                <div class="analysis-team-card team-a">
+                    <h4>🔵 TEAM A</h4>
+                    <div class="analysis-section-title">Hypothesis</div>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('hypothesisA').value) || '(Not provided)'}</div>
+                    
+                    <div class="analysis-section-title">Evidence</div>
+                    ${evidenceA.length > 0 
+                        ? evidenceA.filter(e => e.text).map(e => `<div class="analysis-evidence-item">${escapeHtml(e.text)}</div>`).join('')
+                        : '<div class="analysis-content">(No evidence provided)</div>'}
+                    
+                    <div class="analysis-section-title">Logical Chain</div>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('logicA').value) || '(Not provided)'}</div>
+                    
+                    <div class="analysis-section-title">Weaknesses</div>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('weaknessesA').value) || '(Not provided)'}</div>
+                </div>
+                
+                <div class="analysis-team-card team-b">
+                    <h4>🟢 TEAM B</h4>
+                    <div class="analysis-section-title">Hypothesis</div>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('hypothesisB').value) || '(Not provided)'}</div>
+                    
+                    <div class="analysis-section-title">Evidence</div>
+                    ${evidenceB.length > 0 
+                        ? evidenceB.filter(e => e.text).map(e => `<div class="analysis-evidence-item">${escapeHtml(e.text)}</div>`).join('')
+                        : '<div class="analysis-content">(No evidence provided)</div>'}
+                    
+                    <div class="analysis-section-title">Logical Chain</div>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('logicB').value) || '(Not provided)'}</div>
+                    
+                    <div class="analysis-section-title">Weaknesses</div>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('weaknessesB').value) || '(Not provided)'}</div>
+                </div>
+            `;
+            document.getElementById('analysisTeamsGrid').innerHTML = teamsHtml;
+            
+            // Assessment
+            const assessmentHtml = `
+                <h4>⚖️ Outside Assessment</h4>
+                <div class="analysis-assessment-grid">
+                    <div class="analysis-assessment-item">
+                        <h5>Evidence Quality (Team A)</h5>
+                        <div class="analysis-content">${escapeHtml(document.getElementById('evidenceQualityA').value) || '(Not assessed)'}</div>
+                    </div>
+                    <div class="analysis-assessment-item">
+                        <h5>Evidence Quality (Team B)</h5>
+                        <div class="analysis-content">${escapeHtml(document.getElementById('evidenceQualityB').value) || '(Not assessed)'}</div>
+                    </div>
+                    <div class="analysis-assessment-item">
+                        <h5>Logical Rigor (Team A)</h5>
+                        <div class="analysis-content">${escapeHtml(document.getElementById('logicRigorA').value) || '(Not assessed)'}</div>
+                    </div>
+                    <div class="analysis-assessment-item">
+                        <h5>Logical Rigor (Team B)</h5>
+                        <div class="analysis-content">${escapeHtml(document.getElementById('logicRigorB').value) || '(Not assessed)'}</div>
+                    </div>
+                </div>
+                <div class="analysis-assessment-item" style="margin-bottom: 15px;">
+                    <h5>Missing Information</h5>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('missingInfo').value) || '(Not identified)'}</div>
+                </div>
+                <div class="analysis-assessment-item" style="background: #f0fdfa;">
+                    <h5 style="color: #0d9488;">Preliminary Conclusion</h5>
+                    <div class="analysis-content">${escapeHtml(document.getElementById('conclusion').value) || '(Not concluded)'}</div>
+                </div>
+            `;
+            document.getElementById('analysisAssessment').innerHTML = assessmentHtml;
+            
+            view.classList.add('visible');
+            view.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideAnalysisView() {
+            document.getElementById('analysisView').classList.remove('visible');
+        }
+
+        // ==================== RESOURCES ====================
+
+        function toggleResources() {
+            const content = document.getElementById('resourcesContent');
+            const btn = document.querySelector('.resources-toggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                btn.textContent = '📚 Optional Resources ▲';
+            } else {
+                content.style.display = 'none';
+                btn.textContent = '📚 Optional Resources ▼';
+            }
+        }
+
+        // ==================== SAVE/LOAD/EXPORT ====================
+
+        function saveAnalysis() {
+            const data = {
+                version: 2,
+                question: document.getElementById('question').value,
+                teamA: {
+                    hypothesis: document.getElementById('hypothesisA').value,
+                    evidence: evidenceA,
+                    logic: document.getElementById('logicA').value,
+                    weaknesses: document.getElementById('weaknessesA').value
+                },
+                teamB: {
+                    hypothesis: document.getElementById('hypothesisB').value,
+                    evidence: evidenceB,
+                    logic: document.getElementById('logicB').value,
+                    weaknesses: document.getElementById('weaknessesB').value
+                },
+                assessment: {
+                    evidenceQualityA: document.getElementById('evidenceQualityA').value,
+                    evidenceQualityB: document.getElementById('evidenceQualityB').value,
+                    logicRigorA: document.getElementById('logicRigorA').value,
+                    logicRigorB: document.getElementById('logicRigorB').value,
+                    missingInfo: document.getElementById('missingInfo').value,
+                    conclusion: document.getElementById('conclusion').value
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `team_ab_analysis_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    document.getElementById('question').value = data.question || '';
+                    
+                    if (data.teamA) {
+                        document.getElementById('hypothesisA').value = data.teamA.hypothesis || '';
+                        document.getElementById('logicA').value = data.teamA.logic || '';
+                        document.getElementById('weaknessesA').value = data.teamA.weaknesses || '';
+                        evidenceA = data.teamA.evidence || [];
+                    }
+                    
+                    if (data.teamB) {
+                        document.getElementById('hypothesisB').value = data.teamB.hypothesis || '';
+                        document.getElementById('logicB').value = data.teamB.logic || '';
+                        document.getElementById('weaknessesB').value = data.teamB.weaknesses || '';
+                        evidenceB = data.teamB.evidence || [];
+                    }
+                    
+                    if (data.assessment) {
+                        document.getElementById('evidenceQualityA').value = data.assessment.evidenceQualityA || '';
+                        document.getElementById('evidenceQualityB').value = data.assessment.evidenceQualityB || '';
+                        document.getElementById('logicRigorA').value = data.assessment.logicRigorA || '';
+                        document.getElementById('logicRigorB').value = data.assessment.logicRigorB || '';
+                        document.getElementById('missingInfo').value = data.assessment.missingInfo || '';
+                        document.getElementById('conclusion').value = data.assessment.conclusion || '';
+                    }
+                    
+                    nextIdA = Math.max(...evidenceA.map(e => e.id), 0) + 1;
+                    nextIdB = Math.max(...evidenceB.map(e => e.id), 0) + 1;
+                    renderEvidence('A');
+                    renderEvidence('B');
+                    
+                    hideAnalysisView();
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function exportReport() {
+            let report = 'TEAM A/TEAM B ANALYSIS\n';
+            report += '═'.repeat(60) + '\n\n';
+            
+            const question = document.getElementById('question').value;
+            if (question) {
+                report += 'THE QUESTION:\n' + question + '\n\n';
+                report += '─'.repeat(60) + '\n\n';
+            }
+            
+            report += '🔵 TEAM A\n';
+            report += '─'.repeat(30) + '\n\n';
+            report += 'HYPOTHESIS:\n' + (document.getElementById('hypothesisA').value || '(Not provided)') + '\n\n';
+            report += 'EVIDENCE:\n';
+            if (evidenceA.length > 0) {
+                evidenceA.forEach((e, i) => {
+                    if (e.text) report += `${i + 1}. ${e.text}\n`;
+                });
+            } else {
+                report += '(No evidence provided)\n';
+            }
+            report += '\nLOGICAL CHAIN:\n' + (document.getElementById('logicA').value || '(Not provided)') + '\n\n';
+            report += 'WEAKNESSES:\n' + (document.getElementById('weaknessesA').value || '(Not provided)') + '\n\n';
+            
+            report += '─'.repeat(60) + '\n\n';
+            
+            report += '🟢 TEAM B\n';
+            report += '─'.repeat(30) + '\n\n';
+            report += 'HYPOTHESIS:\n' + (document.getElementById('hypothesisB').value || '(Not provided)') + '\n\n';
+            report += 'EVIDENCE:\n';
+            if (evidenceB.length > 0) {
+                evidenceB.forEach((e, i) => {
+                    if (e.text) report += `${i + 1}. ${e.text}\n`;
+                });
+            } else {
+                report += '(No evidence provided)\n';
+            }
+            report += '\nLOGICAL CHAIN:\n' + (document.getElementById('logicB').value || '(Not provided)') + '\n\n';
+            report += 'WEAKNESSES:\n' + (document.getElementById('weaknessesB').value || '(Not provided)') + '\n\n';
+            
+            report += '═'.repeat(60) + '\n\n';
+            
+            report += '⚖️ OUTSIDE ASSESSMENT\n';
+            report += '─'.repeat(30) + '\n\n';
+            report += 'Evidence Quality (Team A): ' + (document.getElementById('evidenceQualityA').value || '(Not assessed)') + '\n\n';
+            report += 'Evidence Quality (Team B): ' + (document.getElementById('evidenceQualityB').value || '(Not assessed)') + '\n\n';
+            report += 'Logical Rigor (Team A): ' + (document.getElementById('logicRigorA').value || '(Not assessed)') + '\n\n';
+            report += 'Logical Rigor (Team B): ' + (document.getElementById('logicRigorB').value || '(Not assessed)') + '\n\n';
+            report += 'MISSING INFORMATION:\n' + (document.getElementById('missingInfo').value || '(Not identified)') + '\n\n';
+            report += 'PRELIMINARY CONCLUSION:\n' + (document.getElementById('conclusion').value || '(Not concluded)') + '\n\n';
+            
+            report += '─'.repeat(60) + '\n';
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `team_ab_report_${date}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            let report = 'TEAM A/TEAM B ANALYSIS\n\n';
+            
+            const question = document.getElementById('question').value;
+            if (question) report += 'QUESTION: ' + question + '\n\n';
+            
+            report += '--- TEAM A ---\n';
+            report += 'Hypothesis: ' + (document.getElementById('hypothesisA').value || '(Not provided)') + '\n';
+            report += 'Evidence: ';
+            if (evidenceA.length > 0) {
+                report += evidenceA.filter(e => e.text).map(e => e.text).join('; ') || '(None)';
+            } else {
+                report += '(None)';
+            }
+            report += '\nLogic: ' + (document.getElementById('logicA').value || '(Not provided)') + '\n';
+            report += 'Weaknesses: ' + (document.getElementById('weaknessesA').value || '(Not provided)') + '\n\n';
+            
+            report += '--- TEAM B ---\n';
+            report += 'Hypothesis: ' + (document.getElementById('hypothesisB').value || '(Not provided)') + '\n';
+            report += 'Evidence: ';
+            if (evidenceB.length > 0) {
+                report += evidenceB.filter(e => e.text).map(e => e.text).join('; ') || '(None)';
+            } else {
+                report += '(None)';
+            }
+            report += '\nLogic: ' + (document.getElementById('logicB').value || '(Not provided)') + '\n';
+            report += 'Weaknesses: ' + (document.getElementById('weaknessesB').value || '(Not provided)') + '\n\n';
+            
+            report += '--- ASSESSMENT ---\n';
+            report += 'Conclusion: ' + (document.getElementById('conclusion').value || '(Not concluded)') + '\n';
+            report += 'Missing Info: ' + (document.getElementById('missingInfo').value || '(Not identified)') + '\n';
+
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Analysis copied to clipboard!');
+            });
+        }
+
+        function copyAssessorPrompt() {
+            const question = document.getElementById('question').value || '[Question not provided]';
+            
+            let teamAEvidence = '(No evidence provided)';
+            if (evidenceA.length > 0 && evidenceA.some(e => e.text)) {
+                teamAEvidence = evidenceA.filter(e => e.text).map((e, i) => `${i + 1}. ${e.text}`).join('\n');
+            }
+            
+            let teamBEvidence = '(No evidence provided)';
+            if (evidenceB.length > 0 && evidenceB.some(e => e.text)) {
+                teamBEvidence = evidenceB.filter(e => e.text).map((e, i) => `${i + 1}. ${e.text}`).join('\n');
+            }
+            
+            const prompt = `I need you to act as an impartial outside assessor for a Team A/Team B adversarial analysis. Your role is to evaluate both teams' arguments with rigorous skepticism and help us get closer to the truth.
+
+THE QUESTION UNDER ANALYSIS:
+${question}
+
+TEAM A'S POSITION:
+Hypothesis: ${document.getElementById('hypothesisA').value || '(Not provided)'}
+
+Evidence:
+${teamAEvidence}
+
+Logical Chain: ${document.getElementById('logicA').value || '(Not provided)'}
+
+Self-Identified Weaknesses: ${document.getElementById('weaknessesA').value || '(Not provided)'}
+
+---
+
+TEAM B'S POSITION:
+Hypothesis: ${document.getElementById('hypothesisB').value || '(Not provided)'}
+
+Evidence:
+${teamBEvidence}
+
+Logical Chain: ${document.getElementById('logicB').value || '(Not provided)'}
+
+Self-Identified Weaknesses: ${document.getElementById('weaknessesB').value || '(Not provided)'}
+
+---
+
+YOUR TASK AS OUTSIDE ASSESSOR:
+
+Please provide a rigorous, critically-minded assessment. Do not be diplomatic at the expense of truth. We need your honest evaluation to make a good decision.
+
+1. EVIDENCE QUALITY ASSESSMENT
+For each team, evaluate:
+- Source credibility: Are these claims verifiable? From reliable sources?
+- Methodological soundness: How was this evidence gathered? What biases might affect it?
+- Relevance: Does this evidence actually bear on the hypothesis, or is it tangential?
+- Completeness: What obvious evidence is missing that should have been considered?
+
+2. LOGICAL ANALYSIS
+For each team:
+- Identify any logical fallacies, gaps in reasoning, or unsupported inferential leaps
+- Assess whether the evidence actually supports the conclusion drawn
+- Note any hidden assumptions that haven't been made explicit
+
+3. STEEL-MANNING CHECK
+- Has each team presented the strongest version of their hypothesis?
+- What stronger arguments exist that neither team has made?
+- Are there better framings of either position?
+
+4. CRITICAL WEAKNESSES
+- What's the single most damaging counterargument to Team A that they haven't adequately addressed?
+- What's the single most damaging counterargument to Team B that they haven't adequately addressed?
+
+5. YOUR PRELIMINARY ASSESSMENT
+- Based on current evidence, which hypothesis is better supported? (Express as a probability split, e.g., 60/40 for Team A)
+- What is your confidence in this assessment? What would change it?
+- What specific information would most decisively resolve this question?
+
+Please be direct and specific. Vague assessments don't help us make better decisions.`;
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert('Assessor prompt copied! Paste into a Claude conversation to get an impartial outside assessment.');
+            });
+        }
+
+        function copyFullAnalysisPrompt() {
+            const question = document.getElementById('question').value || '[Question not provided]';
+            
+            let teamAEvidence = '(No evidence provided)';
+            if (evidenceA.length > 0 && evidenceA.some(e => e.text)) {
+                teamAEvidence = evidenceA.filter(e => e.text).map((e, i) => `${i + 1}. ${e.text}`).join('\n');
+            }
+            
+            let teamBEvidence = '(No evidence provided)';
+            if (evidenceB.length > 0 && evidenceB.some(e => e.text)) {
+                teamBEvidence = evidenceB.filter(e => e.text).map((e, i) => `${i + 1}. ${e.text}`).join('\n');
+            }
+            
+            const prompt = `I've completed a Team A/Team B adversarial analysis and need your help taking it further. Please approach this with rigorous critical thinking — I want you to help me get closer to the truth, not just validate my conclusions. Challenge my reasoning where it's weak, identify what I've missed, and help me see past my blind spots.
+
+THE QUESTION:
+${question}
+
+═══════════════════════════════════════════════════════════════
+
+TEAM A'S CASE:
+
+Hypothesis: ${document.getElementById('hypothesisA').value || '(Not provided)'}
+
+Evidence:
+${teamAEvidence}
+
+Logical Chain: ${document.getElementById('logicA').value || '(Not provided)'}
+
+Self-Identified Weaknesses: ${document.getElementById('weaknessesA').value || '(Not provided)'}
+
+═══════════════════════════════════════════════════════════════
+
+TEAM B'S CASE:
+
+Hypothesis: ${document.getElementById('hypothesisB').value || '(Not provided)'}
+
+Evidence:
+${teamBEvidence}
+
+Logical Chain: ${document.getElementById('logicB').value || '(Not provided)'}
+
+Self-Identified Weaknesses: ${document.getElementById('weaknessesB').value || '(Not provided)'}
+
+═══════════════════════════════════════════════════════════════
+
+OUTSIDE ASSESSMENT (completed):
+
+Evidence Quality - Team A: ${document.getElementById('evidenceQualityA').value || '(Not assessed)'}
+
+Evidence Quality - Team B: ${document.getElementById('evidenceQualityB').value || '(Not assessed)'}
+
+Logical Rigor - Team A: ${document.getElementById('logicRigorA').value || '(Not assessed)'}
+
+Logical Rigor - Team B: ${document.getElementById('logicRigorB').value || '(Not assessed)'}
+
+Missing Information: ${document.getElementById('missingInfo').value || '(Not identified)'}
+
+Preliminary Conclusion: ${document.getElementById('conclusion').value || '(Not concluded)'}
+
+═══════════════════════════════════════════════════════════════
+
+PLEASE HELP ME WITH THE FOLLOWING:
+
+1. BLIND SPOT CHECK
+What important considerations, evidence, or perspectives has this entire analysis missed? What questions should we have asked but didn't? Are there third hypotheses we haven't considered that might better explain the situation?
+
+2. EVIDENCE AUDIT
+Looking at the evidence cited by both teams:
+- Which pieces of evidence are strongest? Which are weakest or most suspect?
+- What crucial evidence is missing that would be obtainable?
+- Are there ways either team's evidence could be misleading or misinterpreted?
+
+3. REASONING AUDIT
+- Where are the logical gaps or unsupported inferential leaps in each team's reasoning?
+- What hidden assumptions are both teams making that should be examined?
+- Are there alternative explanations for the evidence that neither team considered?
+
+4. ASSESSMENT CRITIQUE
+Looking at my preliminary conclusion:
+- Where might I be wrong? What would I need to see to change my mind?
+- Am I overweighting or underweighting any particular evidence?
+- Is my confidence level appropriate given the evidence quality?
+
+5. PATH FORWARD
+- What specific actions, experiments, or information-gathering would most efficiently resolve the remaining uncertainty?
+- If I had to make a decision today, what should I do? If I can wait, what should I investigate first?
+- What early warning signs should I watch for that would indicate I chose wrong?
+
+Please be rigorous and direct. Don't soften your assessment to spare my feelings — I need your honest evaluation to make a good decision. If my analysis is fundamentally flawed, I need to know that.`;
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert('Full analysis prompt copied! Paste into a Claude conversation for deep follow-up analysis.');
+            });
+        }
+
+        function clearAll() {
+            if (!confirm('Clear all analysis data? This cannot be undone.')) return;
+            
+            document.getElementById('question').value = '';
+            document.getElementById('hypothesisA').value = '';
+            document.getElementById('hypothesisB').value = '';
+            document.getElementById('logicA').value = '';
+            document.getElementById('logicB').value = '';
+            document.getElementById('weaknessesA').value = '';
+            document.getElementById('weaknessesB').value = '';
+            document.getElementById('evidenceQualityA').value = '';
+            document.getElementById('evidenceQualityB').value = '';
+            document.getElementById('logicRigorA').value = '';
+            document.getElementById('logicRigorB').value = '';
+            document.getElementById('missingInfo').value = '';
+            document.getElementById('conclusion').value = '';
+            
+            evidenceA = [];
+            evidenceB = [];
+            nextIdA = 1;
+            nextIdB = 1;
+            
+            renderEvidence('A');
+            renderEvidence('B');
+            hideAnalysisView();
+        }
+
+        // ==================== LOAD EXAMPLE ====================
+
+        function loadExample() {
+            document.getElementById('question').value = 'Is the 30% decline in monthly active users over the past quarter primarily due to our recent UI redesign, or due to increased competition from a new market entrant?';
+            
+            // Populate the summary fields for team workflow
+            document.getElementById('hypothesisASummary').value = 'The decline is primarily caused by our UI redesign';
+            document.getElementById('hypothesisBSummary').value = 'The decline is primarily caused by a new competitor';
+            
+            document.getElementById('hypothesisA').value = 'The decline is primarily caused by our UI redesign launched in Q2. The new interface increased friction for core workflows, driving away power users. If we revert key navigation elements, we will see a 15-20% recovery in MAU within 6 weeks.';
+            
+            evidenceA = [
+                { id: 1, text: 'Support tickets mentioning "can\'t find X" increased 340% in the 2 weeks following the redesign launch' },
+                { id: 2, text: 'Session duration dropped from 12 min average to 7 min average, suggesting users are giving up faster' },
+                { id: 3, text: 'Cohort analysis shows users who experienced the old UI first have 3x higher churn than new users who only know the new UI' }
+            ];
+            nextIdA = 4;
+            
+            document.getElementById('logicA').value = 'The timing correlation is strong: decline began within days of launch. The support ticket spike shows direct user frustration. The session duration drop indicates users aren\'t completing their intended tasks. The cohort difference suggests it\'s specifically the change (not the design itself) that\'s problematic — users with expectations are leaving, while new users without prior habits are adapting.';
+            
+            document.getElementById('weaknessesA').value = 'We don\'t have direct user interviews confirming the UI is the reason they left. The competitor launched in the same quarter, so timing alone doesn\'t prove causation. Some of the churn could be users who were already marginal and the redesign was just the final straw.';
+            
+            document.getElementById('hypothesisB').value = 'The decline is primarily due to the new competitor (RivalApp) which launched in late Q1 with aggressive pricing and a feature set targeting our core demographic. The UI redesign is a minor factor at most. Even with a perfect UI, we would have lost these users.';
+            
+            evidenceB = [
+                { id: 1, text: 'RivalApp downloads exceeded 500K in their first quarter, with demographics matching our core user base (25-34, urban, tech-forward)' },
+                { id: 2, text: 'Social media mentions of "switching to RivalApp" outnumber mentions of our UI issues by 4:1' },
+                { id: 3, text: 'Exit surveys (n=200) show 45% citing "found a better alternative" vs 28% citing "app became harder to use"' }
+            ];
+            nextIdB = 4;
+            
+            document.getElementById('logicB').value = 'The competitor\'s launch timing matches the decline start. Their downloads are of similar magnitude to our losses. Social sentiment shows users are actively choosing them, not just abandoning us. Most importantly, exit survey data directly contradicts the UI hypothesis — users themselves say they\'re leaving for a competitor, not because of usability.';
+            
+            document.getElementById('weaknessesB').value = 'Exit surveys may not reach the users most frustrated by UI changes (they might not complete a survey). "Found a better alternative" could be downstream of "got frustrated and looked around." We don\'t have data on whether RivalApp users tried our new UI before switching.';
+            
+            document.getElementById('evidenceQualityA').value = 'Strong on internal metrics (support tickets, session duration), but weak on direct causation. The cohort analysis is compelling but could have confounds. No controlled experiment.';
+            
+            document.getElementById('evidenceQualityB').value = 'Exit survey data is direct evidence of user reasoning, but sample size is small and self-selected. Social media analysis is noisy. Competitor download numbers are impressive but don\'t prove they came from us.';
+            
+            document.getElementById('logicRigorA').value = 'Good causal reasoning from timing and behavioral metrics, but commits post hoc fallacy to some degree. Doesn\'t adequately address the competitor confound.';
+            
+            document.getElementById('logicRigorB').value = 'Appropriately weighs direct user testimony, but may underestimate revealed preference vs stated preference. Users may not accurately report their own motivations.';
+            
+            document.getElementById('missingInfo').value = 'We need: (1) A/B test reverting UI for a random subset — if MAU recovers, Team A wins. (2) Data on whether churned users tried RivalApp before or after our redesign. (3) Interview data from churned users with open-ended "walk me through your last month with our app" questions.';
+            
+            document.getElementById('conclusion').value = 'Currently leaning 55/45 toward Team B (competition). The exit survey data is hard to dismiss, even with caveats. However, both factors are likely contributing — these are not mutually exclusive hypotheses. Recommended next step: run the A/B reversion test. If it shows significant MAU recovery, we should also invest in competitive differentiation. Confidence: Low-medium. Would revise strongly based on A/B results.';
+            
+            renderEvidence('A');
+            renderEvidence('B');
+            
+            alert('Example loaded! This demonstrates a Team A/Team B analysis for a product decision.');
+        }
+
+        // ==================== INITIALIZE ====================
+        
+        renderEvidence('A');
+        renderEvidence('B');
+    </script>
+</body>
+</html>

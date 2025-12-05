@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Structure Matrix (DSM) Tool</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 8px; }
+        h2 { color: #2c5282; margin: 0 0 15px 0; font-size: 18px; }
+        h3 { color: #2c5282; margin: 20px 0 12px 0; font-size: 16px; }
+        h4 { margin: 0 0 10px 0; font-size: 14px; }
+        .subtitle { color: #444; margin-bottom: 20px; font-size: 14px; }
+        
+        /* Load banner */
+        .load-banner {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .load-banner p {
+            margin: 0;
+            color: #1565c0;
+            font-size: 14px;
+        }
+        .load-banner-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Intro box */
+        .intro-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-left: 4px solid #0d9488;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; font-size: 14px; color: #333; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: #0f766e; }
+        
+        /* Example box */
+        .example-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border: 1px solid #5eead4;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .example-box h4 { color: #0f766e; font-size: 14px; }
+        .example-box p, .example-box li { 
+            margin: 0 0 8px 0; 
+            color: #115e59; 
+            font-size: 14px; 
+        }
+        .example-box ul { margin: 8px 0; padding-left: 20px; }
+        .example-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        .example-box th, .example-box td {
+            padding: 8px 10px;
+            text-align: left;
+            border: 1px solid #99f6e4;
+        }
+        .example-box th {
+            background: #ccfbf1;
+            color: #0f766e;
+            font-weight: 600;
+        }
+        .example-box td { background: white; }
+        
+        /* Guidance box */
+        .guidance-box {
+            background: linear-gradient(135deg, #f8f5ff 0%, #f3e8ff 100%);
+            border-left: 4px solid #7c5cad;
+            padding: 18px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .guidance-box h4 { color: #5b4180; font-size: 14px; }
+        .guidance-box p, .guidance-box li { 
+            margin: 0 0 8px 0; 
+            color: #333; 
+            font-size: 14px; 
+        }
+        .guidance-box ul { margin: 8px 0; padding-left: 20px; }
+        .guidance-box strong { color: #5b4180; }
+        
+        /* Reading box */
+        .reading-box {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .reading-box h4 { color: #444; font-size: 14px; margin: 0 0 10px 0; }
+        .reading-box p { margin: 0 0 10px 0; font-size: 14px; color: #444; }
+        .reading-box p:last-child { margin-bottom: 0; }
+        .reading-box a { color: #2c5282; }
+        
+        /* Collapsible details */
+        details { margin-top: 15px; }
+        details summary {
+            cursor: pointer;
+            color: #0d9488;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        details summary:hover { color: #0f766e; }
+        
+        /* Section styling */
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 18px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary {
+            background: #6b7280;
+            padding: 8px 14px;
+        }
+        button.secondary:hover { background: #4b5563; }
+        button.add-btn {
+            background: #0d9488;
+        }
+        button.add-btn:hover { background: #0f766e; }
+        button.remove-btn {
+            background: #6b7280;
+            padding: 4px 10px;
+            font-size: 14px;
+        }
+        button.remove-btn:hover { background: #4b5563; }
+        button.analysis-btn {
+            background: #7c5cad;
+        }
+        button.analysis-btn:hover { background: #5b4180; }
+        
+        /* Inputs */
+        input[type="text"], input[type="number"], select {
+            padding: 10px;
+            border: 2px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        /* Element list */
+        .element-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            min-height: 40px;
+        }
+        .element-item {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .empty-elements {
+            color: #555;
+            font-size: 14px;
+            padding: 10px;
+        }
+        
+        /* Matrix container */
+        .matrix-container {
+            overflow: auto;
+            max-height: 500px;
+            border: 1px solid #d0d0d0;
+            background: white;
+            border-radius: 4px;
+            width: 100%;
+        }
+        table.dsm-table {
+            border-collapse: collapse;
+            font-size: 14px;
+            width: 100%;
+            table-layout: fixed;
+        }
+        table.dsm-table th, table.dsm-table td {
+            border: 1px solid #d0d0d0;
+            padding: 10px 8px;
+            text-align: center;
+            min-width: 80px;
+            position: relative;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        table.dsm-table th {
+            background: #f0f0f0;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+        table.dsm-table th.row-header {
+            position: sticky;
+            left: 0;
+            background: #f0f0f0;
+            z-index: 11;
+            text-align: left;
+            min-width: 140px;
+            max-width: 180px;
+        }
+        table.dsm-table th.corner {
+            position: sticky;
+            left: 0;
+            top: 0;
+            z-index: 12;
+            min-width: 140px;
+        }
+        table.dsm-table td.row-header {
+            background: #f8f8f8;
+            font-weight: 500;
+            position: sticky;
+            left: 0;
+            z-index: 9;
+            text-align: left;
+            min-width: 140px;
+            max-width: 180px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+        table.dsm-table td.dependency {
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.1s;
+        }
+        table.dsm-table td.dependency:hover {
+            background: #e0f2fe;
+        }
+        table.dsm-table td.has-dependency {
+            background: #2c5282;
+            color: white;
+            font-weight: bold;
+        }
+        table.dsm-table td.has-dependency:hover {
+            background: #1a365d;
+        }
+        table.dsm-table td.has-dependency.confidence-high {
+            background: #166534;
+        }
+        table.dsm-table td.has-dependency.confidence-high:hover {
+            background: #14532d;
+        }
+        table.dsm-table td.has-dependency.confidence-medium {
+            background: #ca8a04;
+        }
+        table.dsm-table td.has-dependency.confidence-medium:hover {
+            background: #a16207;
+        }
+        table.dsm-table td.has-dependency.confidence-low {
+            background: #dc2626;
+        }
+        table.dsm-table td.has-dependency.confidence-low:hover {
+            background: #b91c1c;
+        }
+        table.dsm-table td.diagonal {
+            background: #e5e5e5;
+            cursor: default;
+        }
+        
+        /* Confidence selector popup */
+        .confidence-popup {
+            position: fixed;
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 220px;
+        }
+        .confidence-popup h4 {
+            margin: 0 0 10px 0;
+            color: #2c5282;
+            font-size: 14px;
+        }
+        .confidence-option {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            margin: 5px 0;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+        .confidence-option:hover {
+            border-color: #2c5282;
+            background: #f0f7ff;
+        }
+        .confidence-option.high { border-left: 4px solid #166534; }
+        .confidence-option.medium { border-left: 4px solid #ca8a04; }
+        .confidence-option.low { border-left: 4px solid #dc2626; }
+        .confidence-option.remove { border-left: 4px solid #6b7280; color: #6b7280; }
+        
+        /* Cluster colors */
+        .cluster-1 td.row-header, .cluster-1 th { background-color: rgba(16, 185, 129, 0.15) !important; }
+        .cluster-2 td.row-header, .cluster-2 th { background-color: rgba(59, 130, 246, 0.15) !important; }
+        .cluster-3 td.row-header, .cluster-3 th { background-color: rgba(245, 158, 11, 0.15) !important; }
+        .cluster-4 td.row-header, .cluster-4 th { background-color: rgba(139, 92, 246, 0.15) !important; }
+        .cluster-5 td.row-header, .cluster-5 th { background-color: rgba(236, 72, 153, 0.15) !important; }
+        
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #444;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            border: 1px solid #d0d0d0;
+            border-radius: 3px;
+        }
+        
+        /* Dashboard metrics */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 500px) {
+            .dashboard { grid-template-columns: repeat(2, 1fr); }
+        }
+        .metric-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .metric-card-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .metric-card-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        .metric-card-value.warning { color: #d97706; }
+        .metric-card-value.good { color: #059669; }
+        
+        /* Recommendations styling */
+        .recommendations {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .recommendations h4 {
+            color: #444;
+            margin: 0 0 10px 0;
+        }
+        .recommendations ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .recommendations li {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+        .recommendations li strong {
+            color: #2c5282;
+        }
+        
+        /* Flowchart render */
+        .flowchart-container {
+            background: white;
+            border: 2px solid #7c5cad;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+        .flowchart-container.visible { display: block; }
+        .flowchart-container h3 {
+            color: #5b4180;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #d8b4fe;
+        }
+        .mermaid-code {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            color: #333;
+        }
+        
+        /* Next steps */
+        .next-steps-box {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+            border: 1px solid #7dd3fc;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .next-steps-box h4 {
+            color: #0369a1;
+            margin: 0 0 12px 0;
+            font-size: 14px;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .next-steps-box li {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+        .next-steps-box li strong { color: #0369a1; }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            margin-top: 25px;
+            border: 1px solid #e0e0e0;
+        }
+        .toolbar-note {
+            width: 100%;
+            font-size: 14px;
+            color: #555;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Design Structure Matrix (DSM)</h1>
+        <p class="subtitle">Reveal the hidden architecture of dependencies in complex systems.</p>
+        
+        <!-- Load Banner -->
+        <div class="load-banner">
+            <p>Have a previous DSM? Load it to continue working.</p>
+            <div class="load-banner-buttons">
+                <button class="secondary" onclick="document.getElementById('loadInput').click()">📂 Load Previous (.json)</button>
+                <button class="secondary" onclick="loadExample()">📋 Load Example</button>
+                <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadDSM(event)">
+            </div>
+        </div>
+        
+        <!-- Intro Box -->
+        <div class="intro-box">
+            <p><strong>Making the invisible visible:</strong> Every complex endeavour — a research programme, an organisational change, a policy campaign — involves elements that depend on each other. These dependencies are often implicit, residing in people's heads or buried in project plans. When they remain invisible, coordination failures feel like "politics" or "communication problems." Often, they're structural.</p>
+            
+            <p>A Design Structure Matrix makes dependencies explicit and visual. By mapping what depends on what, you can identify bottlenecks (elements everything flows through), leverage points (where improvements cascade widely), circular dependencies (mutual dependencies that require iteration), natural clusters (elements that should be tightly coordinated), and sequencing opportunities (what can start when).</p>
+            
+            <p><strong>Confidence levels:</strong> Not all dependencies are equally certain. This tool lets you mark each dependency as high, medium, or low confidence — distinguishing structural realities from assumptions worth testing. Low-confidence dependencies are hypotheses about your system; treat them as candidates for scrutiny.</p>
+            
+            <p><strong>Reading the matrix:</strong> A mark in row X, column Y means <em>"X depends on Y"</em> — element X needs input, information, or output from element Y before it can proceed. Marks <em>below</em> the diagonal represent forward flow (earlier elements feeding later ones). Marks <em>above</em> the diagonal represent feedback loops (later elements feeding back to earlier ones) — these aren't necessarily problems, but they indicate iteration that needs explicit management.</p>
+            
+            <p><strong>How to use this tool:</strong> The worked example below shows the depth of strategic analysis possible with DSM. This interface provides foundational metrics — bottlenecks, leverage points, feedback loops, clusters, low-confidence dependencies. For deeper interpretation (counterfactual analysis, structural recommendations, theory-of-change scrutiny), use the <strong>Claude Analysis Template</strong> in the "What to Do With This Analysis" section. Export your DSM and paste it into a Claude conversation for the full analytical treatment demonstrated in the worked example.</p>
+            
+            <details>
+                <summary>📖 Worked Example: Coordinating a Pandemic Preparedness Policy Campaign</summary>
+                <div class="example-box">
+                    <h4>Scenario: A small non-profit working on global catastrophic risk reduction</h4>
+                    <p>The organisation wants to advocate for improved biosecurity legislation. Eight functions must coordinate:</p>
+                    
+                    <table>
+                        <tr><th>Element</th><th>Role</th></tr>
+                        <tr><td>Executive Director</td><td>Strategy, relationships with policymakers, fundraising</td></tr>
+                        <tr><td>Policy Research</td><td>Evidence synthesis, policy drafts, technical briefings</td></tr>
+                        <tr><td>Government Relations</td><td>Legislator meetings, coalition building, political intelligence</td></tr>
+                        <tr><td>Communications</td><td>Public messaging, media relations, awareness campaigns</td></tr>
+                        <tr><td>Technical Advisors</td><td>Scientific credibility, expert review, testimony</td></tr>
+                        <tr><td>Operations</td><td>Budget, logistics, compliance, reporting</td></tr>
+                        <tr><td>Coalition Partners</td><td>Allied organisations, coordinated advocacy, shared resources</td></tr>
+                        <tr><td>Funders</td><td>Grant requirements, progress reporting, relationship management</td></tr>
+                    </table>
+                    
+                    <h4 style="margin-top: 15px;">The dependency structure visualised:</h4>
+                    <pre style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 4px; padding: 15px; font-family: monospace; font-size: 12px; overflow-x: auto; color: #166534;">
+                    ┌─────────────────────┐
+                    │  Technical Advisors │ ─────────────────────────────┐
+                    └──────────┬──────────┘                              │
+                               │                                         ▼
+                               ▼                              ┌─────────────────────┐
+                    ┌─────────────────────┐                   │  Executive Director │◄──┐
+                    │   Policy Research   │◄─────────────────►│    (bottleneck)     │   │
+                    └──────────┬──────────┘                   └──────────┬──────────┘   │
+                               │    ▲                                    │              │
+                               │    │ feedback loop                      │              │
+                               ▼    │                                    ▼              │
+                    ┌─────────────────────┐                   ┌─────────────────────┐   │
+                    │ Government Relations│◄─────────────────►│  Coalition Partners │   │
+                    └──────────┬──────────┘                   └─────────────────────┘   │
+                               │                                                        │
+                               ▼                                                        │
+                    ┌─────────────────────┐      ┌─────────────────────┐               │
+                    │    Communications   │      │      Operations     │◄──────────────┤
+                    └─────────────────────┘      └──────────┬──────────┘               │
+                                                           │                          │
+                                                           ▼                          │
+                                                 ┌─────────────────────┐              │
+                                                 │       Funders       │──────────────┘
+                                                 └─────────────────────┘
+                    </pre>
+                    <p style="font-size: 14px; color: #555; margin-top: 8px;"><em>Arrows show dependency direction: A → B means "B depends on A" (A must provide something to B).</em></p>
+                    
+                    <h4 style="margin-top: 15px;">What the DSM reveals:</h4>
+                    <ul>
+                        <li><strong>Hidden bottleneck:</strong> Executive Director has dependencies flowing <em>in</em> from almost every function (strategy input, relationship access, approval). If they're overloaded, everything stalls. The matrix makes visible what everyone feels but rarely discusses.</li>
+                        <li><strong>Critical circular dependency:</strong> Policy Research ↔ Government Relations. Policy needs to know what's politically feasible; GR needs policy content to advocate. This isn't a problem to "fix" — it's an iteration that requires explicit coordination protocols.</li>
+                        <li><strong>Natural clusters emerge:</strong> {Policy Research + Technical Advisors + Communications} share content dependencies. {Government Relations + Coalition Partners + ED} share relationship dependencies. Operations and Funders connect to both clusters but don't need tight coordination with each other.</li>
+                        <li><strong>Sequencing insight:</strong> Technical Advisors can begin evidence review early. Communications can draft messaging frameworks but can't finalise until Policy Research locks recommendations. Coalition Partners need GR intelligence before committing to joint advocacy.</li>
+                    </ul>
+                    
+                    <p style="margin-top: 12px;"><strong>The deeper insight:</strong> What feels like interpersonal friction between Policy Research and Government Relations has a structural explanation — they're in a feedback loop by design. Rather than treating it as a conflict to resolve, the organisation can design explicit iteration cycles: weekly syncs where Policy shares drafts and GR shares political feasibility assessments.</p>
+                </div>
+            </details>
+            
+            <details>
+                <summary>🧭 Before You Begin: Identifying Your Elements</summary>
+                <div class="guidance-box" style="margin-top: 15px; margin-bottom: 0;">
+                    <p><strong>The hardest part of DSM is choosing what to include.</strong> Too granular and the matrix becomes unwieldy; too coarse and you miss important dependencies. Start with 6-12 elements — you can always decompose further once you see the structure. Research consistently shows that gathering input from multiple perspectives — not just the project lead — produces more accurate matrices and surfaces dependencies that individuals miss.</p>
+                    
+                    <h4 style="margin-top: 12px;">For Process DSMs (tasks/activities):</h4>
+                    <ul>
+                        <li>What are the major deliverables or milestones?</li>
+                        <li>What decisions must be made, and what information do they require?</li>
+                        <li>Where do handoffs occur between people or teams?</li>
+                    </ul>
+                    
+                    <h4>For Organisational DSMs (teams/roles/people):</h4>
+                    <ul>
+                        <li>Who needs information from whom to do their work?</li>
+                        <li>Where do approvals or sign-offs create dependencies?</li>
+                        <li>Which groups must coordinate on shared resources or timing?</li>
+                    </ul>
+                    
+                    <h4>For System DSMs (components/modules):</h4>
+                    <ul>
+                        <li>What are the major subsystems or functional units?</li>
+                        <li>What interfaces exist — data flows, shared resources, physical connections?</li>
+                        <li>What can be changed independently vs. what requires coordinated changes?</li>
+                    </ul>
+                    
+                    <p style="margin-top: 12px;"><strong>Refinement heuristics:</strong> If two elements always have identical dependencies, consider merging them. If one element has very different internal dependencies, consider splitting it. If you're uncertain whether a dependency exists, mark it — you can always remove it after discussion.</p>
+                    
+                    <p><strong>Cross-tool support:</strong> If you're struggling to identify elements, try an <em>Environmental Scan</em> to map all actors and forces, or use <em>Value-Focused Thinking</em> to clarify what outcomes matter and work backward to the activities that produce them.</p>
+                </div>
+            </details>
+            
+            <details style="margin-top: 10px;">
+                <summary>🔬 Example: Research-to-Policy Impact Pathway</summary>
+                <div class="example-box" style="margin-top: 10px;">
+                    <p>For research organisations seeking policy impact, DSM can make your theory of change explicit:</p>
+                    <table>
+                        <tr><th>Element</th><th>Role in Impact Chain</th></tr>
+                        <tr><td>Literature Review</td><td>Establish evidence gaps, frame research question</td></tr>
+                        <tr><td>Study Design</td><td>Methodology, ethics approval, partnerships</td></tr>
+                        <tr><td>Data Collection</td><td>Field work, surveys, experiments</td></tr>
+                        <tr><td>Analysis & Findings</td><td>Statistical analysis, interpretation</td></tr>
+                        <tr><td>Academic Publication</td><td>Peer review, journal placement</td></tr>
+                        <tr><td>Policy Brief</td><td>Translate findings for policymakers</td></tr>
+                        <tr><td>Stakeholder Briefings</td><td>Direct engagement with decision-makers</td></tr>
+                        <tr><td>Media Coverage</td><td>Public awareness, political pressure</td></tr>
+                        <tr><td>Legislative Action</td><td>Bill introduction, committee hearings</td></tr>
+                    </table>
+                    <p style="margin-top: 10px;"><strong>Key insight:</strong> Each arrow is a dependency with its own confidence level. The path from "Academic Publication" to "Stakeholder Briefings" often carries <em>low confidence</em> — publication doesn't automatically create briefing opportunities. Marking these assumptions explicitly reveals where your impact chain is weakest.</p>
+                </div>
+            </details>
+        </div>
+        
+        <!-- Key Concepts - moved up for early understanding -->
+        <div class="guidance-box" style="margin-bottom: 25px;">
+            <h4>📐 Key Concepts</h4>
+            <p style="margin-bottom: 10px;"><strong>Clusters:</strong> Groups of elements that are densely connected to each other but sparsely connected to elements outside the group. Elements in the same cluster should typically be coordinated tightly — co-located, assigned to the same team, or given frequent sync points.</p>
+            <p style="margin-bottom: 10px;"><strong>Modularity:</strong> A measure of how well-separated your clusters are. High modularity (60%+) means most dependencies stay within clusters, with clean interfaces between them. Low modularity means dependencies cross cluster boundaries frequently — which may indicate genuinely integrated work that resists modularisation.</p>
+            <p style="margin-bottom: 10px;"><strong>Feedback loops:</strong> Dependencies that flow "backward" — from later elements to earlier ones (appearing above the diagonal). These create iteration cycles where neither element can finish without the other. Feedback loops aren't inherently bad, but they need explicit management through regular syncs and clear protocols.</p>
+            <p style="margin-bottom: 10px;"><strong>Leverage points:</strong> Elements where improvements cascade widely through the system. An element with high leverage has many things depending on it (directly and indirectly). Investing in quality and speed at leverage points yields multiplied returns.</p>
+            <p><strong>Confidence levels:</strong> Not all dependencies are equally certain. High-confidence dependencies are structural realities; low-confidence ones are hypotheses worth testing. Marking confidence explicitly turns your DSM into a map of what you know versus what you assume.</p>
+        </div>
+        
+        <!-- Step 1: Define Elements -->
+        <div class="section">
+            <h2>Step 1: Define Elements</h2>
+            <p style="color: #555; font-size: 14px; margin-bottom: 15px;">Add the components, tasks, teams, or other elements whose dependencies you want to map.</p>
+            <div class="controls">
+                <input type="text" id="elementName" placeholder="Element name" style="flex: 1; min-width: 200px;" onkeypress="if(event.key === 'Enter') addElement()">
+                <button class="add-btn" onclick="addElement()">+ Add Element</button>
+            </div>
+            <div class="element-list" id="elementList">
+                <span class="empty-elements">No elements added yet. Add elements above to begin.</span>
+            </div>
+        </div>
+        
+        <!-- Step 2: Mark Dependencies -->
+        <div class="section">
+            <h2>Step 2: Mark Dependencies</h2>
+            <p style="color: #555; font-size: 14px; margin-bottom: 15px;">Click cells to toggle dependencies. Read as: <strong>"Row element depends on Column element."</strong></p>
+            <div class="matrix-container">
+                <table class="dsm-table" id="dsmMatrix">
+                    <tbody id="matrixBody"></tbody>
+                </table>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box" style="background: #166534;"></div>
+                    <span>High confidence</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background: #ca8a04;"></div>
+                    <span>Medium confidence</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background: #dc2626;"></div>
+                    <span>Low confidence</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background: #e5e5e5;"></div>
+                    <span>Diagonal (self)</span>
+                </div>
+            </div>
+            <p style="font-size: 14px; color: #555; margin-top: 10px;"><em>Click a cell to add/edit a dependency. Low-confidence dependencies are candidates for the Key Assumptions Check — are they real constraints or assumptions?</em></p>
+        </div>
+        
+        <!-- Step 3: Analyse -->
+        <div class="section">
+            <h2>Step 3: Analyse Structure</h2>
+            <p style="color: #444; font-size: 14px; margin-bottom: 15px;">The dashboard below updates automatically as you add dependencies. Use the buttons for deeper analysis:</p>
+            <div class="controls">
+                <button class="analysis-btn" onclick="identifyClusters()" title="Group elements by connection density">🔍 Find Clusters</button>
+                <button class="analysis-btn" onclick="optimizeSequence()" title="Reorder elements to minimise feedback">📊 Optimise Sequence</button>
+                <button class="analysis-btn" onclick="showLeverageAnalysis()" title="Show which elements have highest downstream impact">⚡ View Leverage Points</button>
+                <button class="secondary" onclick="generateFlowchart()" title="Generate Mermaid diagram code">🔀 Generate Flowchart</button>
+            </div>
+            <div style="background: #f8f8f8; border-radius: 4px; padding: 12px; margin: 15px 0; font-size: 14px; color: #444;">
+                <p style="margin: 0 0 10px 0;"><strong>Find Clusters:</strong> Identifies groups of tightly-connected elements. Most useful when your system might have natural module boundaries. <strong>Limitation: In highly interconnected systems (like most organisational DSMs), everything may end up in one cluster</strong> — which is itself useful information: it tells you there are no clean separation points.</p>
+                <p style="margin: 0 0 10px 0;"><strong>Optimise Sequence:</strong> Reorders elements to push dependencies below the diagonal, minimising feedback loops. <strong>Limitation: Only useful for Process DSMs (task sequences) where you control the order of work.</strong> For organisational DSMs, you can't reorder stakeholders — the "sequence" is fixed by reality.</p>
+                <p style="margin: 0;"><strong>View Leverage Points:</strong> Shows which elements have the highest downstream impact — directly and indirectly. To spot leverage in the matrix: look for columns with many marks (many things depend on this element). High-leverage elements are where quality improvements cascade through your system.</p>
+            </div>
+            
+            <!-- Leverage Analysis Panel -->
+            <div id="leveragePanel" style="display: none; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid #f59e0b; border-radius: 6px; padding: 15px; margin-bottom: 15px;">
+                <h4 style="color: #92400e; margin: 0 0 10px 0;">⚡ Leverage Point Analysis</h4>
+                <div id="leverageContent"></div>
+                <button class="secondary" onclick="hideLeveragePanel()" style="margin-top: 10px;">Close</button>
+            </div>
+            
+            <!-- Dashboard -->
+            <div class="dashboard" id="dashboard">
+                <p style="color: #555; grid-column: 1/-1; text-align: center; font-size: 14px;">Add elements and dependencies to see metrics</p>
+            </div>
+            
+            <!-- Analysis (shows inline when there are dependencies) -->
+            <div id="analysisContent" style="margin-top: 15px;"></div>
+            <div class="recommendations" id="recommendations" style="display: none;"></div>
+            
+            <!-- Flowchart Render -->
+            <div class="flowchart-container" id="flowchartContainer">
+                <h3>🔀 Dependency Flowchart</h3>
+                <p style="font-size: 14px; color: #555; margin-bottom: 15px;">Copy this Mermaid code into a Mermaid-compatible renderer (or paste it into a Claude conversation for visualisation):</p>
+                <div class="mermaid-code" id="mermaidCode"></div>
+                <div style="margin-top: 12px;">
+                    <button class="secondary" onclick="copyMermaid()">📋 Copy Mermaid Code</button>
+                    <button class="secondary" onclick="hideFlowchart()" style="margin-left: 8px;">Close</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- What to Do With This Analysis -->
+        <div class="next-steps-box" id="nextSteps" style="display: none;">
+            <h4>What to Do With This Analysis</h4>
+            <ul>
+                <li><strong>Bottlenecks:</strong> Elements with high fan-in (many things depend on them) are potential single points of failure. Consider adding redundancy, delegating, or redesigning to reduce centralisation.</li>
+                <li><strong>Leverage points:</strong> Elements with high downstream impact are where small improvements cascade widely. Prioritise quality and speed in these elements — the returns multiply through the system.</li>
+                <li><strong>Feedback loops:</strong> Circular dependencies aren't inherently bad — they often represent necessary iteration. But they need explicit management: regular syncs, clear protocols for when to iterate vs. when to lock decisions.</li>
+                <li><strong>Clusters:</strong> Elements that cluster together have dense internal dependencies. They should be co-located, tightly coordinated, or treated as a module. Interfaces between clusters should be explicit and minimal.</li>
+                <li><strong>Low-confidence dependencies:</strong> These are your hypotheses about how the system works. Test them deliberately — some "constraints" dissolve under scrutiny, revealing new degrees of freedom.</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px;">Counterfactual Thinking</h4>
+            <p style="margin-bottom: 10px;">For each critical element, ask the counterfactual question:</p>
+            <ul>
+                <li><strong>If this element failed or didn't exist, could the work proceed differently?</strong> Some apparently critical elements have workarounds; others are truly irreplaceable. This distinction matters for risk assessment and resource allocation.</li>
+                <li><strong>If this dependency were removed, what would break — and what wouldn't?</strong> Dependencies marked as "low confidence" deserve this scrutiny. You may discover that some are self-imposed rather than structural.</li>
+                <li><strong>What's the counterfactual impact of improving this element?</strong> For high-leverage elements, estimate: if this element were 20% faster or higher-quality, how much would that improve final outcomes?</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px;">Ecosystem Mapping: Beyond Your Organisation</h4>
+            <p style="margin-bottom: 10px;">DSM can map dependencies across organisations, not just within them. For advocacy coalitions, research collaborations, or movement-building:</p>
+            <ul>
+                <li><strong>External dependencies:</strong> Where does your theory of change require <em>another organisation</em> to succeed? These dependencies are often invisible until mapped explicitly.</li>
+                <li><strong>Coordination interfaces:</strong> Which external relationships require active coordination vs. passive monitoring? High-traffic interfaces need explicit protocols.</li>
+                <li><strong>Ecosystem bottlenecks:</strong> Is there a single organisation that many others depend on? This may be a fragility in your field, not just your project.</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px;">Phase Transitions</h4>
+            <p style="margin-bottom: 10px;">Dependencies change over time. Consider creating separate DSMs for different phases:</p>
+            <ul>
+                <li><strong>Research phase:</strong> Building evidence base, literature review, methodology development</li>
+                <li><strong>Synthesis phase:</strong> Policy recommendations, stakeholder briefings, coalition alignment</li>
+                <li><strong>Advocacy phase:</strong> Legislative engagement, media campaigns, public mobilisation</li>
+            </ul>
+            <p style="font-size: 14px; color: #555;"><em>Revisit your DSM at phase transitions. The bottlenecks and leverage points shift as work progresses.</em></p>
+            
+            <h4 style="margin-top: 15px;">Research-to-Policy Pathways</h4>
+            <p style="margin-bottom: 10px;">For research organisations seeking policy impact, DSM can map your impact pathway explicitly:</p>
+            <ul>
+                <li><strong>Conduct study → Publish findings → Brief policymakers → Legislative action</strong></li>
+                <li>Each arrow is a dependency with its own confidence level. Where are the weak links?</li>
+                <li>The DSM reveals where your theory of change depends on assumptions you haven't tested — for instance, assuming that publication leads to briefing opportunities.</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px;">Using the Flowchart</h4>
+            <p style="margin-bottom: 10px;">The "Generate Flowchart" button produces Mermaid code — a text format that renders as a visual diagram. You can:</p>
+            <ul>
+                <li><strong>Paste into Claude:</strong> Ask Claude to render it as an artifact and help you analyse bottlenecks, critical paths, or suggest structural improvements.</li>
+                <li><strong>Workshop with your team:</strong> Share the diagram in a meeting to discuss dependencies people may not have been aware of. Use it to surface hidden assumptions about who needs what from whom.</li>
+                <li><strong>Create a Gantt chart:</strong> For Process DSMs, the dependency structure maps directly to project scheduling. Elements with no incoming dependencies can start immediately; the rest must wait for their inputs.</li>
+                <li><strong>Document your system:</strong> The visual diagram serves as living documentation of your coordination structure — useful for onboarding, retrospectives, or restructuring discussions.</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px;">Cross-Tool Integration</h4>
+            <ul>
+                <li>Use <em>Pre-mortem Analysis</em> to stress-test your critical path elements — what happens if the bottleneck fails?</li>
+                <li>Use <em>Key Assumptions Check</em> on dependencies marked "low confidence" — are they real constraints or assumed ones?</li>
+                <li>Use <em>Reference Class Forecasting</em> to estimate how long dependency chains typically take in similar projects.</li>
+            </ul>
+            
+            <h4 style="margin-top: 15px;">Getting Claude's Help</h4>
+            <p style="margin-bottom: 10px;">Copy your DSM report (using the "Copy Report" button below) and paste it into a Claude conversation. You can ask Claude to:</p>
+            <ul>
+                <li>Visualise the dependencies as an interactive diagram</li>
+                <li>Identify structural risks and coordination failure points</li>
+                <li>Suggest how to break problematic circular dependencies</li>
+                <li>Recommend optimal sequencing for Process DSMs</li>
+                <li>Help translate the analysis into concrete next steps for your team</li>
+                <li>Stress-test your theory of change by questioning low-confidence dependencies</li>
+            </ul>
+            <details style="margin-top: 10px;">
+                <summary style="color: #0369a1; font-weight: 500; cursor: pointer;">📋 Claude Prompt Template (click to expand)</summary>
+                <div style="margin-top: 10px; padding: 12px; background: white; border-radius: 4px; border: 1px solid #d0d0d0;">
+                    <div style="font-family: monospace; font-size: 12px; white-space: pre-wrap; color: #333;" id="claudeTemplate">I have a Design Structure Matrix representing dependencies in [describe your system].
+
+Format: "Row depends on Column" — a mark in row X, column Y means X needs input from Y.
+Confidence levels: Green = high (structural reality), Amber = medium (likely), Red = low (assumption to test).
+
+Please help me:
+1. Visualise this as a dependency diagram (create a Mermaid flowchart)
+2. Identify bottlenecks and leverage points — where do small improvements cascade widely?
+3. Find circular dependencies — which are necessary iteration vs. problematic coupling?
+4. Examine low-confidence dependencies — are these real constraints or assumptions?
+5. Suggest counterfactuals — if key elements failed, what would break and what wouldn't?
+6. Highlight structural risks — where might coordination failures occur?
+
+Here's my DSM:
+
+[PASTE YOUR REPORT HERE]</div>
+                    <button onclick="copyTemplate()" class="secondary" style="margin-top: 10px; font-size: 14px;">📋 Copy Template</button>
+                </div>
+            </details>
+        </div>
+        
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button onclick="saveDSM()">💾 Save DSM (.json)</button>
+            <button onclick="exportCSV()" class="secondary">📊 Export CSV</button>
+            <button onclick="copyReport()" class="secondary">📋 Copy Report</button>
+            <button onclick="clearAll()" class="secondary">🔄 Clear All</button>
+            <div class="toolbar-note">
+                <strong>Save (.json)</strong> preserves your full analysis for continued work. <strong>Export CSV</strong> creates a spreadsheet-compatible format for analysis in Excel, sharing with colleagues, or importing into professional DSM tools. <strong>Copy Report</strong> copies a text summary for documents or Claude conversations.
+            </div>
+        </div>
+        
+        <!-- Further Reading -->
+        <div class="reading-box" style="margin-top: 25px;">
+            <h4>📚 Further Reading</h4>
+            <p style="margin-bottom: 10px;"><strong><a href="https://dsmweb.org/" target="_blank">dsmweb.org</a></strong> — The DSM community hub with tutorials, use cases, and tools. Includes webinar series and links to the annual International DSM Conference.</p>
+            <p><strong>Eppinger & Browning, <em>Design Structure Matrix Methods and Applications</em> (MIT Press, 2012)</strong> — The definitive reference, covering product, organisation, process, and multi-domain DSMs with 44 real-world applications across industries.</p>
+        </div>
+    </div>
+
+    <script>
+        let elements = [];
+        let dependencies = {};
+        let clusters = {};
+        
+        function addElement() {
+            const input = document.getElementById('elementName');
+            const name = input.value.trim();
+            if (name && !elements.includes(name)) {
+                elements.push(name);
+                dependencies[name] = {};
+                updateElementList();
+                updateMatrix();
+                updateDashboard();
+            }
+            input.value = '';
+            input.focus();
+        }
+        
+        function removeElement(name) {
+            elements = elements.filter(el => el !== name);
+            delete dependencies[name];
+            // Remove dependencies TO this element
+            Object.keys(dependencies).forEach(from => {
+                delete dependencies[from][name];
+            });
+            delete clusters[name];
+            updateElementList();
+            updateMatrix();
+            updateDashboard();
+        }
+        
+        function updateElementList() {
+            const list = document.getElementById('elementList');
+            if (elements.length === 0) {
+                list.innerHTML = '<span class="empty-elements">No elements added yet. Add elements above to begin.</span>';
+            } else {
+                list.innerHTML = elements.map(el => `
+                    <div class="element-item">
+                        <span>${escapeHtml(el)}</span>
+                        <button class="remove-btn" onclick="removeElement('${escapeHtml(el)}')">✕</button>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function updateMatrix() {
+            const tbody = document.getElementById('matrixBody');
+            
+            if (elements.length === 0) {
+                tbody.innerHTML = '<tr><td style="padding: 30px; color: #555; text-align: center;">Add elements to see the dependency matrix</td></tr>';
+                return;
+            }
+            
+            let html = '<tr><th class="corner">Depends on →</th>';
+            elements.forEach(el => {
+                html += `<th title="${escapeHtml(el)}">${escapeHtml(el)}</th>`;
+            });
+            html += '</tr>';
+            
+            elements.forEach((rowEl, rowIdx) => {
+                const clusterClass = clusters[rowEl] ? `cluster-${clusters[rowEl]}` : '';
+                html += `<tr class="${clusterClass}"><td class="row-header" title="${escapeHtml(rowEl)}">${escapeHtml(rowEl)}</td>`;
+                
+                elements.forEach((colEl, colIdx) => {
+                    if (rowEl === colEl) {
+                        html += '<td class="diagonal">—</td>';
+                    } else {
+                        const dep = dependencies[rowEl] && dependencies[rowEl][colEl];
+                        let depClass = '';
+                        let symbol = '';
+                        if (dep) {
+                            const confidence = typeof dep === 'object' ? dep.confidence : 'high';
+                            depClass = `has-dependency confidence-${confidence}`;
+                            symbol = '●';
+                        }
+                        html += `<td class="dependency ${depClass}" onclick="showConfidencePopup(event, '${escapeHtml(rowEl)}', '${escapeHtml(colEl)}')">${symbol}</td>`;
+                    }
+                });
+                html += '</tr>';
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function showConfidencePopup(event, from, to) {
+            // Remove any existing popup
+            const existing = document.getElementById('confidencePopup');
+            if (existing) existing.remove();
+            
+            const hasDep = dependencies[from] && dependencies[from][to];
+            
+            const popup = document.createElement('div');
+            popup.id = 'confidencePopup';
+            popup.className = 'confidence-popup';
+            popup.innerHTML = `
+                <h4>${hasDep ? 'Edit' : 'Add'} Dependency</h4>
+                <p style="font-size: 14px; color: #555; margin: 0 0 10px 0;">"${from}" depends on "${to}"</p>
+                <button class="confidence-option high" onclick="setDependency('${escapeHtml(from)}', '${escapeHtml(to)}', 'high')">
+                    <strong>High confidence</strong> — structural reality
+                </button>
+                <button class="confidence-option medium" onclick="setDependency('${escapeHtml(from)}', '${escapeHtml(to)}', 'medium')">
+                    <strong>Medium confidence</strong> — likely but uncertain
+                </button>
+                <button class="confidence-option low" onclick="setDependency('${escapeHtml(from)}', '${escapeHtml(to)}', 'low')">
+                    <strong>Low confidence</strong> — assumption to test
+                </button>
+                ${hasDep ? `<button class="confidence-option remove" onclick="removeDependency('${escapeHtml(from)}', '${escapeHtml(to)}')">
+                    Remove dependency
+                </button>` : ''}
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Position popup near click
+            const rect = event.target.getBoundingClientRect();
+            popup.style.left = Math.min(rect.left, window.innerWidth - 250) + 'px';
+            popup.style.top = Math.min(rect.bottom + 5, window.innerHeight - popup.offsetHeight - 10) + 'px';
+            
+            // Close on click outside
+            setTimeout(() => {
+                document.addEventListener('click', closePopupOnClickOutside);
+            }, 10);
+        }
+        
+        function closePopupOnClickOutside(event) {
+            const popup = document.getElementById('confidencePopup');
+            if (popup && !popup.contains(event.target)) {
+                popup.remove();
+                document.removeEventListener('click', closePopupOnClickOutside);
+            }
+        }
+        
+        function setDependency(from, to, confidence) {
+            if (!dependencies[from]) dependencies[from] = {};
+            dependencies[from][to] = { confidence: confidence };
+            closePopup();
+            updateMatrix();
+            updateDashboard();
+        }
+        
+        function removeDependency(from, to) {
+            if (dependencies[from]) {
+                delete dependencies[from][to];
+            }
+            closePopup();
+            updateMatrix();
+            updateDashboard();
+        }
+        
+        function closePopup() {
+            const popup = document.getElementById('confidencePopup');
+            if (popup) popup.remove();
+            document.removeEventListener('click', closePopupOnClickOutside);
+        }
+        
+        // Keep old function for compatibility
+        function toggleDependency(from, to) {
+            if (!dependencies[from]) dependencies[from] = {};
+            if (dependencies[from][to]) {
+                delete dependencies[from][to];
+            } else {
+                dependencies[from][to] = { confidence: 'high' };
+            }
+            updateMatrix();
+            updateDashboard();
+        }
+        
+        function updateDashboard() {
+            const dashboard = document.getElementById('dashboard');
+            
+            if (elements.length === 0) {
+                dashboard.innerHTML = '<p style="color: #555; grid-column: 1/-1; text-align: center; font-size: 14px;">Add elements and dependencies to see metrics</p>';
+                document.getElementById('nextSteps').style.display = 'none';
+                return;
+            }
+            
+            const metrics = calculateMetrics();
+            
+            dashboard.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-card-label">Elements</div>
+                    <div class="metric-card-value">${metrics.elements}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Dependencies</div>
+                    <div class="metric-card-value">${metrics.dependencies}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Feedback Loops</div>
+                    <div class="metric-card-value ${metrics.feedbackLoops > metrics.dependencies * 0.3 ? 'warning' : ''}">${metrics.feedbackLoops}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Low Confidence</div>
+                    <div class="metric-card-value ${metrics.lowConfidenceCount > 0 ? 'warning' : ''}">${metrics.lowConfidenceCount}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Modularity</div>
+                    <div class="metric-card-value ${metrics.modularity > 0.6 ? 'good' : ''}">${(metrics.modularity * 100).toFixed(0)}%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-label">Clusters</div>
+                    <div class="metric-card-value">${metrics.clusterCount || '—'}</div>
+                </div>
+            `;
+            
+            // Update inline analysis
+            updateAnalysisContent(metrics);
+            
+            // Show next steps if there are dependencies
+            document.getElementById('nextSteps').style.display = metrics.dependencies > 0 ? 'block' : 'none';
+        }
+        
+        function updateAnalysisContent(metrics) {
+            const analysisDiv = document.getElementById('analysisContent');
+            const recsDiv = document.getElementById('recommendations');
+            
+            if (!metrics || metrics.dependencies === 0) {
+                analysisDiv.innerHTML = '';
+                recsDiv.style.display = 'none';
+                return;
+            }
+            
+            const critical = identifyCriticalElements();
+            const leverage = calculateLeverageScores();
+            
+            // Find highest leverage elements
+            const leverageRanked = elements
+                .map(el => ({ name: el, score: leverage[el].total }))
+                .filter(el => el.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 3);
+            
+            // Find low-confidence dependencies
+            const lowConfDeps = [];
+            elements.forEach(from => {
+                if (dependencies[from]) {
+                    Object.keys(dependencies[from]).forEach(to => {
+                        const dep = dependencies[from][to];
+                        if (typeof dep === 'object' && dep.confidence === 'low') {
+                            lowConfDeps.push({ from, to });
+                        }
+                    });
+                }
+            });
+            
+            let content = '<div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 15px;">';
+            content += `<p style="font-size: 14px; color: #166534; margin: 0 0 10px 0;">
+                <strong>${metrics.dependencies} dependencies</strong> mapped across <strong>${metrics.elements} elements</strong>.`;
+            
+            if (metrics.feedbackLoops > 0) {
+                content += ` <strong>${metrics.feedbackLoops} feedback loop${metrics.feedbackLoops > 1 ? 's' : ''}</strong> (above-diagonal dependencies) indicate iteration cycles.`;
+            }
+            content += '</p>';
+            
+            if (critical.bottlenecks.length > 0) {
+                content += `<p style="font-size: 14px; color: #166534; margin: 0 0 5px 0;"><strong>Potential bottlenecks:</strong> ${critical.bottlenecks.join(', ')} — many elements depend on these.</p>`;
+            }
+            if (leverageRanked.length > 0) {
+                content += `<p style="font-size: 14px; color: #166534; margin: 0 0 5px 0;"><strong>Highest leverage:</strong> ${leverageRanked.map(l => `${l.name} (${l.score} downstream)`).join(', ')} — improvements here cascade widely.</p>`;
+            }
+            if (critical.hubs.length > 0) {
+                content += `<p style="font-size: 14px; color: #166534; margin: 0 0 5px 0;"><strong>Hub elements:</strong> ${critical.hubs.join(', ')} — these depend on many others.</p>`;
+            }
+            if (lowConfDeps.length > 0) {
+                content += `<p style="font-size: 14px; color: #b45309; margin: 0;"><strong>⚠ ${lowConfDeps.length} low-confidence dependenc${lowConfDeps.length > 1 ? 'ies' : 'y'}:</strong> ${lowConfDeps.slice(0, 3).map(d => `"${d.from}" → "${d.to}"`).join(', ')}${lowConfDeps.length > 3 ? '...' : ''} — consider testing these assumptions.</p>`;
+            }
+            content += '</div>';
+            
+            analysisDiv.innerHTML = content;
+            
+            // Generate recommendations if there are issues
+            let recs = [];
+            
+            if (metrics.feedbackLoops > metrics.dependencies * 0.3) {
+                recs.push('<strong>High feedback complexity:</strong> Many above-diagonal dependencies suggest significant iteration. Consider explicit iteration protocols for elements in feedback loops.');
+            }
+            
+            if (metrics.modularity < 0.5 && metrics.clusterCount > 1) {
+                recs.push('<strong>Low modularity:</strong> Dependencies cross cluster boundaries frequently. Consider strengthening module interfaces or reassigning elements.');
+            }
+            
+            if (metrics.avgDepsPerElement > 3) {
+                recs.push('<strong>High coupling:</strong> Elements have many dependencies on average. Consider introducing coordination roles or abstraction layers.');
+            }
+            
+            if (critical.bottlenecks.length > 0) {
+                recs.push(`<strong>Bottleneck risk:</strong> ${critical.bottlenecks.join(', ')} have many incoming dependencies. If these elements are slow or unavailable, they may block others.`);
+            }
+            
+            if (lowConfDeps.length > 0) {
+                recs.push(`<strong>Assumption testing needed:</strong> You have ${lowConfDeps.length} low-confidence dependenc${lowConfDeps.length > 1 ? 'ies' : 'y'}. Use <em>Key Assumptions Check</em> to test whether these are real constraints or self-imposed.`);
+            }
+            
+            if (recs.length > 0) {
+                recsDiv.innerHTML = '<h4 style="margin: 0 0 10px 0; color: #444;">Observations</h4><ul style="margin: 0; padding-left: 20px;">' + 
+                    recs.map(r => `<li style="margin-bottom: 8px; font-size: 14px; color: #333;">${r}</li>`).join('') + 
+                    '</ul>';
+                recsDiv.style.display = 'block';
+            } else {
+                recsDiv.style.display = 'none';
+            }
+        }
+        
+        function calculateMetrics() {
+            let totalDeps = 0;
+            let feedbackLoops = 0;
+            let modularity = 0;
+            let lowConfidenceCount = 0;
+            
+            elements.forEach((from, i) => {
+                elements.forEach((to, j) => {
+                    if (dependencies[from] && dependencies[from][to]) {
+                        totalDeps++;
+                        if (i > j) feedbackLoops++;
+                        const dep = dependencies[from][to];
+                        if (typeof dep === 'object' && dep.confidence === 'low') {
+                            lowConfidenceCount++;
+                        }
+                    }
+                });
+            });
+            
+            if (Object.keys(clusters).length > 0) {
+                let withinCluster = 0;
+                elements.forEach(from => {
+                    if (dependencies[from]) {
+                        Object.keys(dependencies[from]).forEach(to => {
+                            if (clusters[from] === clusters[to]) {
+                                withinCluster++;
+                            }
+                        });
+                    }
+                });
+                modularity = totalDeps > 0 ? (withinCluster / totalDeps) : 0;
+            }
+            
+            return {
+                elements: elements.length,
+                dependencies: totalDeps,
+                feedbackLoops: feedbackLoops,
+                modularity: modularity,
+                avgDepsPerElement: elements.length > 0 ? totalDeps / elements.length : 0,
+                clusterCount: new Set(Object.values(clusters)).size,
+                lowConfidenceCount: lowConfidenceCount
+            };
+        }
+        
+        function calculateLeverageScores() {
+            // Calculate downstream impact for each element
+            // An element's leverage = how many things (directly + indirectly) depend on it
+            const leverage = {};
+            
+            elements.forEach(el => {
+                leverage[el] = { direct: 0, indirect: 0, total: 0 };
+            });
+            
+            // Count direct dependents (fan-out: things that depend on this element)
+            elements.forEach(el => {
+                elements.forEach(other => {
+                    if (dependencies[other] && dependencies[other][el]) {
+                        leverage[el].direct++;
+                    }
+                });
+            });
+            
+            // Calculate indirect impact using BFS from each element
+            elements.forEach(startEl => {
+                const visited = new Set([startEl]);
+                const queue = [];
+                
+                // Find all elements that directly depend on startEl
+                elements.forEach(other => {
+                    if (dependencies[other] && dependencies[other][startEl]) {
+                        queue.push(other);
+                    }
+                });
+                
+                while (queue.length > 0) {
+                    const current = queue.shift();
+                    if (visited.has(current)) continue;
+                    visited.add(current);
+                    leverage[startEl].indirect++;
+                    
+                    // Find elements that depend on current
+                    elements.forEach(other => {
+                        if (!visited.has(other) && dependencies[other] && dependencies[other][current]) {
+                            queue.push(other);
+                        }
+                    });
+                }
+                
+                leverage[startEl].total = leverage[startEl].direct + leverage[startEl].indirect;
+            });
+            
+            return leverage;
+        }
+        
+        function showLeverageAnalysis() {
+            if (elements.length === 0) {
+                alert('Add elements first.');
+                return;
+            }
+            
+            const leverage = calculateLeverageScores();
+            const leverageRanked = elements
+                .map(el => ({ 
+                    name: el, 
+                    direct: leverage[el].direct,
+                    indirect: leverage[el].indirect,
+                    total: leverage[el].total 
+                }))
+                .sort((a, b) => b.total - a.total);
+            
+            let content = '<p style="font-size: 14px; color: #92400e; margin: 0 0 12px 0;"><strong>How to read this:</strong> "Direct" = elements that immediately depend on this one. "Indirect" = elements further downstream that are affected through dependency chains. Higher total = more leverage.</p>';
+            
+            content += '<table style="width: 100%; border-collapse: collapse; font-size: 14px;">';
+            content += '<tr style="background: #fef3c7;"><th style="text-align: left; padding: 8px; border-bottom: 2px solid #f59e0b;">Element</th><th style="padding: 8px; border-bottom: 2px solid #f59e0b;">Direct</th><th style="padding: 8px; border-bottom: 2px solid #f59e0b;">Indirect</th><th style="padding: 8px; border-bottom: 2px solid #f59e0b;">Total</th></tr>';
+            
+            leverageRanked.forEach((el, idx) => {
+                const highlight = idx < 3 && el.total > 0 ? 'background: #fef9c3;' : '';
+                content += `<tr style="${highlight}"><td style="padding: 8px; border-bottom: 1px solid #fde68a;">${el.name}</td><td style="text-align: center; padding: 8px; border-bottom: 1px solid #fde68a;">${el.direct}</td><td style="text-align: center; padding: 8px; border-bottom: 1px solid #fde68a;">${el.indirect}</td><td style="text-align: center; padding: 8px; border-bottom: 1px solid #fde68a; font-weight: bold;">${el.total}</td></tr>`;
+            });
+            
+            content += '</table>';
+            
+            content += '<p style="font-size: 14px; color: #92400e; margin: 12px 0 0 0;"><strong>Matrix shortcut:</strong> Count the marks in each column — columns with many marks are high-leverage elements. Improving their quality or speed cascades to everything that depends on them.</p>';
+            
+            document.getElementById('leverageContent').innerHTML = content;
+            document.getElementById('leveragePanel').style.display = 'block';
+        }
+        
+        function hideLeveragePanel() {
+            document.getElementById('leveragePanel').style.display = 'none';
+        }
+        
+        function identifyClusters() {
+            if (elements.length < 2) {
+                alert('Add at least 2 elements to identify clusters.');
+                return;
+            }
+            
+            clusters = {};
+            const visited = new Set();
+            let clusterNum = 0;
+            
+            function getConnected(el) {
+                const connected = new Set();
+                if (dependencies[el]) {
+                    Object.keys(dependencies[el]).forEach(to => connected.add(to));
+                }
+                elements.forEach(other => {
+                    if (dependencies[other] && dependencies[other][el]) {
+                        connected.add(other);
+                    }
+                });
+                return connected;
+            }
+            
+            function dfs(el, cluster) {
+                if (visited.has(el)) return;
+                visited.add(el);
+                clusters[el] = cluster;
+                getConnected(el).forEach(connected => {
+                    dfs(connected, cluster);
+                });
+            }
+            
+            elements.forEach(el => {
+                if (!visited.has(el)) {
+                    clusterNum++;
+                    dfs(el, clusterNum);
+                }
+            });
+            
+            updateMatrix();
+            updateDashboard();
+        }
+        
+        function optimizeSequence() {
+            if (elements.length < 2) {
+                alert('Add at least 2 elements to optimise sequence.');
+                return;
+            }
+            
+            const inDegree = {};
+            const adjList = {};
+            
+            elements.forEach(el => {
+                inDegree[el] = 0;
+                adjList[el] = [];
+            });
+            
+            elements.forEach(from => {
+                if (dependencies[from]) {
+                    Object.keys(dependencies[from]).forEach(to => {
+                        adjList[to].push(from);
+                        inDegree[from]++;
+                    });
+                }
+            });
+            
+            const queue = [];
+            const sorted = [];
+            
+            elements.forEach(el => {
+                if (inDegree[el] === 0) queue.push(el);
+            });
+            
+            while (queue.length > 0) {
+                const current = queue.shift();
+                sorted.push(current);
+                
+                adjList[current].forEach(neighbor => {
+                    inDegree[neighbor]--;
+                    if (inDegree[neighbor] === 0) {
+                        queue.push(neighbor);
+                    }
+                });
+            }
+            
+            elements.forEach(el => {
+                if (!sorted.includes(el)) sorted.push(el);
+            });
+            
+            elements = sorted;
+            updateElementList();
+            updateMatrix();
+            updateDashboard();
+        }
+        
+        function identifyCriticalElements() {
+            const depCounts = {};
+            
+            elements.forEach(el => {
+                depCounts[el] = { in: 0, out: 0 };
+            });
+            
+            elements.forEach(from => {
+                if (dependencies[from]) {
+                    Object.keys(dependencies[from]).forEach(to => {
+                        depCounts[from].out++;
+                        if (depCounts[to]) depCounts[to].in++;
+                    });
+                }
+            });
+            
+            const threshold = Math.max(2, elements.length * 0.25);
+            
+            return {
+                bottlenecks: elements.filter(el => depCounts[el].in >= threshold),
+                hubs: elements.filter(el => depCounts[el].out >= threshold)
+            };
+        }
+        
+        function generateFlowchart() {
+            if (elements.length === 0) {
+                alert('Add elements first.');
+                return;
+            }
+            
+            let mermaid = 'flowchart TD\n';
+            
+            // Add nodes
+            elements.forEach((el, i) => {
+                const safeId = `n${i}`;
+                const clusterNum = clusters[el];
+                mermaid += `    ${safeId}["${el}"]\n`;
+            });
+            
+            mermaid += '\n';
+            
+            // Add edges (dependencies) with different styles for confidence levels
+            elements.forEach((from, fromIdx) => {
+                if (dependencies[from]) {
+                    Object.keys(dependencies[from]).forEach(to => {
+                        const toIdx = elements.indexOf(to);
+                        if (toIdx !== -1) {
+                            const dep = dependencies[from][to];
+                            const conf = typeof dep === 'object' ? dep.confidence : 'high';
+                            // Arrow from dependency TO dependent (to -> from)
+                            // Use different line styles: solid for high, dashed for medium, dotted for low
+                            if (conf === 'high') {
+                                mermaid += `    n${toIdx} --> n${fromIdx}\n`;
+                            } else if (conf === 'medium') {
+                                mermaid += `    n${toIdx} -.-> n${fromIdx}\n`;
+                            } else {
+                                mermaid += `    n${toIdx} -..-> n${fromIdx}\n`;
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Add legend for confidence
+            mermaid += '\n    %% Legend: --> High confidence, -.-> Medium, -..-> Low\n';
+            
+            // Add cluster styling if clusters exist
+            if (Object.keys(clusters).length > 0) {
+                const clusterGroups = {};
+                elements.forEach((el, i) => {
+                    const c = clusters[el];
+                    if (c) {
+                        if (!clusterGroups[c]) clusterGroups[c] = [];
+                        clusterGroups[c].push(`n${i}`);
+                    }
+                });
+                
+                mermaid += '\n';
+                Object.entries(clusterGroups).forEach(([clusterNum, nodes]) => {
+                    const colors = ['#d1fae5', '#dbeafe', '#fef3c7', '#ede9fe', '#fce7f3'];
+                    const color = colors[(parseInt(clusterNum) - 1) % colors.length];
+                    mermaid += `    style ${nodes.join(',')} fill:${color}\n`;
+                });
+            }
+            
+            document.getElementById('mermaidCode').textContent = mermaid;
+            document.getElementById('flowchartContainer').classList.add('visible');
+        }
+        
+        function hideFlowchart() {
+            document.getElementById('flowchartContainer').classList.remove('visible');
+        }
+        
+        function copyMermaid() {
+            const code = document.getElementById('mermaidCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Mermaid code copied! Paste into a Mermaid renderer or Claude conversation.');
+            });
+        }
+        
+        function saveDSM() {
+            const data = {
+                version: '2.0',
+                timestamp: new Date().toISOString(),
+                elements: elements,
+                dependencies: dependencies,
+                clusters: clusters
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dsm_analysis.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadDSM(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    elements = data.elements || [];
+                    dependencies = data.dependencies || {};
+                    clusters = data.clusters || {};
+                    updateElementList();
+                    updateMatrix();
+                    updateDashboard();
+                } catch (err) {
+                    alert('Error loading file. Please ensure it is a valid DSM JSON file.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        function loadExample() {
+            elements = [
+                'Executive Director',
+                'Policy Research',
+                'Government Relations',
+                'Communications',
+                'Technical Advisors',
+                'Operations',
+                'Coalition Partners',
+                'Funders'
+            ];
+            
+            // Dependencies with confidence levels showing realistic uncertainty
+            dependencies = {
+                'Executive Director': {},
+                'Policy Research': { 
+                    'Technical Advisors': { confidence: 'high' },  // Structural: need science for credibility
+                    'Government Relations': { confidence: 'medium' }  // Need political feasibility input
+                },
+                'Government Relations': { 
+                    'Executive Director': { confidence: 'high' },  // ED owns key relationships
+                    'Policy Research': { confidence: 'high' },  // Need policy content to advocate
+                    'Coalition Partners': { confidence: 'low' }  // Assumption: do we really need coalition buy-in first?
+                },
+                'Communications': { 
+                    'Policy Research': { confidence: 'high' },  // Need content to communicate
+                    'Executive Director': { confidence: 'medium' }  // Approval needed, but how much?
+                },
+                'Technical Advisors': {},
+                'Operations': { 
+                    'Executive Director': { confidence: 'high' },  // Budget authority
+                    'Funders': { confidence: 'high' }  // Grant requirements
+                },
+                'Coalition Partners': { 
+                    'Government Relations': { confidence: 'low' }  // Assumption: do they really wait for our GR intel?
+                },
+                'Funders': { 
+                    'Executive Director': { confidence: 'high' },  // Relationship management
+                    'Operations': { confidence: 'medium' }  // Reporting dependency
+                }
+            };
+            
+            clusters = {};
+            
+            updateElementList();
+            updateMatrix();
+            updateDashboard();
+        }
+        
+        function exportCSV() {
+            if (elements.length === 0) {
+                alert('Add elements first.');
+                return;
+            }
+            
+            let csv = 'DSM,' + elements.join(',') + '\n';
+            
+            elements.forEach(row => {
+                csv += '"' + row + '",';
+                csv += elements.map(col => {
+                    if (row === col) return 'X';
+                    if (dependencies[row] && dependencies[row][col]) {
+                        const dep = dependencies[row][col];
+                        const conf = typeof dep === 'object' ? dep.confidence : 'high';
+                        // Use H/M/L for high/medium/low confidence
+                        return conf === 'high' ? 'H' : (conf === 'medium' ? 'M' : 'L');
+                    }
+                    return '';
+                }).join(',');
+                csv += '\n';
+            });
+            
+            csv += '\nLegend: H=High confidence, M=Medium confidence, L=Low confidence, X=Self\n';
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dsm_matrix.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function copyReport() {
+            if (elements.length === 0) {
+                alert('Add elements first.');
+                return;
+            }
+            
+            const metrics = calculateMetrics();
+            const critical = identifyCriticalElements();
+            const leverage = calculateLeverageScores();
+            
+            // Find highest leverage elements
+            const leverageRanked = elements
+                .map(el => ({ name: el, score: leverage[el].total }))
+                .filter(el => el.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 3);
+            
+            // Find low-confidence dependencies
+            const lowConfDeps = [];
+            const medConfDeps = [];
+            elements.forEach(from => {
+                if (dependencies[from]) {
+                    Object.keys(dependencies[from]).forEach(to => {
+                        const dep = dependencies[from][to];
+                        if (typeof dep === 'object') {
+                            if (dep.confidence === 'low') lowConfDeps.push({ from, to });
+                            else if (dep.confidence === 'medium') medConfDeps.push({ from, to });
+                        }
+                    });
+                }
+            });
+            
+            let report = `DESIGN STRUCTURE MATRIX REPORT
+Generated: ${new Date().toLocaleString()}
+
+ELEMENTS (${elements.length}):
+${elements.map((el, i) => `${i + 1}. ${el}`).join('\n')}
+
+DEPENDENCIES (by confidence):
+`;
+            
+            // Group dependencies by confidence
+            elements.forEach(from => {
+                if (dependencies[from]) {
+                    const deps = Object.keys(dependencies[from]);
+                    if (deps.length > 0) {
+                        const depsWithConf = deps.map(to => {
+                            const dep = dependencies[from][to];
+                            const conf = typeof dep === 'object' ? dep.confidence : 'high';
+                            return `${to} [${conf}]`;
+                        });
+                        report += `• ${from} depends on: ${depsWithConf.join(', ')}\n`;
+                    }
+                }
+            });
+            
+            report += `
+METRICS:
+• Total dependencies: ${metrics.dependencies}
+• Feedback loops: ${metrics.feedbackLoops}
+• Low-confidence dependencies: ${metrics.lowConfidenceCount}
+• Modularity: ${(metrics.modularity * 100).toFixed(0)}%
+• Clusters identified: ${metrics.clusterCount || 0}
+`;
+            
+            if (critical.bottlenecks.length > 0) {
+                report += `• Potential bottlenecks: ${critical.bottlenecks.join(', ')}\n`;
+            }
+            if (leverageRanked.length > 0) {
+                report += `• Highest leverage: ${leverageRanked.map(l => `${l.name} (${l.score} downstream)`).join(', ')}\n`;
+            }
+            if (critical.hubs.length > 0) {
+                report += `• Hub elements: ${critical.hubs.join(', ')}\n`;
+            }
+            
+            if (lowConfDeps.length > 0) {
+                report += `\nLOW-CONFIDENCE DEPENDENCIES (assumptions to test):\n`;
+                lowConfDeps.forEach(d => {
+                    report += `• "${d.from}" depends on "${d.to}" — is this a real constraint?\n`;
+                });
+            }
+            
+            report += `
+CSV FORMAT (for Claude analysis):
+Legend: H=High confidence, M=Medium, L=Low, X=Self
+DSM,${elements.join(',')}
+`;
+            elements.forEach(row => {
+                report += `${row},` + elements.map(col => {
+                    if (row === col) return 'X';
+                    if (dependencies[row] && dependencies[row][col]) {
+                        const dep = dependencies[row][col];
+                        const conf = typeof dep === 'object' ? dep.confidence : 'high';
+                        return conf === 'high' ? 'H' : (conf === 'medium' ? 'M' : 'L');
+                    }
+                    return '';
+                }).join(',') + '\n';
+            });
+            
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Report copied to clipboard!');
+            });
+        }
+        
+        function copyTemplate() {
+            const template = document.getElementById('claudeTemplate').innerText;
+            navigator.clipboard.writeText(template).then(() => {
+                alert('Template copied! Paste into a Claude conversation with your DSM.');
+            });
+        }
+        
+        function clearAll() {
+            if (elements.length === 0 || confirm('Clear all elements and dependencies?')) {
+                elements = [];
+                dependencies = {};
+                clusters = {};
+                updateElementList();
+                updateMatrix();
+                updateDashboard();
+                hideAnalysis();
+                hideFlowchart();
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+        
+        // Initialize
+        updateElementList();
+        updateMatrix();
+        updateDashboard();
+    </script>
+</body>
+</html>

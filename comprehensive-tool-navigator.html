@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis & Facilitation Tool Navigator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            margin: 0 0 15px 0;
+            color: #2c5282;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+        }
+        
+        .tool-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .tool-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .tool-card.selected {
+            background: #e8f4f8;
+            border-color: #4a90e2;
+        }
+        
+        .tool-name {
+            font-weight: bold;
+            color: #2c5282;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .tool-description {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .tool-params {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .param {
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            color: #555;
+        }
+        
+        .param.reversibility {
+            background: #fee;
+            color: #c00;
+        }
+        
+        .param.data {
+            background: #eff;
+            color: #066;
+        }
+        
+        .param.time {
+            background: #fef;
+            color: #606;
+        }
+        
+        .param.category {
+            background: #eef;
+            color: #00c;
+        }
+        
+        .tool-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .tool-card.expanded .tool-details {
+            display: block;
+        }
+        
+        .tool-combination {
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Analysis & Facilitation Tool Navigator</h1>
+        <p style="margin: 15px 0 10px 0; color: #666;">Select one or more filters below to narrow your search, or browse all tools:</p>
+        <div class="filters">
+            <div class="filter-group">
+                <label>Category</label>
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="uncertainty">Uncertainty & Risk Analysis</option>
+                    <option value="decision">Decision Making & Prioritization</option>
+                    <option value="sensemaking">Sensemaking & Pattern Recognition</option>
+                    <option value="team">Team Dynamics & Collective Intelligence</option>
+                    <option value="strategic">Strategic Review & System Design</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Decision Type</label>
+                <select id="decisionFilter">
+                    <option value="">All Types</option>
+                    <option value="irreversible">Type 1: Irreversible/High-stakes</option>
+                    <option value="reversible">Type 2: Reversible/Low-cost</option>
+                    <option value="uncertain">Type 3: High uncertainty</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Data Needs</label>
+                <select id="dataFilter">
+                    <option value="">Any</option>
+                    <option value="concrete">Needs concrete data</option>
+                    <option value="hunches">Works with hunches</option>
+                    <option value="mixed">Flexible</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Time Investment</label>
+                <select id="timeFilter">
+                    <option value="">Any duration</option>
+                    <option value="5min">5 minutes</option>
+                    <option value="30min">30 minutes</option>
+                    <option value="2hr">2+ hours</option>
+                    <option value="multi-day">Multi-day</option>
+                </select>
+            </div>
+        </div>
+        <input type="text" class="search-box" id="searchBox" placeholder="Search tools by name or description...">
+    </div>
+    
+    <div class="container">
+        <div class="tools-grid" id="toolsGrid">
+            <!-- All tools will be inserted here by JavaScript -->
+        </div>
+        <div class="no-results hidden" id="noResults">
+            No tools found matching your criteria. Try adjusting the filters.
+        </div>
+    </div>
+    
+    <script>
+        // Tool data structure
+        const tools = [
+            // Uncertainty & Risk Analysis
+            {
+                category: "uncertainty",
+                name: "FMEA (Failure Mode & Effects Analysis)",
+                description: "Systematic identification of failure points and their cascading effects. Essential for AI safety critical systems.",
+                tags: "irreversible concrete 2hr",
+                details: {
+                    when: "Before deploying any system where failure has serious consequences",
+                    process: "List failure modes →’ Rate severity/likelihood/detectability → Prioritize interventions",
+                    worksWith: "Red Team Analysis, Design Structure Matrix"
+                }
+            },
+            {
+                category: "uncertainty",
+                name: "Uncertainty Cascades",
+                description: "Map interconnected uncertainties to understand compound risks and decision dependencies.",
+                tags: "uncertain mixed 30min",
+                details: {
+                    when: "When multiple uncertainties interact in complex ways",
+                    process: "Map dependencies → Assign probabilities → Identify critical paths → Design hedges",
+                    worksWith: "Monte Carlo Simulation, Scenario Planning"
+                }
+            },
+            {
+                category: "uncertainty",
+                name: "Pre-mortem Analysis",
+                description: "Imagine failure happened and work backwards to identify prevention strategies.",
+                tags: "irreversible mixed 2hr",
+                details: {
+                    when: "Before major launches or irreversible decisions",
+                    process: "Assume failure → Brainstorm causes → Work backwards → Create prevention plan",
+                    worksWith: "Key Assumptions Check, Indicators of Change"
+                }
+            },
+            {
+                category: "uncertainty",
+                name: "Monte Carlo Simulation",
+                description: "Model uncertainty through repeated random sampling to understand probability distributions.",
+                tags: "uncertain concrete 2hr",
+                details: {
+                    when: "When you have probability estimates but complex interactions",
+                    process: "Define variables → Set distributions → Run simulations → Analyze outcomes",
+                    worksWith: "Fermi Estimation, Reference Class Forecasting"
+                }
+            },
+            {
+                category: "uncertainty",
+                name: "Safe-to-Fail Experiments",
+                description: "Design small tests that probe uncertain territory with limited downside.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "When uncertainty is high but action is needed",
+                    process: "Define hypothesis → Design minimal test → Set failure criteria → Extract learning",
+                    worksWith: "Indicators of Change, Adaptive Cycle Framework"
+                }
+            },
+            {
+                category: "uncertainty",
+                name: "Red Team Analysis",
+                description: "Test robustness by thinking like an adversary or critic.",
+                tags: "irreversible mixed 2hr",
+                details: {
+                    when: "Before deploying security-critical systems or strategies",
+                    process: "Define system → Think adversarially → Find vulnerabilities → Strengthen defenses",
+                    worksWith: "FMEA, Pre-mortem Analysis"
+                }
+            },
+            {
+                category: "uncertainty",
+                name: "Cone of Possibilities",
+                description: "Map how situations could evolve based on key drivers and assumptions.",
+                tags: "uncertain mixed multi-day",
+                details: {
+                    when: "For long-term strategic planning under uncertainty",
+                    process: "Identify drivers → Create baseline → Generate scenarios → Track indicators",
+                    worksWith: "Environmental Scan, Indicators of Change"
+                }
+            },
+            {
+                category: "uncertainty",
+                name: "Self-Organized Criticality",
+                description: "Understand systems at critical states where small changes can cascade into large effects.",
+                tags: "uncertain mixed 2hr",
+                details: {
+                    when: "Analyzing systems prone to cascade failures or tipping points",
+                    process: "Identify critical parameters → Map cascade pathways → Design circuit breakers",
+                    worksWith: "Resilience Thinking, Strange Attractors"
+                }
+            },
+            
+            // Decision Making & Prioritization
+            {
+                category: "decision",
+                name: "Multi-Criteria Decision Analysis (MCDA)",
+                description: "Systematic evaluation of options against weighted criteria with stakeholder input.",
+                tags: "irreversible concrete multi-day",
+                details: {
+                    when: "Complex decisions with multiple stakeholders and criteria",
+                    process: "Define criteria → Weight importance → Score options → Sensitivity analysis",
+                    worksWith: "AHP for structuring, Swing Weighting for weights"
+                }
+            },
+            {
+                category: "decision",
+                name: "Analytic Hierarchy Process (AHP)",
+                description: "Structure complex decisions into hierarchical criteria with pairwise comparisons.",
+                tags: "irreversible concrete 2hr",
+                details: {
+                    when: "Before MCDA to structure decision criteria",
+                    process: "Build hierarchy → Pairwise comparisons → Check consistency → Calculate weights",
+                    note: "Use geometric mean for group decisions"
+                }
+            },
+            {
+                category: "decision",
+                name: "Value-Focused Thinking (Keeney)",
+                description: "Start with fundamental values to generate better alternatives rather than just comparing existing options.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "When stuck with poor options or need innovation",
+                    process: "Identify fundamental objectives → Build means-objectives network → Create new alternatives",
+                    worksWith: "Polarity Mapping, Purpose Probe"
+                }
+            },
+            {
+                category: "decision",
+                name: "Advice Process Tracker",
+                description: "Systematically gather input from those with expertise or stake in the decision.",
+                tags: "uncertain mixed 30min",
+                details: {
+                    when: "Any decision affecting multiple people",
+                    process: "Identify stakeholders → Gather perspectives → Document advice → Make decision transparent",
+                    worksWith: "Epistemological Diversity Mapping"
+                }
+            },
+            {
+                category: "decision",
+                name: "Reference Class Forecasting",
+                description: "Use similar past cases to improve predictions and avoid planning fallacy.",
+                tags: "irreversible concrete 30min",
+                details: {
+                    when: "When making predictions about project outcomes",
+                    process: "Find similar cases → Extract base rates → Adjust for specifics → Check biases",
+                    worksWith: "Fermi Estimation, Monte Carlo"
+                }
+            },
+            {
+                category: "decision",
+                name: "Fermi Estimation",
+                description: "Break complex calculations into manageable pieces for order-of-magnitude estimates.",
+                tags: "reversible mixed 5min",
+                details: {
+                    when: "Reality-checking claims or getting ballpark figures",
+                    process: "Decompose problem → Estimate components → Multiply through → Sanity check",
+                    worksWith: "Reference Class Forecasting"
+                }
+            },
+            {
+                category: "decision",
+                name: "Swing Weighting",
+                description: "Ground criteria weights in actual ranges rather than abstract importance.",
+                tags: "reversible concrete 30min",
+                details: {
+                    when: "Setting weights for MCDA or similar decisions",
+                    process: "Define ranges → Identify most valuable swing → Assign 100 → Compare others",
+                    worksWith: "MCDA, AHP"
+                }
+            },
+            {
+                category: "decision",
+                name: "Problem Mapping with Facilitator",
+                description: "Expert-guided deep dive into problem structure for wicked or high-stakes challenges.",
+                tags: "irreversible mixed 2hr",
+                details: {
+                    when: "Problems that resist standard analysis or have failed attempts",
+                    process: "Facilitator guides through problem structure mapping, causal analysis, leverage identification",
+                    note: "Consider for problems worth >$100k or affecting >50 people"
+                }
+            },
+            
+            // Sensemaking & Pattern Recognition
+            {
+                category: "sensemaking",
+                name: "Environmental Scan",
+                description: "Map all forces affecting your situation across multiple domains (social, technical, economic, etc).",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "Starting point for understanding any complex situation",
+                    process: "List categories → Brainstorm forces → Look for interactions → Identify gaps",
+                    worksWith: "Connection Circles, Outside-In Thinking"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Connection Circles",
+                description: "Visualize how different elements interact and influence each other in a system.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "Understanding feedback loops and system dynamics",
+                    process: "List elements → Draw connections → Identify loops → Find leverage points",
+                    worksWith: "Strange Attractors, Self-Organized Criticality"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Key Assumptions Check",
+                description: "Surface and test hidden assumptions that your analysis depends on.",
+                tags: "reversible hunches 5min",
+                details: {
+                    when: "Start of ANY analysis or when something feels off",
+                    process: "List assumptions → Rate importance/confidence → Test shaky load-bearers",
+                    note: "Universal tool - should be used with almost every other technique"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Quality of Information Check",
+                description: "Assess reliability of sources and confidence in your information.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "When decisions depend on uncertain information",
+                    process: "List sources → Rate credibility → Check biases → Flag uncertainties",
+                    worksWith: "Ladder of Inference, Epistemological Diversity Mapping"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Warm Data Approaches",
+                description: "Understand complex systems by examining relationships between relationships across contexts.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "When traditional analysis misses important contextual factors",
+                    process: "Multiple contexts → Cross-context patterns → Relational insights",
+                    worksWith: "Metaphor Mapping, Edge Effect Cultivation"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Ladder of Inference",
+                description: "Trace back from conclusions to raw data to expose reasoning steps and biases.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "When team has different conclusions from same data",
+                    process: "Start with conclusion → Work backwards → Find divergence point → Test steps",
+                    worksWith: "Clean Language, Double Crux"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Cynefin Framework",
+                description: "Categorize problems by domain (Clear/Complicated/Complex/Chaotic) to match approach to context.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "When unsure what type of problem you're facing",
+                    process: "Assess domain → Match approach → Act accordingly",
+                    note: "Meta-tool that helps select other appropriate tools"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Pattern Language Development",
+                description: "Capture recurring successful patterns that can be combined into larger solutions.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "Building reusable knowledge from experience",
+                    process: "Identify pattern → Define context → Document solution → Link patterns",
+                    worksWith: "Collective Memory Systems"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Conversation Mapping",
+                description: "Track how ideas evolve and combine during discussions, showing relationships between concepts.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "Complex multi-stakeholder discussions needing synthesis",
+                    process: "Real-time capture → Show relationships → Track evolution → Identify synthesis",
+                    worksWith: "Epistemological Diversity Mapping, Clean Language"
+                }
+            },
+            {
+                category: "sensemaking",
+                name: "Knowledge Crystallization Patterns",
+                description: "Understand how raw information becomes actionable knowledge through specific cognitive patterns.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Designing effective knowledge management systems",
+                    process: "Identify info types → Map processing patterns → Design capture methods",
+                    worksWith: "Collective Memory Systems, Pattern Language"
+                }
+            },
+            
+            // Team Dynamics & Collective Intelligence
+            {
+                category: "team",
+                name: "Ephemeral Group Process (EGP)",
+                description: "Collective sensemaking through structured rounds of deep inquiry on topics that matter.",
+                tags: "reversible hunches 2hr",
+                details: {
+                    when: "When the question itself needs collective exploration",
+                    process: "Rounds of sharing → Deep listening → Emergent insights",
+                    worksWith: "Circling, Purpose Probe"
+                }
+            },
+            {
+                category: "team",
+                name: "Liberating Structures",
+                description: "33+ microstructures for facilitating participation and unleashing collective intelligence.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "Breaking out of unproductive meeting patterns",
+                    examples: "1-2-4-All, Troika Consulting, 25/10 Crowd Sourcing",
+                    worksWith: "Any other process as warm-up or integration"
+                }
+            },
+            {
+                category: "team",
+                name: "Clean Language",
+                description: "Explore mental models using precise questions that minimize facilitator contamination.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "Understanding how team members really think about problems",
+                    keyQuestions: '"What kind of X is that?" "Is there anything else about X?"',
+                    worksWith: "Metaphor Mapping, Epistemological Diversity"
+                }
+            },
+            {
+                category: "team",
+                name: "Polarity Mapping",
+                description: "Work with tensions that are polarities to manage rather than problems to solve.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Recurring tensions that won't go away",
+                    process: "Map both poles → Identify upsides/downsides → Design actions → Set indicators",
+                    worksWith: "Value-Focused Thinking, Adaptive Cycle"
+                }
+            },
+            {
+                category: "team",
+                name: "Team A/Team B Analysis",
+                description: "Structure competing hypotheses with dedicated teams arguing each side.",
+                tags: "uncertain mixed 2hr",
+                details: {
+                    when: "Major disagreements or competing strategies",
+                    process: "Assign teams → Steelman arguments → Present to judges → Synthesize",
+                    worksWith: "Double Crux, Epistemological Diversity Mapping"
+                }
+            },
+            {
+                category: "team",
+                name: "Double Crux (CFAR)",
+                description: "Find the real points of disagreement in conflicts by identifying mutual cruxes.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "When disagreements seem intractable",
+                    process: "State positions → Find cruxes → Test if mutual → Examine evidence",
+                    worksWith: "Ladder of Inference, Clean Language"
+                }
+            },
+            {
+                category: "team",
+                name: "Epistemological Diversity Mapping",
+                description: "Map different ways of knowing in your team to leverage cognitive diversity.",
+                tags: "reversible hunches 2hr",
+                details: {
+                    when: "Complex problems needing multiple perspectives",
+                    process: "Identify knowledge types → Map team strengths → Design integration",
+                    worksWith: "Cultural Intelligence Tools, Warm Data"
+                }
+            },
+            {
+                category: "team",
+                name: "NVC (Nonviolent Communication)",
+                description: "Structure communication through observations, feelings, needs, and requests.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "Addressing conflicts or charged situations",
+                    process: "Observe without evaluation → Express feelings → State needs → Make requests",
+                    worksWith: "Circling, Double Crux"
+                }
+            },
+            {
+                category: "team",
+                name: "Circling",
+                description: "Present-moment relational awareness practice for deep interpersonal understanding.",
+                tags: "reversible hunches 2hr",
+                details: {
+                    when: "Building deep team trust and awareness",
+                    process: "One person as focus → Others share present experience → Stay with what emerges",
+                    worksWith: "NVC, EGP"
+                }
+            },
+            {
+                category: "team",
+                name: "Goal Factoring (CFAR)",
+                description: "Decompose goals to understand true motivations and find better ways to achieve them.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "When goals conflict or methods seem inefficient",
+                    process: 'List goals → Ask "why?" repeatedly → Find root motivations → Redesign approach',
+                    worksWith: "Value-Focused Thinking, Purpose Probe"
+                }
+            },
+            
+            // Strategic Review & System Design
+            {
+                category: "strategic",
+                name: "Indicators of Change",
+                description: "Set up tracking systems for early signals of important shifts.",
+                tags: "uncertain mixed 30min",
+                details: {
+                    when: "After any scenario planning or strategy work",
+                    process: "Define scenarios → List observable signals → Create dashboard → Regular review",
+                    worksWith: "Cone of Possibilities, Adaptive Cycle"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Design Structure Matrix",
+                description: "Visualize and optimize dependencies in complex systems or projects.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Designing modular systems or managing complex projects",
+                    process: "List elements → Map dependencies → Cluster → Optimize sequence",
+                    worksWith: "Service Blueprinting, Problem Structure Mapping"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Adaptive Cycle Framework",
+                description: "Understand system phases (growth/conservation/release/reorganization) to time interventions.",
+                tags: "reversible mixed multi-day",
+                details: {
+                    when: "Managing transformative change or resilience",
+                    process: "Identify current phase → Match interventions → Monitor transitions",
+                    worksWith: "Resilience Thinking, Strange Attractors"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Outside-In Thinking",
+                description: "Start with external forces and trends to understand their impact on your situation.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Strategic planning or when feeling stuck internally",
+                    process: "List external forces → Assess impacts → Find opportunities/threats",
+                    worksWith: "Environmental Scan, Alternative Futures"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Alternative Futures (2x2)",
+                description: "Explore four scenarios based on two critical uncertainties to test strategy robustness.",
+                tags: "uncertain mixed 2hr",
+                details: {
+                    when: "Testing strategies against different futures",
+                    process: "Identify 2 critical uncertainties → Create 2x2 → Develop scenarios → Test strategies",
+                    worksWith: "Indicators of Change, Wind Tunneling"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Collective Memory Systems",
+                description: "Build persistent repositories of insights and patterns that evolve with use.",
+                tags: "reversible mixed multi-day",
+                details: {
+                    when: "Preventing repeated mistakes and building on learning",
+                    process: "Design capture method → Regular synthesis → Make searchable → Evolve patterns",
+                    worksWith: "Pattern Language, Team Learning Architecture"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Wisdom Council",
+                description: "Convene diverse perspectives for major strategic decisions combining analysis and intuition.",
+                tags: "irreversible mixed multi-day",
+                details: {
+                    when: "Organization-shaping decisions",
+                    process: "Select council → Frame question → Multiple rounds → Synthesize wisdom",
+                    worksWith: "Epistemological Diversity, Warm Data"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Service Blueprinting",
+                description: "Map visible and invisible elements supporting any process or system.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Designing complete socio-technical systems",
+                    process: "Map frontstage → Identify backstage → Document infrastructure",
+                    worksWith: "Design Structure Matrix, Journey Mapping"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Journey Mapping",
+                description: "Track multi-dimensional experiences over time to find intervention points.",
+                tags: "reversible mixed multi-day",
+                details: {
+                    when: "Understanding user/team experiences over time",
+                    process: "Map phases → Track dimensions → Identify pain/joy points → Design interventions",
+                    worksWith: "Service Blueprinting, Indicators of Change"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Team Learning Architecture",
+                description: "Design how teams learn about their own learning through feedback loops and reflection.",
+                tags: "reversible mixed multi-day",
+                details: {
+                    when: "Building organizational capacity for continuous improvement",
+                    process: "Design feedback loops → Create reflection cycles → Build capture systems",
+                    worksWith: "Collective Memory Systems, Knowledge Crystallization"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Stigmergy Patterns",
+                description: "Design coordination through environmental traces rather than direct communication.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "Distributed teams or self-organizing systems",
+                    process: "Identify coordination needs → Design traces → Test emergence",
+                    worksWith: "Service Blueprinting, Edge Effects"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Edge Effect Cultivation",
+                description: "Create productive interfaces between different perspectives or domains for innovation.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Cross-functional innovation or bridging communities",
+                    process: "Map boundaries → Design interfaces → Support emergence → Harvest insights",
+                    worksWith: "Epistemological Diversity, Metaphor Mapping"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Presencing (Theory U)",
+                description: "Move through sensing-presencing-realizing to access deeper knowing and possibility.",
+                tags: "reversible hunches multi-day",
+                details: {
+                    when: "Fundamental shifts needed in approach or understanding",
+                    process: "Co-initiating → Co-sensing → Presencing → Co-creating → Co-evolving",
+                    worksWith: "Embodied Cognition, Purpose Probe"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Fitness Landscape Mapping",
+                description: "Visualize solution performance across possibility space to find peaks and paths.",
+                tags: "reversible mixed 30min",
+                details: {
+                    when: "Stuck on local maxima or exploring solution space",
+                    process: "Define dimensions → Map current position → Identify peaks → Plan paths",
+                    worksWith: "Safe-to-Fail Experiments, Alternative Futures"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Geometric Mean for Groups",
+                description: "Mathematically sound way to aggregate team judgments in pairwise comparisons.",
+                tags: "reversible concrete 30min",
+                details: {
+                    when: "Combining team inputs in AHP or similar",
+                    process: "Collect individual comparisons → Apply geometric mean → Check consistency",
+                    note: "Preserves reciprocal property unlike arithmetic mean"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Purpose Probe",
+                description: "Simple questions to check alignment with emerging purpose.",
+                tags: "reversible hunches 5min",
+                details: {
+                    when: "Regular check-ins on value alignment",
+                    process: "Ask probing questions → Listen deeply → Adjust if needed",
+                    worksWith: "Value-Focused Thinking, EGP"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Metaphor Mapping",
+                description: "Develop and evolve shared language for complex concepts systematically.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Building shared understanding of complex ideas",
+                    process: "Gather metaphors → Map what they reveal/hide → Combine productively",
+                    worksWith: "Clean Language, Warm Data"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Embodied Cognition Practices",
+                description: "Use physical movement and positioning to access different ways of understanding.",
+                tags: "reversible hunches 30min",
+                details: {
+                    when: "When stuck in abstract thinking or need fresh perspective",
+                    process: "Physical mapping → Movement exploration → Embodied insights",
+                    worksWith: "Presencing, Constellation work"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Problem Structure Mapping",
+                description: "Reveal deep structure of complex challenges including causal links, feedback loops, and emergent properties.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Understanding leverage points in complex problems",
+                    process: "Map elements → Identify relationships → Find loops → Locate leverage",
+                    worksWith: "Connection Circles, Design Structure Matrix"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Resilience Thinking Framework",
+                description: "Build capacity to maintain function through disturbance via diversity, modularity, and feedback loops.",
+                tags: "reversible mixed multi-day",
+                details: {
+                    when: "Designing antifragile systems for uncertain futures",
+                    process: "Assess resilience properties → Strengthen weak areas → Test shocks",
+                    note: "Critical for AI safety systems that must handle unexpected scenarios"
+                }
+            },
+            {
+                category: "strategic",
+                name: "Strange Attractors",
+                description: "Recognize and work with persistent patterns that emerge in complex systems.",
+                tags: "reversible mixed 2hr",
+                details: {
+                    when: "Dealing with recurring patterns that resist change",
+                    process: "Identify patterns → Map phase space → Find attractors → Design interventions",
+                    worksWith: "Self-Organized Criticality, Adaptive Cycle"
+                }
+            }
+        ];
+        
+        // Render all tools
+        function renderTools() {
+            const grid = document.getElementById('toolsGrid');
+            grid.innerHTML = '';
+            
+            tools.forEach(tool => {
+                const card = document.createElement('div');
+                card.className = 'tool-card';
+                card.dataset.category = tool.category;
+                card.dataset.tags = tool.tags;
+                
+                const params = tool.tags.split(' ').map(tag => {
+                    if (['irreversible', 'reversible', 'uncertain'].includes(tag)) {
+                        return `<span class="param reversibility">${tag}</span>`;
+                    } else if (['concrete', 'hunches', 'mixed'].includes(tag)) {
+                        return `<span class="param data">${tag === 'hunches' ? 'works with hunches' : tag === 'concrete' ? 'needs concrete data' : 'flexible data'}</span>`;
+                    } else if (['5min', '30min', '2hr', 'multi-day'].includes(tag)) {
+                        return `<span class="param time">${tag === '2hr' ? '2+ hours' : tag}</span>`;
+                    }
+                    return '';
+                }).filter(p => p).join('');
+                
+                // Add category param
+                const categoryName = tool.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                let detailsHtml = '';
+                if (tool.details.when) detailsHtml += `<strong>When to use:</strong> ${tool.details.when}<br>`;
+                if (tool.details.process) detailsHtml += `<strong>Process:</strong> ${tool.details.process}<br>`;
+                if (tool.details.examples) detailsHtml += `<strong>Examples:</strong> ${tool.details.examples}<br>`;
+                if (tool.details.keyQuestions) detailsHtml += `<strong>Key questions:</strong> ${tool.details.keyQuestions}<br>`;
+                if (tool.details.worksWith) detailsHtml += `<strong>Works well with:</strong> ${tool.details.worksWith}<br>`;
+                if (tool.details.note) detailsHtml += `<strong>Note:</strong> ${tool.details.note}`;
+                
+                card.innerHTML = `
+                    <div class="tool-name">${tool.name}</div>
+                    <div class="tool-description">${tool.description}</div>
+                    <div class="tool-params">
+                        ${params}
+                        <span class="param category">${categoryName}</span>
+                    </div>
+                    <div class="tool-details">${detailsHtml}</div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    card.classList.toggle('expanded');
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Filter functionality
+        function applyFilters() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const decisionFilter = document.getElementById('decisionFilter').value;
+            const dataFilter = document.getElementById('dataFilter').value;
+            const timeFilter = document.getElementById('timeFilter').value;
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            
+            const cards = document.querySelectorAll('.tool-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const category = card.dataset.category;
+                const tags = card.dataset.tags.split(' ');
+                const name = card.querySelector('.tool-name').textContent.toLowerCase();
+                const description = card.querySelector('.tool-description').textContent.toLowerCase();
+                const details = card.querySelector('.tool-details').textContent.toLowerCase();
+                
+                let show = true;
+                
+                // Category filter
+                if (categoryFilter && category !== categoryFilter) show = false;
+                
+                // Decision type filter
+                if (decisionFilter && !tags.includes(decisionFilter)) show = false;
+                
+                // Data needs filter
+                if (dataFilter && !tags.includes(dataFilter)) show = false;
+                
+                // Time filter
+                if (timeFilter && !tags.includes(timeFilter)) show = false;
+                
+                // Search filter
+                if (searchTerm && !name.includes(searchTerm) && !description.includes(searchTerm) && !details.includes(searchTerm)) show = false;
+                
+                if (show) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+            
+            // Show/hide no results message
+            document.getElementById('noResults').classList.toggle('hidden', visibleCount > 0);
+        }
+        
+        // Event listeners
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        document.getElementById('decisionFilter').addEventListener('change', applyFilters);
+        document.getElementById('dataFilter').addEventListener('change', applyFilters);
+        document.getElementById('timeFilter').addEventListener('change', applyFilters);
+        document.getElementById('searchBox').addEventListener('input', applyFilters);
+        
+        // Initialize
+        renderTools();
+    </script>
+</body>
+</html>

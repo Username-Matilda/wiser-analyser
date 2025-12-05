@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-mortem Analysis</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #f0fdfa 0%, #faf5ff 100%);
+            color: #1e293b;
+            font-size: 15px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 { 
+            color: #0d9488; 
+            margin-bottom: 8px;
+            font-size: 1.8em;
+        }
+        h2 { 
+            color: #0f766e; 
+            margin-bottom: 12px; 
+            font-size: 1.25em;
+            font-weight: 600;
+        }
+        h3 { 
+            color: #0f766e; 
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+        h4 { 
+            margin: 0 0 8px 0; 
+            font-size: 1em;
+            font-weight: 600;
+        }
+        .subtitle { color: #475569; margin-bottom: 25px; }
+        
+        /* Intro box - teal theme */
+        .intro-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border-left: 4px solid #14b8a6;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .intro-box p { margin: 0 0 12px 0; color: #134e4a; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box ul { margin: 8px 0; padding-left: 20px; }
+        .intro-box li { margin-bottom: 6px; color: #134e4a; }
+        .intro-box strong { color: #0f766e; }
+        
+        /* Optional resources box - light neutral */
+        .resources-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .resources-box h4 { color: #475569; margin-bottom: 8px; }
+        .resources-box a { color: #0d9488; }
+        .resources-box ul { margin: 0; padding-left: 20px; }
+        .resources-box li { margin-bottom: 4px; color: #475569; }
+        
+        /* Prep tools box - purple theme */
+        .prep-box {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 1px solid #c4b5fd;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .prep-box h4 { color: #7c3aed; }
+        .prep-box p { margin: 0 0 8px 0; color: #5b21b6; }
+        .prep-box ul { margin: 8px 0 0 0; padding-left: 20px; }
+        .prep-box li { color: #5b21b6; margin-bottom: 4px; }
+        .prep-box a { color: #7c3aed; }
+        
+        /* Example box - coral theme */
+        .example-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border: 1px solid #fdba74;
+            padding: 18px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .example-box h4 { color: #c2410c; margin-bottom: 12px; }
+        .example-box p { margin: 0 0 10px 0; color: #7c2d12; }
+        .example-box p:last-child { margin-bottom: 0; }
+        .example-box ul { margin: 8px 0 12px 0; padding-left: 20px; }
+        .example-box li { color: #7c2d12; margin-bottom: 6px; }
+        .example-note {
+            background: white;
+            border-left: 3px solid #f97316;
+            padding: 10px 14px;
+            margin: 12px 0;
+            border-radius: 0 6px 6px 0;
+            color: #9a3412;
+        }
+        .example-note strong { color: #c2410c; }
+        
+        /* Sections */
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .section.active {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+        .section.completed {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #fafafa 0%, #ecfdf5 100%);
+        }
+        .section-help {
+            color: #475569;
+            margin-bottom: 15px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .section-status {
+            font-size: 0.9em;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .status-pending { background: #f1f5f9; color: #64748b; }
+        .status-active { background: #ccfbf1; color: #0d9488; }
+        .status-done { background: #d1fae5; color: #059669; }
+        
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            background: #0d9488;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        button:hover { background: #0f766e; transform: translateY(-1px); }
+        button.secondary { background: #64748b; }
+        button.secondary:hover { background: #475569; }
+        button.add-btn { background: #0d9488; }
+        button.remove-btn { 
+            background: #94a3b8; 
+            padding: 6px 12px; 
+        }
+        button.remove-btn:hover { background: #64748b; }
+        button.done-btn {
+            background: #10b981;
+            padding: 12px 28px;
+        }
+        button.done-btn:hover { background: #059669; }
+        button.coral { background: #f97316; }
+        button.coral:hover { background: #ea580c; }
+        button.purple { background: #7c3aed; }
+        button.purple:hover { background: #6d28d9; }
+        button.small-add {
+            padding: 6px 14px;
+            font-size: 0.85em;
+            background: #64748b;
+        }
+        button.small-add:hover { background: #475569; }
+        
+        /* Form inputs */
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #14b8a6;
+        }
+        label {
+            display: block;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        
+        .input-large { min-height: 100px; }
+        .input-medium { min-height: 70px; }
+        
+        /* Failure scenario - simple teal border */
+        .failure-card {
+            background: #f0fdfa;
+            border: 2px solid #14b8a6;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+        .failure-card label { color: #0f766e; }
+        .failure-card textarea {
+            border-color: #5eead4;
+            min-height: 60px;
+        }
+        .failure-card textarea:focus { border-color: #14b8a6; }
+        
+        /* Cause items */
+        .cause-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #14b8a6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        .cause-header {
+            display: flex;
+            gap: 12px;
+            align-items: start;
+        }
+        .cause-number {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .cause-content { flex: 1; }
+        .cause-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        /* Causes summary display */
+        .causes-summary {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%);
+            border: 1px solid #6ee7b7;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+        .causes-summary h4 { color: #059669; margin-bottom: 12px; }
+        .cause-chip {
+            display: inline-block;
+            background: white;
+            border: 1px solid #a7f3d0;
+            padding: 6px 14px;
+            margin: 4px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cause-chip:hover {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        .cause-chip.selected {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        /* Selectable items for prevention mapping */
+        .selectable-item {
+            display: inline-block;
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            max-width: 300px;
+        }
+        .selectable-item:hover {
+            border-color: #14b8a6;
+            background: #f0fdfa;
+        }
+        .selectable-item.selected {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+        .selectable-item.has-prevention {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+        .selectable-item .item-label {
+            font-size: 0.75em;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .selectable-item .item-text {
+            color: #1e293b;
+            margin-top: 2px;
+        }
+        .selectable-item .item-status {
+            font-size: 0.8em;
+            color: #10b981;
+            margin-top: 4px;
+        }
+        
+        /* Prevention panel */
+        .prevention-panel {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 2px solid #6ee7b7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        .prevention-panel.visible { display: block; }
+        .prevention-panel h4 { color: #047857; margin-bottom: 15px; }
+        .prevention-panel .selected-source {
+            background: white;
+            border-left: 4px solid #10b981;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 0 6px 6px 0;
+            color: #065f46;
+        }
+        .prevention-panel label { color: #047857; }
+        
+        /* Multi-item containers */
+        .multi-item-container {
+            margin-bottom: 15px;
+        }
+        .multi-item {
+            display: flex;
+            gap: 10px;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+        .multi-item textarea {
+            flex: 1;
+            min-height: 60px;
+        }
+        .multi-item input[type="text"] {
+            width: 150px;
+            flex-shrink: 0;
+        }
+        .multi-item .remove-btn {
+            flex-shrink: 0;
+            margin: 0;
+        }
+        
+        .indicator-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .indicator-section label { color: #92400e; }
+        .indicator-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .indicator-item input {
+            flex: 1;
+        }
+        
+        /* Cause interplay canvas */
+        .interplay-section {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .interplay-section h4 { color: #7c3aed; margin-bottom: 10px; }
+        .interplay-help { color: #64748b; margin-bottom: 15px; }
+        .connection-grid {
+            display: grid;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .connection-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: #faf5ff;
+            border-radius: 6px;
+        }
+        .connection-arrow {
+            color: #7c3aed;
+            font-weight: bold;
+        }
+        .connection-text {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #c4b5fd;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        /* Flowchart visualization - larger */
+        .flowchart-container {
+            background: #faf5ff;
+            border: 2px solid #c4b5fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            display: none;
+        }
+        .flowchart-container.visible { display: block; }
+        #flowchartCanvas {
+            display: block;
+            width: 100%;
+            max-width: 900px;
+            height: 600px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin: 0 auto;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 20px 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #14b8a6 0%, #7c3aed 100%);
+            border-radius: 3px;
+        }
+        .timeline-event {
+            position: relative;
+            margin-bottom: 18px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 18px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #14b8a6;
+        }
+        .timeline-event:last-child { margin-bottom: 0; }
+        .timeline-event .timing-label {
+            font-weight: 600;
+            color: #0f766e;
+            margin-bottom: 8px;
+        }
+        .uncertainty-flag {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-left: 8px;
+        }
+        
+        /* Prompt cards - purple theme */
+        .prompt-section {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 1px solid #c4b5fd;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .prompt-section h4 { color: #7c3aed; margin-bottom: 12px; }
+        .prompt-section > p { color: #5b21b6; margin-bottom: 15px; }
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 10px;
+        }
+        .prompt-card {
+            background: white;
+            border: 1px solid #ddd6fe;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+        .prompt-card:hover {
+            border-color: #a78bfa;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1);
+        }
+        .prompt-card strong { color: #6d28d9; display: block; margin-bottom: 4px; }
+        .prompt-card p { margin: 0; color: #5b21b6; font-size: 0.9em; }
+        
+        /* Workshop mode box */
+        .workshop-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid #6ee7b7;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .workshop-box h4 { color: #047857; margin-bottom: 10px; }
+        .workshop-box p { color: #065f46; margin: 0 0 8px 0; }
+        .workshop-box ul { margin: 8px 0 0 0; padding-left: 20px; }
+        .workshop-box li { color: #065f46; margin-bottom: 6px; }
+        .workshop-box strong { color: #047857; }
+        .workshop-note {
+            background: white;
+            border-left: 3px solid #10b981;
+            padding: 10px 14px;
+            margin-top: 12px;
+            border-radius: 0 6px 6px 0;
+            color: #065f46;
+        }
+        .workshop-note a { color: #0d9488; }
+        
+        /* Next steps box - green theme */
+        .next-steps-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid #6ee7b7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+        .next-steps-box h4 { color: #047857; margin: 0 0 15px 0; }
+        .next-steps-box ul { margin: 0; padding-left: 20px; color: #065f46; }
+        .next-steps-box li { margin-bottom: 10px; }
+        .next-steps-box li:last-child { margin-bottom: 0; }
+        .next-steps-box strong { color: #047857; }
+        
+        /* Load button explanation */
+        .load-explanation {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .load-explanation p {
+            margin: 0;
+            color: #475569;
+            font-size: 0.9em;
+        }
+        
+        /* Toolbar with explanations */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: stretch;
+            padding: 15px 18px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 25px;
+        }
+        .toolbar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .toolbar-item button {
+            margin-bottom: 4px;
+        }
+        .toolbar-hint {
+            font-size: 0.75em;
+            color: #64748b;
+            max-width: 150px;
+        }
+        
+        /* Completion summary */
+        .completion-summary {
+            background: white;
+            border: 2px solid #10b981;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        .completion-summary h3 {
+            color: #047857;
+            margin-bottom: 20px;
+        }
+        .summary-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .summary-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .summary-section h4 {
+            color: #0f766e;
+            margin-bottom: 10px;
+        }
+        .summary-item {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+        }
+        .summary-item:last-child { margin-bottom: 0; }
+        .summary-threat {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border-left: 3px solid #14b8a6;
+        }
+        .summary-prevention {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border-left: 3px solid #10b981;
+            margin-left: 20px;
+        }
+        .summary-indicator {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+            border-left: 3px solid #f59e0b;
+            margin-left: 20px;
+        }
+        .summary-connection {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border-left: 3px solid #7c3aed;
+        }
+        .summary-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 2px dashed #cbd5e1;
+        }
+        
+        /* Progress indicator */
+        .progress-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        .progress-step {
+            flex: 1;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+        .progress-step.done { background: #10b981; }
+        .progress-step.active { background: #14b8a6; }
+        
+        /* Print styles */
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 20px; }
+            .toolbar, button.remove-btn, button.add-btn, .prompt-section, .workshop-box, .load-explanation { display: none; }
+            .section { break-inside: avoid; }
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .section { padding: 15px; }
+            .prompt-grid { grid-template-columns: 1fr; }
+            .connection-row { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pre-mortem Analysis</h1>
+        <p class="subtitle">Imagine failure, then prevent it</p>
+        
+        <div class="progress-bar">
+            <div class="progress-step" id="prog1"></div>
+            <div class="progress-step" id="prog2"></div>
+            <div class="progress-step" id="prog3"></div>
+            <div class="progress-step" id="prog4"></div>
+        </div>
+        
+        <div class="intro-box">
+            <p><strong>What this tool does:</strong> A pre-mortem asks you to imagine that your project has already failed, then work backwards to understand why. This mental shift—treating failure as an established fact rather than a mere possibility—bypasses our natural optimism bias and surfaces risks we'd otherwise overlook.</p>
+            
+            <p><strong>The research:</strong> Studies show that "prospective hindsight" (imagining an event has already occurred) increases our ability to identify reasons for outcomes by around 30%. By mentally time-traveling to a future where things went wrong, you access insights that forward-looking risk assessment misses.</p>
+            
+            <p><strong>What you'll do:</strong></p>
+            <ul>
+                <li>Describe your initiative and declare its failure as already having happened</li>
+                <li>Brainstorm all the reasons it might have failed—be specific and imaginative</li>
+                <li>Map how these causes connect, build a causal chain, and design prevention strategies with early warning indicators</li>
+            </ul>
+            
+            <details class="resources-box" style="cursor: pointer;">
+                <summary style="font-weight: 600; color: #475569;">Optional resources for deeper context (click to expand)</summary>
+                <ul style="margin-top: 10px;">
+                    <li><a href="https://www.lesswrong.com/posts/Htjbj8ystqc2zLtMX/murphyjitsu-an-inner-simulator-algorithm" target="_blank">Murphyjitsu</a> — CFAR's refined pre-mortem technique</li>
+                    <li><a href="https://hbr.org/2007/09/performing-a-project-premortem" target="_blank">Performing a Project Premortem</a> — Gary Klein's original HBR article</li>
+                    <li><a href="https://www.lesswrong.com/posts/y9ovsmEBhqCc6tyQF/premortem-as-communication-device-e-g-in-relationship" target="_blank">Premortem as Communication Device</a> — Using pre-mortems to surface unspoken concerns</li>
+                </ul>
+            </details>
+            
+            <div class="prep-box">
+                <h4>Consider starting with these companion tools</h4>
+                <p>A pre-mortem works best when you've already clarified your thinking:</p>
+                <ul>
+                    <li><em>Key Assumptions Check</em> — Surface the beliefs underlying your plan</li>
+                    <li><em>Reference Class Forecasting</em> — How have similar projects actually performed?</li>
+                    <li><em>Alternative Futures (2×2)</em> — What different scenarios might you face?</li>
+                </ul>
+                <p>These aren't prerequisites, but they'll give you richer material to work with here.</p>
+            </div>
+            
+            <details class="example-box" style="cursor: pointer;">
+                <summary style="font-weight: 600; color: #c2410c; margin-bottom: 12px;">Example: Research Grant Application (click to expand)</summary>
+                <p><strong>Initiative:</strong> "Submit a $500K research grant proposal to fund our new lab's first major project."</p>
+                <p><strong>Failure statement:</strong> "It's 8 months from now. Our grant application was rejected. We're scrambling for alternative funding and the team's morale has taken a hit."</p>
+                <p><strong>Some causes of failure:</strong></p>
+                <ul>
+                    <li>The budget was too ambitious for a first-time applicant from a new lab</li>
+                    <li>We didn't get feedback from anyone who'd served on this specific panel before</li>
+                    <li>The preliminary data section was thin because we rushed the pilot study</li>
+                    <li>A key competitor published similar work 2 months before our submission deadline</li>
+                </ul>
+                
+                <div class="example-note">
+                    <strong>Notice the specificity:</strong> "too ambitious <em>for a first-time applicant</em>" is more actionable than just "budget too high." "Anyone who'd served on <em>this specific panel</em>" reveals a concrete gap we can fill. Specificity turns vague worries into addressable risks.
+                </div>
+                
+                <p><strong>From causes to interventions:</strong> Once you've brainstormed causes, the path to prevention often becomes clear. "Budget too ambitious for first-time applicant" → research typical first-grant amounts, talk to program officers, start more modest. "No panel-experienced reviewers" → actively seek out former panelists for feedback. Each specific cause suggests its own remedy.</p>
+            </details>
+            
+            <details class="workshop-box" style="cursor: pointer;">
+                <summary style="font-weight: 600; color: #047857;">Running this as a team workshop? (click to expand)</summary>
+                <p style="margin-top: 10px;">Pre-mortems are especially powerful in groups because they give permission to voice concerns that might otherwise feel disloyal or pessimistic.</p>
+                <ul>
+                    <li><strong>Round 1 — Silent brainstorming:</strong> Have everyone write causes individually (5-10 min). This prevents groupthink and ensures quieter voices contribute.</li>
+                    <li><strong>Sharing:</strong> Go around the room, one cause per person, until all are shared. No critique yet—just collect.</li>
+                    <li><strong>Round 2 — Build on each other (optional):</strong> After hearing everyone's ideas, do another 5 min of individual brainstorming. People often find that others' causes spark new insights.</li>
+                    <li><strong>Cluster & prioritize:</strong> Group related causes, then vote on which feel most likely or most dangerous.</li>
+                    <li><strong>Suggested timing:</strong> 10 min individual, 15 min sharing, 5 min second round, 15 min clustering, 20 min interventions</li>
+                </ul>
+                <div class="workshop-note">
+                    <strong>For sensitive projects with hard-to-model social dynamics:</strong> Creatively-inclined teams might try <a href="https://en.wikipedia.org/wiki/Theatre_of_the_Oppressed" target="_blank">Theatre of the Oppressed</a>-style role playing—acting out scenarios where things go wrong to tap into intuitions that analytical thinking misses. This "prehearsal" technique (see <a href="https://www.sciencedirect.com/science/article/abs/pii/S0016328716301379" target="_blank">FoAM's work on experiential futures</a>) can surface interpersonal dynamics, power imbalances, or motivational failures that are difficult to articulate abstractly.
+                </div>
+            </details>
+        </div>
+
+        <div class="load-explanation">
+            <button onclick="document.getElementById('loadInput').click()" class="secondary">📂 Load Previous Analysis</button>
+            <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadAnalysis(event)">
+            <button onclick="loadExample()" class="secondary">📋 Load Example</button>
+            <p>Have a saved pre-mortem? Load it here to continue where you left off or revisit at a project milestone.</p>
+        </div>
+
+        <!-- Step 1: The Initiative -->
+        <div class="section" id="section1">
+            <div class="section-header">
+                <h2>Step 1: The Initiative</h2>
+                <span class="section-status status-pending" id="status1">Pending</span>
+            </div>
+            <p class="section-help">What project, decision, or initiative are you analyzing? Be specific about scope, timeline, and what success would look like. The more concrete your description, the more useful your failure analysis will be.</p>
+            
+            <textarea id="initiative" class="input-large" placeholder="Describe your initiative in detail. Include:
+• What you're trying to accomplish
+• Key milestones and timeline  
+• Who's involved and their roles
+• What resources you're working with
+• What success looks like"></textarea>
+            
+            <div style="margin-top: 15px;">
+                <button class="done-btn" onclick="completeSection(1)">Done — Continue to Failure Statement →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: The Failure -->
+        <div class="section" id="section2">
+            <div class="section-header">
+                <h2>Step 2: The Failure Statement</h2>
+                <span class="section-status status-pending" id="status2">Pending</span>
+            </div>
+            <p class="section-help">Now make the mental leap: your initiative has failed. State this as a fact, not a possibility. Include a specific timeframe and describe what failure looks like—be visceral about the consequences.</p>
+            
+            <div class="failure-card">
+                <label>Write the failure as though it has already happened:</label>
+                <textarea id="failureStatement" placeholder="Example: 'It's 6 months from now. The product launch was a disaster. We missed our user acquisition targets by 70%, burned through our runway, and two key team members have left. The board is questioning whether to continue funding the project.'"></textarea>
+            </div>
+            
+            <p class="section-help">The more real you make this feel, the better your subsequent analysis will be. Don't hedge with "might have" or "could have"—state it as fact.</p>
+            
+            <div style="margin-top: 15px;">
+                <button class="done-btn" onclick="completeSection(2)">Done — Continue to Brainstorming →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Brainstorm Causes -->
+        <div class="section" id="section3">
+            <div class="section-header">
+                <h2>Step 3: Brainstorm Causes</h2>
+                <span class="section-status status-pending" id="status3">Pending</span>
+            </div>
+            <p class="section-help">Given that the failure happened, why? Generate as many causes as possible without filtering. Specific, concrete causes are more useful than vague ones. Include both things within your control and external factors.</p>
+            
+            <div class="prompt-section">
+                <h4>Prompts to surface hidden failure modes</h4>
+                <p>Use these lenses to ensure you're not missing important categories of risk:</p>
+                <div class="prompt-grid">
+                    <div class="prompt-card">
+                        <strong>People & Team</strong>
+                        <p>Key person leaves or falls seriously ill, team hit by illness (e.g., severe COVID wave), burnout, skill gaps, miscommunication, conflicting priorities, knowledge silos</p>
+                    </div>
+                    <div class="prompt-card">
+                        <strong>External Forces</strong>
+                        <p>Partners, funders, regulators, market shifts, competitors' moves, adversaries who benefit from your failure, environmental or political changes, supply chain disruptions</p>
+                    </div>
+                    <div class="prompt-card">
+                        <strong>Timing & Sequencing</strong>
+                        <p>Delays that cascade, dependencies that slip, seasonal factors, coordination failures across workstreams</p>
+                    </div>
+                    <div class="prompt-card">
+                        <strong>Resources & Budget</strong>
+                        <p>Cost overruns, funding gaps, equipment failures, supply chain issues, opportunity costs of this work</p>
+                    </div>
+                    <div class="prompt-card">
+                        <strong>Assumptions & Blind Spots</strong>
+                        <p>Beliefs we haven't tested, things we're taking for granted, areas where we lack expertise, unknown unknowns</p>
+                    </div>
+                    <div class="prompt-card">
+                        <strong>Reference Classes</strong>
+                        <p>How have similar projects failed? What are the essential features of this project—the critical elements that would bring down the whole thing if they fail? Consider using the <em>Reference Class Forecasting</em> tool to calibrate.</p>
+                    </div>
+                    <div class="prompt-card">
+                        <strong>Motivation & Commitment</strong>
+                        <p>Enthusiasm fading over time, stakeholder priorities shifting, incentive misalignment, scope creep eroding focus</p>
+                    </div>
+                    <div class="prompt-card">
+                        <strong>Complexity & Integration</strong>
+                        <p>Components that don't work together, handoff failures, emergent problems from system interactions, edge cases</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="causesContainer"></div>
+            
+            <div style="margin-top: 12px;">
+                <button onclick="addCause()" class="add-btn">+ Add Cause</button>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="done-btn" onclick="completeSection(3)">Done Brainstorming — Map Connections & Prevention →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Connections, Chain, and Prevention (Integrated) -->
+        <div class="section" id="section4">
+            <div class="section-header">
+                <h2>Step 4: Map Connections, Build Chain, Assign Prevention</h2>
+                <span class="section-status status-pending" id="status4">Pending</span>
+            </div>
+            
+            <!-- Causes Summary Display -->
+            <div class="causes-summary" id="causesSummary">
+                <h4>Your Causes at a Glance</h4>
+                <p style="color: #065f46; margin-bottom: 12px;">Click two causes to map a connection between them.</p>
+                <div id="causeChips"></div>
+            </div>
+            
+            <!-- Interplay Section -->
+            <div class="interplay-section">
+                <h4>Cause Connections (Optional but Valuable)</h4>
+                <p class="interplay-help">Failures rarely have single causes—they emerge from combinations. Which causes reinforce, enable, or trigger each other? Select two causes above, then describe how they connect.</p>
+                <p style="font-size: 13px; color: #64748b; margin-top: 8px;">💡 For complex webs of causation, consider using the <em>Connection Circles</em> tool for a more visual, systems-thinking approach.</p>
+                
+                <div id="connectionsContainer">
+                    <div class="empty-state">
+                        <p>No connections mapped yet. Click "Add Connection" to explore how causes might interact.</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px;">
+                    <button onclick="addConnection()" class="purple">+ Add Connection</button>
+                    <button onclick="toggleFlowchart()" class="secondary" id="flowchartToggle">View Flowchart</button>
+                </div>
+            </div>
+            
+            <!-- Flowchart visualization -->
+            <div class="flowchart-container" id="flowchartContainer">
+                <h4 style="color: #7c3aed; margin-bottom: 15px;">Cause Relationship Flowchart</h4>
+                <p style="color: #64748b; margin-bottom: 15px;">Visual map of how your causes interconnect. Arrows show the relationships you've defined.</p>
+                <canvas id="flowchartCanvas" width="900" height="600"></canvas>
+            </div>
+            
+            <h3 style="margin-top: 25px;">Causal Chain: Work Backward from Failure</h3>
+            <p class="section-help">Starting from the moment of failure, work backwards through time. What happened immediately before failure? What led to that? Keep going until you reach the present. Flag any key uncertainties—points where you're genuinely unsure what will happen.</p>
+            
+            <div class="timeline" id="chainContainer"></div>
+            
+            <div style="margin-top: 12px;">
+                <button onclick="addChainEvent()" class="add-btn">+ Add Event in Chain</button>
+            </div>
+            
+            <!-- Prevention Section - Integrated -->
+            <h3 style="margin-top: 30px;">Prevention Strategies & Early Warning Indicators</h3>
+            <p class="section-help">Now design your defenses. Click on any cause or chain event below to assign prevention strategies and early warning indicators to it.</p>
+            
+            <div style="margin: 20px 0;">
+                <h4 style="color: #0f766e; margin-bottom: 12px;">Causes</h4>
+                <div id="selectableCauses" style="margin-bottom: 20px;"></div>
+                
+                <h4 style="color: #7c3aed; margin-bottom: 12px;">Chain Events</h4>
+                <div id="selectableChain"></div>
+            </div>
+            
+            <!-- Prevention Panel -->
+            <div class="prevention-panel" id="preventionPanel">
+                <h4>🛡️ Prevention & Monitoring</h4>
+                <div class="selected-source" id="selectedSource">Select a cause or chain event above</div>
+                
+                <div class="multi-item-container">
+                    <label>Prevention Strategies — What will you do to prevent or mitigate this?</label>
+                    <div id="strategiesContainer"></div>
+                    <button class="small-add" onclick="addStrategyField()">+ Add another strategy</button>
+                </div>
+                
+                <div class="indicator-section">
+                    <label>⚠️ Early Warning Indicators — What signals would tell you this threat is materializing?</label>
+                    <div id="indicatorsContainer"></div>
+                    <button class="small-add" onclick="addIndicatorField()" style="margin-top: 8px;">+ Add another indicator</button>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <button onclick="savePrevention()" style="background: #10b981;">Save & Close</button>
+                    <button onclick="closePrevention()" class="secondary">Cancel</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <button class="done-btn" onclick="completeSection(4)">Complete Pre-mortem ✓</button>
+            </div>
+        </div>
+
+        <!-- Analysis Complete Section -->
+        <div id="completionSection" style="display: none;">
+            <div class="completion-summary" id="completionSummary">
+                <h3>📋 Pre-mortem Analysis Summary</h3>
+                <div id="summaryContent"></div>
+            </div>
+            
+            <div class="next-steps-box">
+                <h4>What to Do With This Analysis</h4>
+                <ul>
+                    <li><strong>Make prevention strategies actionable:</strong> Each strategy needs an owner, a deadline, and a way to verify it's been implemented. Add these to your project plan.</li>
+                    <li><strong>Set up monitoring:</strong> Put your early warning indicators somewhere you'll actually see them—a dashboard, regular check-in agenda, or calendar reminders.</li>
+                    <li><strong>Share with your team:</strong> If you did this individually, discuss findings with collaborators. If you did it as a group, circulate the summary.</li>
+                    <li><strong>Get external review:</strong> Use "Copy Report" to share with Claude or colleagues for a critical review. Fresh eyes often spot gaps.</li>
+                    <li><strong>Revisit at milestones:</strong> As circumstances change, so do your failure modes. Schedule a refresh at major project milestones.</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <p><strong>Companion tools to extend this work:</strong></p>
+                <ul style="color: #475569;">
+                    <li><em>Key Assumptions Check</em> — Test the beliefs underlying your prevention strategies</li>
+                    <li><em>Reference Class Forecasting</em> — Calibrate probability estimates against base rates</li>
+                    <li><em>Indicators of Change</em> — Build a systematic monitoring dashboard</li>
+                    <li><strong>Uncertainty Cascades</strong> — Map how key uncertainties might unfold</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Toolbar at bottom with explanations -->
+        <div class="toolbar">
+            <div class="toolbar-item">
+                <button onclick="saveAnalysis()" class="secondary">💾 Save</button>
+                <span class="toolbar-hint">Download as .json file to reload later</span>
+            </div>
+            <div class="toolbar-item">
+                <button onclick="copyReport()" class="secondary">📋 Copy Report</button>
+                <span class="toolbar-hint">Plain text for pasting into a Claude conversation</span>
+            </div>
+            <div class="toolbar-item">
+                <button onclick="exportMarkdown()" class="secondary">📄 Export Markdown</button>
+                <span class="toolbar-hint">Formatted .md file for team docs (Notion, Google Docs, etc.)</span>
+            </div>
+            <div class="toolbar-item" style="margin-left: auto;">
+                <button onclick="clearAll()" class="secondary">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA STRUCTURES ====================
+        
+        let causes = [];
+        let chain = [];
+        let preventions = {}; // keyed by "cause_X" or "chain_X", contains { strategies: [{text, owner}], indicators: [] }
+        let connections = [];
+        let selectedCauses = [];
+        let selectedItem = null;
+        let nextId = 1;
+        let completedSections = new Set();
+        let flowchartVisible = false;
+
+        // ==================== SECTION MANAGEMENT ====================
+
+        function completeSection(num) {
+            completedSections.add(num);
+            updateProgress();
+            updateSectionStatuses();
+            
+            const nextSection = document.getElementById(`section${num + 1}`);
+            if (nextSection) {
+                nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            if (num === 3) {
+                renderCauseChips();
+                renderSelectableItems();
+            }
+            
+            if (num === 4) {
+                renderCompletionSummary();
+                document.getElementById('completionSection').style.display = 'block';
+                document.getElementById('completionSection').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function updateProgress() {
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`prog${i}`);
+                if (completedSections.has(i)) {
+                    step.className = 'progress-step done';
+                } else if (i === Math.max(...completedSections, 0) + 1) {
+                    step.className = 'progress-step active';
+                } else {
+                    step.className = 'progress-step';
+                }
+            }
+        }
+
+        function updateSectionStatuses() {
+            for (let i = 1; i <= 4; i++) {
+                const status = document.getElementById(`status${i}`);
+                const section = document.getElementById(`section${i}`);
+                
+                if (completedSections.has(i)) {
+                    status.textContent = 'Done';
+                    status.className = 'section-status status-done';
+                    section.className = 'section completed';
+                } else if (i === Math.max(...completedSections, 0) + 1 || (i === 1 && completedSections.size === 0)) {
+                    status.textContent = 'Current';
+                    status.className = 'section-status status-active';
+                    section.className = 'section active';
+                } else {
+                    status.textContent = 'Pending';
+                    status.className = 'section-status status-pending';
+                    section.className = 'section';
+                }
+            }
+        }
+
+        // ==================== CAUSES ====================
+
+        function addCause() {
+            const id = nextId++;
+            causes.push({ id, text: '' });
+            renderCauses();
+            
+            setTimeout(() => {
+                const input = document.getElementById(`cause_${id}`);
+                if (input) input.focus();
+            }, 50);
+        }
+
+        function removeCause(id) {
+            causes = causes.filter(c => c.id !== id);
+            delete preventions[`cause_${id}`];
+            renderCauses();
+        }
+
+        function updateCause(id, text) {
+            const cause = causes.find(c => c.id === id);
+            if (cause) cause.text = text;
+        }
+
+        function renderCauses() {
+            const container = document.getElementById('causesContainer');
+            
+            if (causes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No causes yet. Click "Add Cause" to start brainstorming what could have gone wrong.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = causes.map((cause, index) => `
+                <div class="cause-card">
+                    <div class="cause-header">
+                        <span class="cause-number">${index + 1}</span>
+                        <div class="cause-content">
+                            <textarea id="cause_${cause.id}" 
+                                placeholder="What went wrong? Be specific..."
+                                onchange="updateCause(${cause.id}, this.value)"
+                                onkeydown="handleCauseKeydown(event, ${cause.id})"
+                            >${escapeHtml(cause.text)}</textarea>
+                            <div class="cause-actions">
+                                <button class="remove-btn" onclick="removeCause(${cause.id})">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleCauseKeydown(event, id) {
+            if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                event.preventDefault();
+                addCause();
+            }
+        }
+
+        // ==================== CAUSE CHIPS & CONNECTIONS ====================
+
+        function renderCauseChips() {
+            const container = document.getElementById('causeChips');
+            const filledCauses = causes.filter(c => c.text.trim());
+            
+            if (filledCauses.length === 0) {
+                container.innerHTML = '<p style="color: #64748b;">No causes to display. Go back and add some causes first.</p>';
+                return;
+            }
+            
+            container.innerHTML = filledCauses.map(cause => {
+                const isSelected = selectedCauses.includes(cause.id);
+                const shortText = cause.text.length > 50 ? cause.text.substring(0, 50) + '...' : cause.text;
+                return `
+                    <span class="cause-chip ${isSelected ? 'selected' : ''}" 
+                          onclick="toggleCauseSelection(${cause.id})"
+                          title="${escapeHtml(cause.text)}">
+                        ${escapeHtml(shortText)}
+                    </span>
+                `;
+            }).join('');
+        }
+
+        function toggleCauseSelection(id) {
+            const index = selectedCauses.indexOf(id);
+            if (index > -1) {
+                selectedCauses.splice(index, 1);
+            } else if (selectedCauses.length < 2) {
+                selectedCauses.push(id);
+            } else {
+                selectedCauses.shift();
+                selectedCauses.push(id);
+            }
+            renderCauseChips();
+        }
+
+        function addConnection() {
+            if (selectedCauses.length < 2) {
+                alert('Select two causes above first by clicking on them.');
+                return;
+            }
+            
+            const id = nextId++;
+            connections.push({
+                id,
+                cause1: selectedCauses[0],
+                cause2: selectedCauses[1],
+                edgeLabel: '',
+                notes: ''
+            });
+            
+            selectedCauses = [];
+            renderCauseChips();
+            renderConnections();
+        }
+
+        function updateConnection(id, field, value) {
+            const conn = connections.find(c => c.id === id);
+            if (conn) conn[field] = value;
+            if (field === 'edgeLabel' && flowchartVisible) renderFlowchart();
+        }
+
+        function removeConnection(id) {
+            connections = connections.filter(c => c.id !== id);
+            renderConnections();
+            if (flowchartVisible) renderFlowchart();
+        }
+
+        function renderConnections() {
+            const container = document.getElementById('connectionsContainer');
+            
+            if (connections.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No connections mapped yet. Click "Add Connection" to explore how causes might interact.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '<div class="connection-grid">' + connections.map(conn => {
+                const cause1 = causes.find(c => c.id === conn.cause1);
+                const cause2 = causes.find(c => c.id === conn.cause2);
+                const text1 = cause1 ? (cause1.text.substring(0, 30) + (cause1.text.length > 30 ? '...' : '')) : '(deleted)';
+                const text2 = cause2 ? (cause2.text.substring(0, 30) + (cause2.text.length > 30 ? '...' : '')) : '(deleted)';
+                
+                // Support legacy 'description' field
+                const edgeLabel = conn.edgeLabel || conn.description || '';
+                const notes = conn.notes || '';
+                
+                // Predefined causal modality options
+                const modalityOptions = [
+                    '',
+                    'worsens',
+                    'is worsened by',
+                    'enables',
+                    'is enabled by',
+                    'triggers',
+                    'is triggered by',
+                    'amplifies',
+                    'is amplified by',
+                    'blocks',
+                    'is blocked by',
+                    'delays',
+                    'is delayed by',
+                    'masks',
+                    'is masked by',
+                    'requires',
+                    'is required by',
+                    'compounds',
+                    'undermines'
+                ];
+                
+                const selectOptions = modalityOptions.map(opt => 
+                    `<option value="${opt}" ${edgeLabel === opt ? 'selected' : ''}>${opt || '— select —'}</option>`
+                ).join('');
+                
+                return `
+                    <div class="connection-row" style="flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                            <span style="flex: 0 0 150px; font-weight: 500; color: #5b21b6;">${escapeHtml(text1)}</span>
+                            <select class="connection-select" style="padding: 6px 10px; border: 1px solid #c4b5fd; border-radius: 4px; background: white; color: #5b21b6; font-size: 13px; min-width: 140px;"
+                                onchange="updateConnection(${conn.id}, 'edgeLabel', this.value)">
+                                ${selectOptions}
+                            </select>
+                            <span style="flex: 0 0 150px; font-weight: 500; color: #5b21b6;">${escapeHtml(text2)}</span>
+                            <button class="remove-btn" onclick="removeConnection(${conn.id})">×</button>
+                        </div>
+                        <div style="width: 100%; margin-top: 8px; padding-left: 160px;">
+                            <textarea style="width: 100%; min-height: 50px; font-size: 13px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;"
+                                placeholder="Notes: Describe the relationship in detail (appears in summary, not flowchart)..."
+                                onchange="updateConnection(${conn.id}, 'notes', this.value)">${escapeHtml(notes)}</textarea>
+                        </div>
+                    </div>
+                `;
+            }).join('') + '</div>';
+        }
+
+        // ==================== FLOWCHART ====================
+
+        function toggleFlowchart() {
+            flowchartVisible = !flowchartVisible;
+            const container = document.getElementById('flowchartContainer');
+            const button = document.getElementById('flowchartToggle');
+            
+            if (flowchartVisible) {
+                container.classList.add('visible');
+                button.textContent = 'Hide Flowchart';
+                renderFlowchart();
+            } else {
+                container.classList.remove('visible');
+                button.textContent = 'View Flowchart';
+            }
+        }
+
+        function renderFlowchart() {
+            const canvas = document.getElementById('flowchartCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size for high-DPI displays
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = 600 * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.height = '600px';
+            
+            const width = rect.width;
+            const height = 600;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            const filledCauses = causes.filter(c => c.text.trim());
+            const filledConnections = connections.filter(c => (c.edgeLabel && c.edgeLabel.trim()) || (c.description && c.description.trim()));
+            
+            if (filledCauses.length === 0) {
+                ctx.fillStyle = '#64748b';
+                ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Add causes and connections to see the flowchart', width / 2, height / 2);
+                return;
+            }
+            
+            // Layout parameters - generous sizing
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const nodeRadius = 55;
+            const circleRadius = Math.min(width, height) / 2 - nodeRadius - 50;
+            
+            const positions = {};
+            
+            // Position nodes in a circle
+            filledCauses.forEach((cause, i) => {
+                const angle = (2 * Math.PI * i / filledCauses.length) - Math.PI / 2;
+                positions[cause.id] = {
+                    x: centerX + circleRadius * Math.cos(angle),
+                    y: centerY + circleRadius * Math.sin(angle),
+                    angle
+                };
+            });
+            
+            // Draw connections first (underneath nodes)
+            filledConnections.forEach((conn, connIndex) => {
+                const pos1 = positions[conn.cause1];
+                const pos2 = positions[conn.cause2];
+                
+                if (pos1 && pos2) {
+                    const angle = Math.atan2(pos2.y - pos1.y, pos2.x - pos1.x);
+                    
+                    // Start/end at node edges
+                    const startX = pos1.x + (nodeRadius + 8) * Math.cos(angle);
+                    const startY = pos1.y + (nodeRadius + 8) * Math.sin(angle);
+                    const endX = pos2.x - (nodeRadius + 8) * Math.cos(angle);
+                    const endY = pos2.y - (nodeRadius + 8) * Math.sin(angle);
+                    
+                    // Control point for gentle curve
+                    const midX = (startX + endX) / 2;
+                    const midY = (startY + endY) / 2;
+                    const perpX = -(endY - startY) * 0.2;
+                    const perpY = (endX - startX) * 0.2;
+                    const ctrlX = midX + perpX;
+                    const ctrlY = midY + perpY;
+                    
+                    // Draw curved arrow
+                    ctx.strokeStyle = '#7c3aed';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+                    ctx.stroke();
+                    
+                    // Draw arrowhead
+                    const arrowAngle = Math.atan2(endY - ctrlY, endX - ctrlX);
+                    const headLen = 12;
+                    ctx.beginPath();
+                    ctx.moveTo(endX, endY);
+                    ctx.lineTo(endX - headLen * Math.cos(arrowAngle - Math.PI / 6),
+                              endY - headLen * Math.sin(arrowAngle - Math.PI / 6));
+                    ctx.lineTo(endX - headLen * Math.cos(arrowAngle + Math.PI / 6),
+                              endY - headLen * Math.sin(arrowAngle + Math.PI / 6));
+                    ctx.closePath();
+                    ctx.fillStyle = '#7c3aed';
+                    ctx.fill();
+                    
+                    // Draw label as frameless text along the curve
+                    const labelText = conn.edgeLabel || conn.description || '';
+                    if (labelText) {
+                        const labelX = ctrlX;
+                        const labelY = ctrlY;
+                        
+                        ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        // White outline for readability
+                        ctx.strokeStyle = 'white';
+                        ctx.lineWidth = 3;
+                        ctx.lineJoin = 'round';
+                        ctx.strokeText(labelText, labelX, labelY);
+                        
+                        // Purple fill
+                        ctx.fillStyle = '#7c3aed';
+                        ctx.fillText(labelText, labelX, labelY);
+                    }
+                }
+            });
+            
+            // Draw nodes
+            filledCauses.forEach(cause => {
+                const pos = positions[cause.id];
+                
+                // Node circle with gradient effect
+                const gradient = ctx.createRadialGradient(pos.x - 15, pos.y - 15, 0, pos.x, pos.y, nodeRadius);
+                gradient.addColorStop(0, '#f0fdfa');
+                gradient.addColorStop(1, '#ccfbf1');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, nodeRadius, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Node border
+                ctx.strokeStyle = '#14b8a6';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+                
+                // Node text with wrapping
+                ctx.fillStyle = '#134e4a';
+                ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const maxWidth = nodeRadius * 1.7;
+                const words = cause.text.split(' ');
+                let lines = [];
+                let currentLine = '';
+                
+                words.forEach(word => {
+                    const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                    const metrics = ctx.measureText(testLine);
+                    if (metrics.width > maxWidth && currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                });
+                if (currentLine) lines.push(currentLine);
+                
+                // Limit to 5 lines
+                if (lines.length > 5) {
+                    lines = lines.slice(0, 5);
+                    lines[4] = lines[4].substring(0, lines[4].length - 2) + '…';
+                }
+                
+                const lineHeight = 15;
+                const startY = pos.y - (lines.length - 1) * lineHeight / 2;
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, pos.x, startY + i * lineHeight);
+                });
+            });
+        }
+
+        // ==================== CAUSAL CHAIN ====================
+
+        function addChainEvent() {
+            const id = nextId++;
+            chain.push({ id, text: '', timing: '', hasUncertainty: false });
+            renderChain();
+            renderSelectableItems();
+            
+            setTimeout(() => {
+                const input = document.getElementById(`chain_${id}`);
+                if (input) input.focus();
+            }, 50);
+        }
+
+        function removeChainEvent(id) {
+            chain = chain.filter(e => e.id !== id);
+            delete preventions[`chain_${id}`];
+            renderChain();
+            renderSelectableItems();
+        }
+
+        function updateChainEvent(id, field, value) {
+            const event = chain.find(e => e.id === id);
+            if (event) event[field] = value;
+            if (field === 'text') renderSelectableItems();
+        }
+
+        function toggleUncertainty(id) {
+            const event = chain.find(e => e.id === id);
+            if (event) {
+                event.hasUncertainty = !event.hasUncertainty;
+                renderChain();
+            }
+        }
+
+        function renderChain() {
+            const container = document.getElementById('chainContainer');
+            
+            if (chain.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No events in the chain yet. Start from failure and work backwards—what happened just before?</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = chain.map((event, index) => `
+                <div class="timeline-event">
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                        <input type="text" 
+                            style="width: 180px; flex-shrink: 0;"
+                            placeholder="When? (e.g., '2 weeks before')"
+                            value="${escapeHtml(event.timing)}"
+                            onchange="updateChainEvent(${event.id}, 'timing', this.value)">
+                        <button class="remove-btn" onclick="removeChainEvent(${event.id})">Remove</button>
+                        <button class="secondary" style="padding: 6px 12px; background: ${event.hasUncertainty ? '#f59e0b' : '#94a3b8'};" 
+                            onclick="toggleUncertainty(${event.id})">
+                            ${event.hasUncertainty ? '⚠️ Uncertain' : 'Flag Uncertainty'}
+                        </button>
+                    </div>
+                    <textarea id="chain_${event.id}"
+                        placeholder="What happened at this point? Include any uncertainties or 'if/then' branching..."
+                        onchange="updateChainEvent(${event.id}, 'text', this.value)"
+                    >${escapeHtml(event.text)}</textarea>
+                    ${event.hasUncertainty ? '<span class="uncertainty-flag">Key Uncertainty</span>' : ''}
+                </div>
+            `).join('');
+        }
+
+        // ==================== SELECTABLE ITEMS & PREVENTION ====================
+
+        function renderSelectableItems() {
+            const causesContainer = document.getElementById('selectableCauses');
+            const chainContainer = document.getElementById('selectableChain');
+            
+            const filledCauses = causes.filter(c => c.text.trim());
+            const filledChain = chain.filter(e => e.text.trim());
+            
+            if (filledCauses.length === 0) {
+                causesContainer.innerHTML = '<p style="color: #64748b;">No causes yet.</p>';
+            } else {
+                causesContainer.innerHTML = filledCauses.map((cause, i) => {
+                    const key = `cause_${cause.id}`;
+                    const prev = preventions[key];
+                    const hasPrevention = prev && (prev.strategies?.some(s => s.text) || prev.indicators?.length > 0);
+                    const isSelected = selectedItem === key;
+                    const shortText = cause.text.length > 60 ? cause.text.substring(0, 60) + '...' : cause.text;
+                    
+                    return `
+                        <div class="selectable-item ${isSelected ? 'selected' : ''} ${hasPrevention ? 'has-prevention' : ''}"
+                             onclick="selectForPrevention('${key}')">
+                            <div class="item-label">Cause ${i + 1}</div>
+                            <div class="item-text">${escapeHtml(shortText)}</div>
+                            ${hasPrevention ? '<div class="item-status">✓ Has prevention strategy</div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            if (filledChain.length === 0) {
+                chainContainer.innerHTML = '<p style="color: #64748b;">No chain events yet.</p>';
+            } else {
+                chainContainer.innerHTML = filledChain.map((event, i) => {
+                    const key = `chain_${event.id}`;
+                    const prev = preventions[key];
+                    const hasPrevention = prev && (prev.strategies?.some(s => s.text) || prev.indicators?.length > 0);
+                    const isSelected = selectedItem === key;
+                    const shortText = event.text.length > 60 ? event.text.substring(0, 60) + '...' : event.text;
+                    const timing = event.timing || `Event ${i + 1}`;
+                    
+                    return `
+                        <div class="selectable-item ${isSelected ? 'selected' : ''} ${hasPrevention ? 'has-prevention' : ''}"
+                             onclick="selectForPrevention('${key}')">
+                            <div class="item-label">${escapeHtml(timing)}</div>
+                            <div class="item-text">${escapeHtml(shortText)}</div>
+                            ${hasPrevention ? '<div class="item-status">✓ Has prevention strategy</div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function selectForPrevention(key) {
+            selectedItem = key;
+            renderSelectableItems();
+            
+            const panel = document.getElementById('preventionPanel');
+            const sourceDiv = document.getElementById('selectedSource');
+            
+            let sourceText = '';
+            if (key.startsWith('cause_')) {
+                const id = parseInt(key.split('_')[1]);
+                const cause = causes.find(c => c.id === id);
+                if (cause) sourceText = cause.text;
+            } else if (key.startsWith('chain_')) {
+                const id = parseInt(key.split('_')[1]);
+                const event = chain.find(e => e.id === id);
+                if (event) sourceText = event.text;
+            }
+            
+            sourceDiv.textContent = sourceText || 'Unknown source';
+            
+            // Load existing prevention data or initialize
+            const existing = preventions[key] || { strategies: [{ text: '', owner: '' }], indicators: [''] };
+            if (!existing.strategies || existing.strategies.length === 0) {
+                existing.strategies = [{ text: '', owner: '' }];
+            }
+            if (!existing.indicators || existing.indicators.length === 0) {
+                existing.indicators = [''];
+            }
+            
+            // Store temporarily for editing
+            preventions[key] = existing;
+            
+            renderStrategyFields();
+            renderIndicatorFields();
+            
+            panel.classList.add('visible');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function renderStrategyFields() {
+            const container = document.getElementById('strategiesContainer');
+            const prev = preventions[selectedItem];
+            if (!prev) return;
+            
+            container.innerHTML = prev.strategies.map((s, i) => `
+                <div class="multi-item">
+                    <textarea placeholder="What will you do? Be specific and actionable..."
+                        onchange="updateStrategy(${i}, 'text', this.value)">${escapeHtml(s.text || '')}</textarea>
+                    <input type="text" placeholder="Owner" 
+                        value="${escapeHtml(s.owner || '')}"
+                        onchange="updateStrategy(${i}, 'owner', this.value)">
+                    ${prev.strategies.length > 1 ? `<button class="remove-btn" onclick="removeStrategy(${i})">×</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderIndicatorFields() {
+            const container = document.getElementById('indicatorsContainer');
+            const prev = preventions[selectedItem];
+            if (!prev) return;
+            
+            container.innerHTML = prev.indicators.map((ind, i) => `
+                <div class="indicator-item">
+                    <input type="text" placeholder="Observable signal that this threat is materializing..."
+                        value="${escapeHtml(ind || '')}"
+                        onchange="updateIndicator(${i}, this.value)">
+                    ${prev.indicators.length > 1 ? `<button class="remove-btn" onclick="removeIndicator(${i})">×</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function updateStrategy(index, field, value) {
+            if (!selectedItem || !preventions[selectedItem]) return;
+            preventions[selectedItem].strategies[index][field] = value;
+        }
+
+        function updateIndicator(index, value) {
+            if (!selectedItem || !preventions[selectedItem]) return;
+            preventions[selectedItem].indicators[index] = value;
+        }
+
+        function addStrategyField() {
+            if (!selectedItem || !preventions[selectedItem]) return;
+            preventions[selectedItem].strategies.push({ text: '', owner: '' });
+            renderStrategyFields();
+        }
+
+        function addIndicatorField() {
+            if (!selectedItem || !preventions[selectedItem]) return;
+            preventions[selectedItem].indicators.push('');
+            renderIndicatorFields();
+        }
+
+        function removeStrategy(index) {
+            if (!selectedItem || !preventions[selectedItem]) return;
+            preventions[selectedItem].strategies.splice(index, 1);
+            renderStrategyFields();
+        }
+
+        function removeIndicator(index) {
+            if (!selectedItem || !preventions[selectedItem]) return;
+            preventions[selectedItem].indicators.splice(index, 1);
+            renderIndicatorFields();
+        }
+
+        function savePrevention() {
+            closePrevention();
+            renderSelectableItems();
+        }
+
+        function closePrevention() {
+            document.getElementById('preventionPanel').classList.remove('visible');
+            selectedItem = null;
+            renderSelectableItems();
+        }
+
+        // ==================== COMPLETION SUMMARY ====================
+
+        function renderCompletionSummary() {
+            const initiative = document.getElementById('initiative').value;
+            const failure = document.getElementById('failureStatement').value;
+            const container = document.getElementById('summaryContent');
+            
+            let html = '';
+            
+            if (initiative.trim()) {
+                html += `
+                    <div class="summary-section">
+                        <h4>Initiative</h4>
+                        <div class="summary-item">${escapeHtml(initiative)}</div>
+                    </div>
+                `;
+            }
+            
+            if (failure.trim()) {
+                html += `
+                    <div class="summary-section">
+                        <h4>Assumed Failure</h4>
+                        <div class="summary-item" style="border-left: 3px solid #f97316; background: #fff7ed;">${escapeHtml(failure)}</div>
+                    </div>
+                `;
+            }
+            
+            // Causes with their preventions
+            const filledCauses = causes.filter(c => c.text.trim());
+            if (filledCauses.length > 0) {
+                html += `<div class="summary-section"><h4>Causes of Failure & Prevention</h4>`;
+                filledCauses.forEach((c, i) => {
+                    const key = `cause_${c.id}`;
+                    const prev = preventions[key];
+                    html += `<div class="summary-item summary-threat">${i + 1}. ${escapeHtml(c.text)}</div>`;
+                    if (prev && prev.strategies) {
+                        prev.strategies.filter(s => s.text).forEach(s => {
+                            html += `
+                                <div class="summary-item summary-prevention">
+                                    <span class="summary-label">Prevention${s.owner ? ` (Owner: ${escapeHtml(s.owner)})` : ''}</span>
+                                    ${escapeHtml(s.text)}
+                                </div>
+                            `;
+                        });
+                    }
+                    if (prev && prev.indicators) {
+                        const filledIndicators = prev.indicators.filter(ind => ind);
+                        if (filledIndicators.length > 0) {
+                            html += `
+                                <div class="summary-item summary-indicator">
+                                    <span class="summary-label">Early Warning Indicators</span>
+                                    ${filledIndicators.map(ind => '• ' + escapeHtml(ind)).join('<br>')}
+                                </div>
+                            `;
+                        }
+                    }
+                });
+                html += `</div>`;
+            }
+            
+            // Connections - new format: [cause A] [modality] [cause B]
+            const filledConnections = connections.filter(c => (c.edgeLabel && c.edgeLabel.trim()) || (c.description && c.description.trim()));
+            if (filledConnections.length > 0) {
+                html += `<div class="summary-section"><h4>Cause Connections</h4>`;
+                filledConnections.forEach(conn => {
+                    const c1 = causes.find(c => c.id === conn.cause1);
+                    const c2 = causes.find(c => c.id === conn.cause2);
+                    const t1 = c1 ? c1.text.substring(0, 40) + (c1.text.length > 40 ? '...' : '') : '(deleted)';
+                    const t2 = c2 ? c2.text.substring(0, 40) + (c2.text.length > 40 ? '...' : '') : '(deleted)';
+                    const label = conn.edgeLabel || conn.description || '';
+                    const notes = conn.notes || '';
+                    html += `<div class="summary-item summary-connection">"${escapeHtml(t1)}" <strong>[${escapeHtml(label)}]</strong> "${escapeHtml(t2)}"`;
+                    if (notes) {
+                        html += `<div style="margin-left: 20px; font-size: 0.9em; color: #64748b; font-style: italic;">${escapeHtml(notes)}</div>`;
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Chain with preventions
+            const filledChain = chain.filter(e => e.text.trim());
+            if (filledChain.length > 0) {
+                html += `<div class="summary-section"><h4>Causal Chain & Prevention</h4>`;
+                filledChain.forEach((e, i) => {
+                    const key = `chain_${e.id}`;
+                    const prev = preventions[key];
+                    html += `
+                        <div class="summary-item">
+                            <span class="summary-label">${e.timing || 'Timeline not specified'}${e.hasUncertainty ? ' ⚠️ KEY UNCERTAINTY' : ''}</span>
+                            ${escapeHtml(e.text)}
+                        </div>
+                    `;
+                    if (prev && prev.strategies) {
+                        prev.strategies.filter(s => s.text).forEach(s => {
+                            html += `
+                                <div class="summary-item summary-prevention">
+                                    <span class="summary-label">Prevention${s.owner ? ` (Owner: ${escapeHtml(s.owner)})` : ''}</span>
+                                    ${escapeHtml(s.text)}
+                                </div>
+                            `;
+                        });
+                    }
+                    if (prev && prev.indicators) {
+                        const filledIndicators = prev.indicators.filter(ind => ind);
+                        if (filledIndicators.length > 0) {
+                            html += `
+                                <div class="summary-item summary-indicator">
+                                    <span class="summary-label">Early Warning Indicators</span>
+                                    ${filledIndicators.map(ind => '• ' + escapeHtml(ind)).join('<br>')}
+                                </div>
+                            `;
+                        }
+                    }
+                });
+                html += `</div>`;
+            }
+            
+            container.innerHTML = html || '<p style="color: #64748b;">No data captured yet.</p>';
+        }
+
+        // ==================== SAVE / LOAD ====================
+
+        function saveAnalysis() {
+            const data = {
+                version: '5.0',
+                initiative: document.getElementById('initiative').value,
+                failureStatement: document.getElementById('failureStatement').value,
+                causes: causes,
+                connections: connections,
+                chain: chain,
+                preventions: preventions,
+                completedSections: Array.from(completedSections)
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `premortem_analysis_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    document.getElementById('initiative').value = data.initiative || '';
+                    document.getElementById('failureStatement').value = data.failureStatement || '';
+                    
+                    causes = data.causes || [];
+                    connections = data.connections || [];
+                    chain = data.chain || [];
+                    
+                    // Handle different versions
+                    if (data.preventions && typeof data.preventions === 'object' && !Array.isArray(data.preventions)) {
+                        // Migrate older formats
+                        preventions = {};
+                        Object.keys(data.preventions).forEach(key => {
+                            const p = data.preventions[key];
+                            if (p.strategies && Array.isArray(p.strategies)) {
+                                // v5 format
+                                preventions[key] = p;
+                            } else if (p.strategy !== undefined) {
+                                // v4 format - single strategy
+                                preventions[key] = {
+                                    strategies: [{ text: p.strategy || '', owner: p.owner || '' }],
+                                    indicators: p.indicators ? [p.indicators] : ['']
+                                };
+                            } else {
+                                preventions[key] = p;
+                            }
+                        });
+                    } else {
+                        preventions = {};
+                    }
+                    
+                    completedSections = new Set(data.completedSections || []);
+                    
+                    nextId = Math.max(
+                        ...causes.map(c => c.id),
+                        ...chain.map(e => e.id),
+                        ...connections.map(c => c.id),
+                        0
+                    ) + 1;
+                    
+                    renderCauses();
+                    renderCauseChips();
+                    renderConnections();
+                    renderChain();
+                    renderSelectableItems();
+                    updateProgress();
+                    updateSectionStatuses();
+                    
+                    if (completedSections.has(4) || completedSections.has(5) || completedSections.has(6)) {
+                        renderCompletionSummary();
+                        document.getElementById('completionSection').style.display = 'block';
+                    }
+                    
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ==================== EXPORT ====================
+
+        function generateReportText() {
+            const initiative = document.getElementById('initiative').value;
+            const failure = document.getElementById('failureStatement').value;
+            
+            let report = 'PRE-MORTEM ANALYSIS\n';
+            report += '='.repeat(50) + '\n\n';
+            
+            if (initiative) {
+                report += 'INITIATIVE:\n';
+                report += initiative + '\n\n';
+            }
+            
+            if (failure) {
+                report += 'ASSUMED FAILURE:\n';
+                report += failure + '\n\n';
+            }
+            
+            const filledCauses = causes.filter(c => c.text.trim());
+            if (filledCauses.length > 0) {
+                report += 'CAUSES OF FAILURE:\n';
+                report += '-'.repeat(30) + '\n\n';
+                filledCauses.forEach((c, i) => {
+                    const key = `cause_${c.id}`;
+                    const prev = preventions[key];
+                    report += `${i + 1}. ${c.text}\n`;
+                    if (prev && prev.strategies) {
+                        prev.strategies.filter(s => s.text).forEach(s => {
+                            report += `   PREVENTION: ${s.text}\n`;
+                            if (s.owner) report += `   OWNER: ${s.owner}\n`;
+                        });
+                    }
+                    if (prev && prev.indicators) {
+                        const filledIndicators = prev.indicators.filter(ind => ind);
+                        if (filledIndicators.length > 0) {
+                            report += `   EARLY WARNINGS:\n`;
+                            filledIndicators.forEach(ind => {
+                                report += `     • ${ind}\n`;
+                            });
+                        }
+                    }
+                    report += '\n';
+                });
+            }
+            
+            const filledConnections = connections.filter(c => (c.edgeLabel && c.edgeLabel.trim()) || (c.description && c.description.trim()));
+            if (filledConnections.length > 0) {
+                report += 'CAUSE CONNECTIONS:\n';
+                report += '-'.repeat(30) + '\n\n';
+                filledConnections.forEach(conn => {
+                    const c1 = causes.find(c => c.id === conn.cause1);
+                    const c2 = causes.find(c => c.id === conn.cause2);
+                    if (c1 && c2) {
+                        const label = conn.edgeLabel || conn.description || '';
+                        const notes = conn.notes || '';
+                        report += `• "${c1.text.substring(0, 40)}..." [${label}] "${c2.text.substring(0, 40)}..."\n`;
+                        if (notes) {
+                            report += `  Notes: ${notes}\n`;
+                        }
+                        report += '\n';
+                    }
+                });
+            }
+            
+            const filledChain = chain.filter(e => e.text.trim());
+            if (filledChain.length > 0) {
+                report += 'CAUSAL CHAIN (Working Backward):\n';
+                report += '-'.repeat(30) + '\n\n';
+                filledChain.forEach((e, i) => {
+                    const key = `chain_${e.id}`;
+                    const prev = preventions[key];
+                    const timing = e.timing || `Step ${i + 1}`;
+                    const uncertainty = e.hasUncertainty ? ' [KEY UNCERTAINTY]' : '';
+                    report += `[${timing}]${uncertainty}\n${e.text}\n`;
+                    if (prev && prev.strategies) {
+                        prev.strategies.filter(s => s.text).forEach(s => {
+                            report += `   PREVENTION: ${s.text}\n`;
+                            if (s.owner) report += `   OWNER: ${s.owner}\n`;
+                        });
+                    }
+                    if (prev && prev.indicators) {
+                        const filledIndicators = prev.indicators.filter(ind => ind);
+                        if (filledIndicators.length > 0) {
+                            report += `   EARLY WARNINGS:\n`;
+                            filledIndicators.forEach(ind => {
+                                report += `     • ${ind}\n`;
+                            });
+                        }
+                    }
+                    report += '\n';
+                });
+            }
+            
+            report += '='.repeat(50) + '\n';
+            report += `Generated: ${new Date().toLocaleString()}\n\n`;
+            
+            report += 'QUESTIONS FOR FURTHER ANALYSIS:\n';
+            report += '• What failure modes might I have missed?\n';
+            report += '• Which prevention strategies are weakest or least likely to be implemented?\n';
+            report += '• Are my early warning indicators specific and observable enough?\n';
+            report += '• What assumptions am I making that I haven\'t tested?\n';
+            report += '• How have similar projects failed in the past?\n';
+            report += '• Which cause connections could create cascading failures?\n';
+            
+            return report;
+        }
+
+        function copyReport() {
+            const report = generateReportText();
+            
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Report copied to clipboard! Paste into a conversation for critical review.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = report;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Report copied to clipboard!');
+            });
+        }
+
+        function exportMarkdown() {
+            const initiative = document.getElementById('initiative').value;
+            const failure = document.getElementById('failureStatement').value;
+            
+            let md = '# Pre-mortem Analysis\n\n';
+            md += `*Generated: ${new Date().toLocaleDateString()}*\n\n`;
+            
+            if (initiative) {
+                md += '## Initiative\n\n';
+                md += initiative + '\n\n';
+            }
+            
+            if (failure) {
+                md += '## Assumed Failure\n\n';
+                md += '> ' + failure.split('\n').join('\n> ') + '\n\n';
+            }
+            
+            const filledCauses = causes.filter(c => c.text.trim());
+            if (filledCauses.length > 0) {
+                md += '## Causes of Failure\n\n';
+                filledCauses.forEach((c, i) => {
+                    const key = `cause_${c.id}`;
+                    const prev = preventions[key];
+                    md += `### ${i + 1}. ${c.text}\n\n`;
+                    if (prev && prev.strategies) {
+                        prev.strategies.filter(s => s.text).forEach(s => {
+                            md += `**Prevention:** ${s.text}\n\n`;
+                            if (s.owner) md += `**Owner:** ${s.owner}\n\n`;
+                        });
+                    }
+                    if (prev && prev.indicators) {
+                        const filledIndicators = prev.indicators.filter(ind => ind);
+                        if (filledIndicators.length > 0) {
+                            md += `**Early Warnings:**\n`;
+                            filledIndicators.forEach(ind => md += `- ${ind}\n`);
+                            md += '\n';
+                        }
+                    }
+                });
+            }
+            
+            const filledConnections = connections.filter(c => (c.edgeLabel && c.edgeLabel.trim()) || (c.description && c.description.trim()));
+            if (filledConnections.length > 0) {
+                md += '## Cause Connections\n\n';
+                filledConnections.forEach(conn => {
+                    const c1 = causes.find(c => c.id === conn.cause1);
+                    const c2 = causes.find(c => c.id === conn.cause2);
+                    if (c1 && c2) {
+                        const label = conn.edgeLabel || conn.description || '';
+                        const notes = conn.notes || '';
+                        md += `- "${c1.text.substring(0, 50)}" **[${label}]** "${c2.text.substring(0, 50)}"\n`;
+                        if (notes) {
+                            md += `  - *${notes}*\n`;
+                        }
+                    }
+                });
+                md += '\n';
+            }
+            
+            const filledChain = chain.filter(e => e.text.trim());
+            if (filledChain.length > 0) {
+                md += '## Causal Chain\n\n';
+                filledChain.forEach((e, i) => {
+                    const key = `chain_${e.id}`;
+                    const prev = preventions[key];
+                    const timing = e.timing || `Step ${i + 1}`;
+                    const uncertainty = e.hasUncertainty ? ' ⚠️' : '';
+                    md += `### [${timing}]${uncertainty}\n\n`;
+                    md += e.text + '\n\n';
+                    if (prev && prev.strategies) {
+                        prev.strategies.filter(s => s.text).forEach(s => {
+                            md += `**Prevention:** ${s.text}\n\n`;
+                            if (s.owner) md += `**Owner:** ${s.owner}\n\n`;
+                        });
+                    }
+                    if (prev && prev.indicators) {
+                        const filledIndicators = prev.indicators.filter(ind => ind);
+                        if (filledIndicators.length > 0) {
+                            md += `**Early Warnings:**\n`;
+                            filledIndicators.forEach(ind => md += `- ${ind}\n`);
+                            md += '\n';
+                        }
+                    }
+                });
+            }
+            
+            md += '---\n\n';
+            md += '## Action Items\n\n';
+            md += '- [ ] Review and prioritize prevention strategies\n';
+            md += '- [ ] Assign owners to all strategies\n';
+            md += '- [ ] Add indicators to project monitoring dashboard\n';
+            md += '- [ ] Schedule pre-mortem refresh at next milestone\n';
+
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `premortem_analysis_${date}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadExample() {
+            const hasContent = document.getElementById('initiative').value || 
+                causes.length > 0 || chain.length > 0;
+            
+            if (hasContent) {
+                if (!confirm('This will replace your current work with an example. Continue?')) {
+                    return;
+                }
+            }
+            
+            // Clear existing data
+            causes = [];
+            connections = [];
+            chain = [];
+            preventions = {};
+            selectedCauses = [];
+            selectedItem = null;
+            completedSections = new Set();
+            nextId = 1;
+            
+            // Set the initiative
+            document.getElementById('initiative').value = `Launch a 6-month research fellowship program for 8 aspiring researchers interested in technical AI safety.
+
+Key elements:
+• Structured curriculum combining self-study, mentorship, and collaborative projects
+• Weekly seminars with visiting researchers and practitioners
+• Final capstone project with publication goal
+• Budget: $180,000 (stipends, operational costs, visiting speakers)
+• Timeline: 3-month setup, 6-month program, 1-month wrap-up
+
+Success looks like: 6+ fellows complete the program, at least 3 produce publishable work, strong cohort bonds form, and 4+ fellows transition to research roles or further study.`;
+            
+            // Set failure statement
+            document.getElementById('failureStatement').value = `The fellowship program ended after one cohort with no plans to continue. Only 4 of 8 fellows completed the full program. No papers were published. Exit interviews revealed widespread frustration: fellows felt underprepared for the material, mentorship was inconsistent, and the cohort fragmented into isolated individuals rather than a supportive community. Two mentors withdrew mid-program citing time constraints. The funder declined to renew.`;
+            
+            // Add root causes
+            causes = [
+                { id: nextId++, text: 'Selection process optimized for credentials over research aptitude and collaborative disposition' },
+                { id: nextId++, text: 'Curriculum difficulty assumed background knowledge many fellows lacked' },
+                { id: nextId++, text: 'Mentor expectations and time commitments were vaguely defined' },
+                { id: nextId++, text: 'No structured community-building activities in first weeks when habits form' },
+                { id: nextId++, text: 'Program director stretched across too many responsibilities with no dedicated operations support' },
+                { id: nextId++, text: 'No early feedback mechanisms to catch problems while still addressable' }
+            ];
+            
+            // Add connections between causes
+            connections = [
+                { id: nextId++, cause1: 1, cause2: 2, edgeLabel: 'compounds', notes: 'Fellows selected for credentials struggled most with curriculum gaps, creating a mismatch between cohort composition and program demands' },
+                { id: nextId++, cause1: 3, cause2: 5, edgeLabel: 'worsens', notes: 'Vague mentor expectations meant director spent time managing mentor relationships instead of program operations' },
+                { id: nextId++, cause1: 4, cause2: 6, edgeLabel: 'masks', notes: 'Without community bonds, fellows suffered in isolation rather than flagging problems collectively; issues stayed hidden longer' }
+            ];
+            
+            // Add causal chain (working backwards from failure)
+            chain = [
+                { id: nextId++, text: 'Funder receives final report showing poor completion rates and no publications; declines to renew', timing: 'End of program', hasUncertainty: false },
+                { id: nextId++, text: 'Final cohort presentation is sparsely attended; only 2 projects are close to publishable quality', timing: '1 week before end', hasUncertainty: false },
+                { id: nextId++, text: 'Two more fellows quietly disengage, attending sessions but not progressing on projects', timing: 'Month 5', hasUncertainty: false },
+                { id: nextId++, text: 'Second mentor withdraws citing "unexpected time constraints"; their 3 fellows are redistributed to already-stretched mentors', timing: 'Month 4', hasUncertainty: true },
+                { id: nextId++, text: 'Director notices attendance dropping but attributes it to "normal project-phase independence"', timing: 'Month 3', hasUncertainty: false },
+                { id: nextId++, text: 'First mentor reduces involvement after fellow misses several meetings; no escalation process exists', timing: 'Month 2', hasUncertainty: false },
+                { id: nextId++, text: 'Fellows struggle with foundational material; some stop attending optional study groups out of embarrassment', timing: 'Weeks 3-4', hasUncertainty: false },
+                { id: nextId++, text: 'Cohort bonding events are cancelled due to scheduling conflicts; "we\'ll do them next week" becomes permanent', timing: 'Week 2', hasUncertainty: true }
+            ];
+            
+            // Add preventions for key causes and chain events
+            preventions = {
+                'cause_1': {
+                    strategies: [
+                        { text: 'Require work sample (e.g., critique of a paper) in application to assess research thinking directly', owner: 'Selection committee' },
+                        { text: 'Include a "collaborative exercise" day as part of final selection to observe group dynamics', owner: 'Program director' }
+                    ],
+                    indicators: ['Ratio of work-sample quality to credential signals in accepted fellows', 'Post-program correlation between selection scores and completion']
+                },
+                'cause_3': {
+                    strategies: [
+                        { text: 'Create explicit mentor agreement: 2 hrs/week minimum, monthly check-in with director, defined escalation path', owner: 'Program director' },
+                        { text: 'Recruit backup mentors (at 0.5x commitment) who can absorb load if primary mentors withdraw', owner: 'Program director' }
+                    ],
+                    indicators: ['Mentor agreement signed before program starts', 'Backup mentor coverage ratio ≥ 1:4']
+                },
+                'cause_6': {
+                    strategies: [
+                        { text: 'Implement week-2 and week-6 anonymous pulse surveys asking about pace, support, and concerns', owner: 'Operations lead' },
+                        { text: 'Director holds brief 1:1 check-ins with each fellow at week 3 specifically to surface unvoiced issues', owner: 'Program director' }
+                    ],
+                    indicators: ['Survey response rate > 80%', 'Issues surfaced in surveys are addressed within 1 week']
+                },
+                'chain_15': {
+                    strategies: [
+                        { text: 'Make first two cohort bonding events mandatory and scheduled before program starts', owner: 'Operations lead' }
+                    ],
+                    indicators: ['100% attendance at first bonding event', 'Fellows can name all cohort members by week 2']
+                }
+            };
+            
+            // Mark some sections as complete to show progress
+            completedSections = new Set([1, 2]);
+            
+            // Render everything
+            renderCauses();
+            renderCauseChips();
+            renderConnections();
+            renderChain();
+            renderSelectableItems();
+            updateProgress();
+            updateSectionStatuses();
+            
+            // Scroll to initiative section
+            document.getElementById('section1').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function clearAll() {
+            if (!confirm('Clear all analysis data? This cannot be undone.')) return;
+            
+            document.getElementById('initiative').value = '';
+            document.getElementById('failureStatement').value = '';
+            causes = [];
+            connections = [];
+            chain = [];
+            preventions = {};
+            selectedCauses = [];
+            selectedItem = null;
+            completedSections = new Set();
+            nextId = 1;
+            flowchartVisible = false;
+            
+            document.getElementById('flowchartContainer').classList.remove('visible');
+            document.getElementById('flowchartToggle').textContent = 'View Flowchart';
+            document.getElementById('preventionPanel').classList.remove('visible');
+            
+            renderCauses();
+            renderCauseChips();
+            renderConnections();
+            renderChain();
+            renderSelectableItems();
+            updateProgress();
+            updateSectionStatuses();
+            
+            document.getElementById('completionSection').style.display = 'none';
+        }
+        
+        // ==================== UTILITY ====================
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // ==================== INITIALIZE ====================
+        
+        renderCauses();
+        renderCauseChips();
+        renderConnections();
+        renderChain();
+        renderSelectableItems();
+        updateProgress();
+        updateSectionStatuses();
+    </script>
+</body>
+</html>

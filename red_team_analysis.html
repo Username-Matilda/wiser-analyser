@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Team Analysis</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px;
+            background: #f0f4f8;
+            color: #1a202c;
+            font-size: 16px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h1 { 
+            color: #2c5282; 
+            margin-bottom: 8px;
+            font-size: 1.8em;
+        }
+        h2 { 
+            color: #2c5282; 
+            margin-bottom: 16px; 
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        h3 { 
+            color: #2c5282; 
+            margin: 0 0 12px 0;
+            font-size: 1.15em;
+        }
+        .subtitle { 
+            color: #4a5568; 
+            margin-bottom: 24px;
+            font-size: 1.05em;
+        }
+        
+        /* Load Previous Banner */
+        .load-banner {
+            background: #f0f7ff;
+            border: 1px solid #a3c5f0;
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .load-banner-text {
+            font-size: 15px;
+            color: #2c5282;
+        }
+        .load-banner-text strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        /* Intro box */
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 22px;
+            margin-bottom: 24px;
+            border-radius: 6px;
+        }
+        .intro-box p { 
+            margin: 0 0 14px 0;
+            color: #2d3748;
+        }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box ul { 
+            margin: 10px 0; 
+            padding-left: 22px;
+            color: #2d3748;
+        }
+        .intro-box li { margin-bottom: 8px; }
+        
+        /* Quote box */
+        .quote-box {
+            background: #f8fafc;
+            border-left: 4px solid #4a5568;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .quote-box blockquote {
+            margin: 0 0 10px 0;
+            color: #2d3748;
+        }
+        .quote-box cite {
+            font-size: 15px;
+            color: #4a5568;
+        }
+        .quote-box cite a {
+            color: #2c5282;
+        }
+        
+        /* Principles box - teal theme */
+        .principles-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            padding: 22px;
+            border-radius: 8px;
+            margin-bottom: 28px;
+        }
+        .principles-box h3 {
+            color: #234e52;
+            margin-bottom: 14px;
+        }
+        .principles-box ul {
+            margin: 0;
+            padding-left: 22px;
+            color: #234e52;
+        }
+        .principles-box li {
+            margin-bottom: 10px;
+        }
+        .principles-box li:last-child { margin-bottom: 0; }
+        
+        /* Preparation tip */
+        .prep-tip {
+            background: #f0f7ff;
+            border: 1px solid #90caf9;
+            padding: 14px 18px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            color: #1565c0;
+        }
+        .prep-tip strong {
+            color: #0d47a1;
+        }
+        
+        /* Section styling */
+        .section {
+            margin-bottom: 28px;
+            padding: 24px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .section-header h3 {
+            margin: 0;
+        }
+        .section-help {
+            color: #4a5568;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        
+        /* Input styling */
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        textarea::placeholder, input[type="text"]::placeholder {
+            color: #718096;
+        }
+        
+        /* Adversary profile */
+        .adversary-profile {
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 16px 0;
+        }
+        .profile-section {
+            margin-bottom: 18px;
+        }
+        .profile-section:last-child {
+            margin-bottom: 0;
+        }
+        .profile-label {
+            font-weight: 600;
+            color: #2c5282;
+            margin-bottom: 8px;
+        }
+        
+        /* Empathy guidance box */
+        .empathy-box {
+            background: #faf5ff;
+            border: 1px solid #d6bcfa;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: #553c9a;
+        }
+        .empathy-box strong {
+            color: #44337a;
+        }
+        
+        /* Multiple adversary note */
+        .multi-adversary-note {
+            background: #fffaf0;
+            border: 1px solid #fbd38d;
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            color: #744210;
+        }
+        
+        /* Completed section render */
+        .completed-summary {
+            background: white;
+            border: 2px solid #48bb78;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+        .completed-summary h4 {
+            color: #276749;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .summary-item {
+            background: #f0fff4;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+        .summary-label {
+            font-weight: 600;
+            color: #276749;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .summary-content {
+            color: #2d3748;
+        }
+        
+        /* Attack vector styling */
+        .attack-vector {
+            background: white;
+            border: 2px solid #4a5568;
+            border-left: 4px solid #4a5568;
+            padding: 20px;
+            margin: 14px 0;
+            border-radius: 6px;
+        }
+        .attack-vector.severity-critical {
+            border-left-color: #c53030;
+        }
+        .attack-vector.severity-high {
+            border-left-color: #dd6b20;
+        }
+        .attack-vector.severity-medium {
+            border-left-color: #3182ce;
+        }
+        .attack-vector.severity-low {
+            border-left-color: #718096;
+        }
+        .attack-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .attack-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .severity-label {
+            color: #4a5568;
+            font-weight: 500;
+        }
+        .severity-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        .critical { background: #c53030; }
+        .high { background: #dd6b20; }
+        .medium { background: #3182ce; }
+        .low { background: #718096; }
+        
+        /* Mitigation grid */
+        .mitigation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .mitigation-card {
+            background: white;
+            border: 2px solid #48bb78;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .mitigation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+        
+        /* Buttons - consolidated styles */
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary { 
+            background: #4a5568; 
+        }
+        button.secondary:hover { 
+            background: #2d3748; 
+        }
+        button.add-btn { 
+            background: #2c5282; 
+            padding: 8px 14px; 
+        }
+        button.remove-btn { 
+            background: #718096; 
+            font-size: 13px; 
+            padding: 6px 10px; 
+        }
+        button.remove-btn:hover {
+            background: #4a5568;
+        }
+        button.mitigation-btn { 
+            background: #38a169; 
+            padding: 8px 14px; 
+        }
+        button.mitigation-btn:hover {
+            background: #276749;
+        }
+        button.done-btn {
+            background: #48bb78;
+            padding: 8px 16px;
+        }
+        button.done-btn:hover {
+            background: #38a169;
+        }
+        button.example-btn {
+            background: #667eea;
+            padding: 8px 14px;
+        }
+        button.example-btn:hover {
+            background: #5a67d8;
+        }
+        button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        
+        .select {
+            padding: 8px 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 15px;
+            background: white;
+        }
+        .select:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        /* Next steps / What to do section */
+        .next-steps-box {
+            background: #f0f7ff;
+            border: 1px solid #a3c5f0;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 28px 0;
+        }
+        .next-steps-box h3 {
+            color: #2c5282;
+            margin: 0 0 16px 0;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 22px;
+            color: #2d3748;
+        }
+        .next-steps-box li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .next-steps-box li:last-child { margin-bottom: 0; }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 24px;
+            padding: 18px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .toolbar-help {
+            color: #4a5568;
+            margin-left: auto;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .toolbar-help span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            color: #718096;
+            padding: 40px 20px;
+        }
+        
+        /* Analysis summary */
+        .analysis-summary {
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .analysis-summary h3 {
+            color: #2c5282;
+            margin-bottom: 16px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .summary-stat {
+            background: #f0f7ff;
+            padding: 14px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .summary-stat .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c5282;
+        }
+        .summary-stat .label {
+            font-size: 13px;
+            color: #4a5568;
+            margin-top: 4px;
+        }
+        
+        /* Coverage matrix */
+        .coverage-section {
+            margin-top: 20px;
+        }
+        .coverage-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            gap: 12px;
+        }
+        .coverage-item.covered {
+            background: #f0fff4;
+        }
+        .coverage-item.uncovered {
+            background: #fff5f5;
+        }
+        .coverage-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .coverage-dot.covered {
+            background: #48bb78;
+        }
+        .coverage-dot.uncovered {
+            background: #e53e3e;
+        }
+        
+        /* Full analysis render for export */
+        .full-analysis-render {
+            background: white;
+            border: 2px solid #2c5282;
+            border-radius: 8px;
+            padding: 28px;
+            margin-top: 24px;
+        }
+        .full-analysis-render h3 {
+            color: #2c5282;
+            margin: 0 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .render-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .render-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .render-section h4 {
+            color: #4a5568;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 12px 0;
+        }
+        .render-content {
+            color: #2d3748;
+            line-height: 1.7;
+        }
+        .render-card {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .render-card:last-child {
+            margin-bottom: 0;
+        }
+        .render-card-title {
+            font-weight: 600;
+            color: #2c5282;
+            margin-bottom: 6px;
+        }
+        .render-card-meta {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+        
+        /* Hidden file input */
+        .hidden-input {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .section { padding: 18px; }
+            .attack-header { flex-direction: column; }
+            .toolbar-help { margin-left: 0; margin-top: 10px; }
+            .mitigation-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Red Team Analysis</h1>
+        <p class="subtitle">Think as the adversary. Every system has vulnerabilities. Find them before someone else does.</p>
+        
+        <!-- Load Banner at top -->
+        <div class="load-banner">
+            <div class="load-banner-text">
+                <strong>📂 Continue Previous Work?</strong>
+                Load a previously saved analysis (.json file) to resume where you left off.
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="document.getElementById('loadInput').click()" class="secondary">Load Saved Analysis</button>
+                <button onclick="loadExample()" class="example-btn">Load Worked Example</button>
+            </div>
+            <input type="file" id="loadInput" accept=".json" class="hidden-input" onchange="loadAnalysis(event)">
+        </div>
+        
+        <!-- Intro box -->
+        <div class="intro-box">
+            <p><strong>What is Red Teaming?</strong> Red teaming is the practice of deliberately adopting an adversarial perspective to identify weaknesses in your plans, systems, or strategies. Rather than assuming things will work as intended, you actively try to break them—because in the real world, someone or something eventually will.</p>
+            
+            <p><strong>How this tool helps:</strong></p>
+            <ul>
+                <li><strong>Profile your adversaries</strong> — understand who might attack, what they want, and what they're capable of</li>
+                <li><strong>Identify attack vectors</strong> — systematically document ways your system could be compromised</li>
+                <li><strong>Design mitigations</strong> — for each vulnerability, develop defenses that eliminate, detect, or contain damage</li>
+                <li><strong>Track coverage</strong> — ensure every critical attack has a corresponding defense</li>
+            </ul>
+            
+            <p>Be specific in your descriptions. Include key uncertainties—what you're not sure about is often where vulnerabilities hide.</p>
+        </div>
+        
+        <!-- Yudkowsky Quote -->
+        <div class="quote-box">
+            <blockquote>
+                "Ordinary paranoia consists of thinking that random persons are out to get you. Security mindset consists of knowing that the world contains agents actively working to exploit your mistakes—but, more importantly, it's about defending against mistakes in your own assumptions rather than just against external adversaries."
+            </blockquote>
+            <cite>— Adapted from Eliezer Yudkowsky, <a href="https://www.lesswrong.com/posts/8gqrbnW758qjHFTrH/security-mindset-and-ordinary-paranoia" target="_blank">"Security Mindset and Ordinary Paranoia"</a>. See also: <a href="https://www.schneier.com/blog/archives/2008/03/the_security_mi_1.html" target="_blank">Bruce Schneier on security mindset</a>.</cite>
+        </div>
+        
+        <!-- Preparation tip -->
+        <div class="prep-tip">
+            <strong>Before you begin:</strong> Red teaming works best when you have a clear picture of what you're defending. Consider first using the <em>Key Assumptions Check</em> to surface hidden beliefs about your system, or <em>Environmental Scan</em> to map the threat landscape. An open mind is essential—the vulnerabilities that hurt most are the ones you didn't want to see.
+        </div>
+        
+        <!-- Team Exercise Facilitation - moved up -->
+        <div class="section" id="teamExerciseSection" style="background: #faf5ff; border-color: #d6bcfa;">
+            <div class="section-header">
+                <h3 style="color: #553c9a;">🎭 Solo or Team Exercise</h3>
+            </div>
+            <p class="section-help" style="color: #553c9a;">
+                You can use this tool solo or step-by-step with collaborators assigned to different teams. The red team tradition comes from adversarial team exercises, and running it with multiple people often surfaces more blind spots. Here's how to structure the team version:
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
+                <div style="background: white; border: 2px solid #c53030; border-radius: 8px; padding: 18px;">
+                    <h4 style="color: #c53030; margin: 0 0 10px 0;">🔴 Red Team (Attackers)</h4>
+                    <p style="margin: 0; color: #2d3748;">Their job: Break everything. Identify attack vectors, find blind spots, chain vulnerabilities together. They should think like real adversaries—creative, patient, ruthless. Success = finding attacks the defenders missed.</p>
+                </div>
+                <div style="background: white; border: 2px solid #3182ce; border-radius: 8px; padding: 18px;">
+                    <h4 style="color: #3182ce; margin: 0 0 10px 0;">🔵 Blue Team (Defenders)</h4>
+                    <p style="margin: 0; color: #2d3748;">Their job: Defend everything. Design mitigations, identify early warning signs, build resilient systems. They should think like security professionals—systematic, thorough, paranoid. Success = having a credible defense for every attack.</p>
+                </div>
+                <div style="background: white; border: 2px solid #805ad5; border-radius: 8px; padding: 18px;">
+                    <h4 style="color: #805ad5; margin: 0 0 10px 0;">🟣 Purple Team (Integration)</h4>
+                    <p style="margin: 0; color: #2d3748;">Optional facilitator role. Coordinates between teams, ensures knowledge transfer, documents insights. After the exercise, helps both teams learn from each other. Particularly valuable for ongoing security improvement.</p>
+                </div>
+            </div>
+            
+            <div style="background: white; border: 1px solid #d6bcfa; border-radius: 6px; padding: 16px; margin-top: 16px;">
+                <strong style="color: #553c9a;">Basic exercise structure:</strong>
+                <ol style="margin: 10px 0 0 0; padding-left: 22px; color: #2d3748;">
+                    <li><strong>Setup (15 min):</strong> Define the system under analysis. Both teams study it independently.</li>
+                    <li><strong>Red Team phase (30-60 min):</strong> Red team identifies attack vectors without seeing Blue's defenses.</li>
+                    <li><strong>Blue Team phase (30-60 min):</strong> Blue team designs mitigations for attacks they anticipate.</li>
+                    <li><strong>Reveal & discuss (30 min):</strong> Compare notes. Which attacks did Blue anticipate? Which blindsided them?</li>
+                    <li><strong>Iterate:</strong> Red team designs attacks against Blue's mitigations. Blue team adapts. Repeat until satisfied.</li>
+                </ol>
+            </div>
+            
+            <p style="margin-top: 14px; color: #553c9a; font-size: 14px;">
+                <strong>Further reading:</strong> These resources are industry-specific (cybersecurity, military) but the principles translate broadly:
+                <a href="https://www.mitre.org/sites/default/files/2021-11/pr-18-1636-ngci-cyber-wargaming.pdf" target="_blank" style="color: #805ad5;">MITRE Cyber Wargaming Framework (PDF)</a> • 
+                <a href="https://www.itstactical.com/digicom/security/red-teaming-and-the-adversarial-mindset-have-a-plan-backup-plan-and-escape-plan/" target="_blank" style="color: #805ad5;">ITS Tactical on the Adversarial Mindset</a> •
+                <a href="https://www.lesswrong.com/posts/8gqrbnW758qjHFTrH/security-mindset-and-ordinary-paranoia" target="_blank" style="color: #805ad5;">Yudkowsky on Security Mindset</a>
+            </p>
+        </div>
+        
+        <!-- Principles Box -->
+        <div class="principles-box">
+            <h3>🎯 Red Team Principles</h3>
+            <ul>
+                <li><strong>Assume competence:</strong> The adversary is smart, resourceful, and patient. They will find weaknesses you overlooked.</li>
+                <li><strong>Think in chains:</strong> One vulnerability enables the next. A minor flaw can cascade into catastrophic failure.</li>
+                <li><strong>No sacred cows:</strong> Every assumption is attackable. Every trust relationship can break. Question everything.</li>
+                <li><strong>Hunt blind spots:</strong> The attacks that hurt most aren't the obvious ones—they're the threat classes you haven't been tracking at all. Prioritize finding what you've been missing over refining what you already see.</li>
+                <li><strong>Seek the grain of truth:</strong> When a perspective feels uncomfortable or creates "wrinkles" in your nice, coherent worldview, that's often where truth hides. Coherence feels like truth, but it's often a red herring.</li>
+                <li><strong>Document with care:</strong> Your red team documentation itself becomes an attack surface. Future defenders will be smarter than current you—but so will future attackers. Store securely, share judiciously, and consider what happens if this analysis is compromised.</li>
+                <li><strong>Test your mitigations:</strong> A defense you haven't tested is a defense you've only imagined.</li>
+            </ul>
+        </div>
+
+        <!-- System Under Analysis -->
+        <div class="section" id="systemSection">
+            <div class="section-header">
+                <h3>1. System Under Analysis</h3>
+                <button class="done-btn" onclick="completeSystemSection()">✓ Done</button>
+            </div>
+            <p class="section-help">
+                What system, strategy, or approach are you testing? Describe what it's meant to achieve and any key assumptions it relies on. Include uncertainties—what aspects are you least confident about?
+            </p>
+            <textarea id="system" 
+                      style="min-height: 120px;" 
+                      placeholder="Example: 'Our community food resilience plan relies on three local farms committing to a CSA model, volunteer coordination through a single organizer, and storage in a rented warehouse. Key uncertainty: whether farms will maintain commitment during economic downturns.'"></textarea>
+            <div id="systemSummary" class="completed-summary" style="display: none;"></div>
+        </div>
+
+        <!-- Adversary Profile -->
+        <div class="section" id="adversarySection">
+            <div class="section-header">
+                <h3>2. Adversary Profile</h3>
+                <button class="done-btn" onclick="completeAdversarySection()">✓ Done</button>
+            </div>
+            <p class="section-help">
+                Who or what might try to break this system? This could be a malicious actor, competitor, natural disaster, economic pressure, or even well-meaning people making mistakes. Be specific about their capabilities and what success looks like for them.
+            </p>
+            
+            <!-- Multiple adversary note -->
+            <div class="multi-adversary-note">
+                <strong>Multiple adversaries?</strong> You'll likely want to run this exercise separately for each distinct adversary profile. A broad sketch encompassing different adversary types will stop you modelling any of them with enough granularity to get solid results. If other profiles come to mind as you work, note them down and run additional rounds after this one.
+            </div>
+            
+            <!-- Empathy guidance -->
+            <div class="empathy-box">
+                <strong>Beyond rational agents:</strong> Don't just model what a cold, calculating adversary might do. Actually imagine <em>being</em> them. What's their worldview? Their values? Their fears and emotions, their social web? What does the world look like through their eyes? What cultural assumptions shape their reasoning, what past experiences inform their instincts? Adversaries aren't optimization algorithms—they're whole people (or complex systems) with their own coherent logic. Understanding that logic is how you predict what they'll actually do.
+            </div>
+            
+            <div class="adversary-profile">
+                <div class="profile-section">
+                    <div class="profile-label">Adversary Identity / Type</div>
+                    <textarea id="adversaryType" 
+                              style="min-height: 60px;" 
+                              placeholder="Examples: 'Competitor with deep pockets', 'Insider with system access', 'Economic recession', 'Coordination failure among volunteers', 'Regulatory changes'"></textarea>
+                </div>
+                <div class="profile-section">
+                    <div class="profile-label">Capabilities & Resources</div>
+                    <textarea id="adversaryCapabilities" 
+                              style="min-height: 60px;" 
+                              placeholder="What can they do? Consider: technical skills, budget, time, access, information, influence, persistence. What's uncertain about their capabilities?"></textarea>
+                </div>
+                <div class="profile-section">
+                    <div class="profile-label">Motivations & Objectives</div>
+                    <textarea id="adversaryMotivations" 
+                              style="min-height: 60px;" 
+                              placeholder="Why would they attack? What do they gain from success? What would 'winning' look like from their perspective?"></textarea>
+                </div>
+                <div class="profile-section">
+                    <div class="profile-label">Constraints & Limitations</div>
+                    <textarea id="adversaryConstraints" 
+                              style="min-height: 60px;" 
+                              placeholder="What can't they do? Consider: legal limits, resource constraints, lack of information, visibility concerns, time pressure."></textarea>
+                </div>
+            </div>
+            <div id="adversarySummary" class="completed-summary" style="display: none;"></div>
+        </div>
+
+        <!-- Attack Vectors -->
+        <div class="section" id="attackSection">
+            <div class="section-header">
+                <div>
+                    <h3>3. Attack Vectors</h3>
+                </div>
+                <button onclick="addAttackVector()" class="add-btn">+ Add Attack Vector</button>
+            </div>
+            <p class="section-help">
+                How could the adversary exploit weaknesses? Think creatively and ruthlessly. No attack is too obvious to document—sometimes the obvious attacks work precisely because defenders assume "no one would try that." Include your uncertainty about each attack's likelihood.
+            </p>
+            
+            <!-- Grain of truth box -->
+            <div class="prep-tip" style="margin-top: 0;">
+                <strong>Seek the grain of truth:</strong> You may not consider an attack vector because your mental picture is too low-resolution and predicts that the world fills in the blanks smoothly, following the nice shape of what you're currently tracking. That's often a signal to look more closely. The vulnerabilities that sting to acknowledge because they run counter to your understanding, or hide in the gaps of your imperfect maps, can be all the harder to spot. A useful heuristic: if considering an attack creates "wrinkles" in your nice, coherent worldview—if it forces you to hold complexity that's uncomfortable—that might be where truth hides. Coherence feels like truth, but it's often a red herring. The territory doesn't smooth itself to fit your map.
+            </div>
+            
+            <div id="attackVectors"></div>
+            <div id="attackSummary" class="completed-summary" style="display: none;"></div>
+        </div>
+
+        <!-- Mitigations -->
+        <div class="section" id="mitigationSection">
+            <div class="section-header">
+                <div>
+                    <h3>4. Mitigations & Defenses</h3>
+                </div>
+                <button onclick="addMitigation()" class="mitigation-btn">+ Add Mitigation</button>
+            </div>
+            <p class="section-help">
+                For each vulnerability, how do you strengthen the system? Good mitigations either <strong>eliminate</strong> the attack vector entirely, <strong>detect</strong> attacks early enough to respond, or <strong>contain</strong> damage if an attack succeeds.
+            </p>
+            
+            <!-- Mitigation design guidance -->
+            <div class="empathy-box" style="background: #f0fff4; border-color: #9ae6b4; color: #22543d;">
+                <strong>Design mitigations thoughtfully:</strong> Resist jumping to the first obvious defense. Consider using <em>Value-Focused Thinking</em> to clarify what you're actually trying to protect before designing solutions. And remember: every mitigation can introduce new vulnerabilities. A backup system creates new attack surface. A monitoring tool can be compromised. A human checkpoint adds social engineering opportunities. Ask: "How might an adversary exploit this defense itself?"
+            </div>
+            
+            <div id="mitigations" class="mitigation-grid"></div>
+        </div>
+
+        <!-- Full Analysis Render (shown after completing sections) -->
+        <div id="fullAnalysisRender" class="full-analysis-render" style="display: none;">
+            <h3>📋 Your Analysis at a Glance</h3>
+            <div id="renderContent"></div>
+        </div>
+
+        <!-- Analysis Summary -->
+        <div id="analysisSummarySection" style="display: none;">
+            <div class="analysis-summary">
+                <h3>📊 Coverage Overview</h3>
+                <div class="summary-grid" id="summaryStats"></div>
+                <div class="coverage-section">
+                    <h4 style="margin-bottom: 12px; color: #4a5568;">Attack Coverage Status</h4>
+                    <div id="coverageMatrix"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- What To Do Next -->
+        <div class="next-steps-box" id="nextStepsBox" style="display: none;">
+            <h3>📋 What To Do With This Analysis</h3>
+            <ul>
+                <li><strong>Prioritize by severity:</strong> Focus first on critical and high-severity attacks that lack mitigations. These are your highest-risk gaps.</li>
+                <li><strong>Test your mitigations:</strong> Don't just plan defenses—actually test them. Run tabletop exercises, simulations, or small experiments to see if they work.</li>
+                <li><strong>Assign ownership:</strong> Each attack vector and mitigation should have someone responsible for monitoring and maintaining it.</li>
+                <li><strong>Set review cadence:</strong> Adversaries evolve. Schedule regular reviews (quarterly?) to update your analysis as circumstances change.</li>
+                <li><strong>Workshop further:</strong> Share this analysis with collaborators, domain experts, or AI assistants for additional perspectives. Fresh eyes often spot what you missed.</li>
+                <li><strong>Run additional rounds:</strong> If you identified other adversary profiles during this exercise, run the tool again for each one.</li>
+                <li><strong>Connect to other tools:</strong> Use <em>Indicators of Change</em> to monitor early warning signs, or <em>Pre-mortem Analysis</em> to imagine specific failure scenarios in detail.</li>
+                <li><strong>Export for integration:</strong> Use the export options below to generate formats suitable for project management tools, collaborative whiteboarding (Miro/Mural/FigJam), or further analysis.</li>
+            </ul>
+        </div>
+        
+        <!-- Action Toolbar -->
+        <div class="toolbar">
+            <button onclick="saveAnalysis()">💾 Save (.json)</button>
+            <button onclick="exportSVG()" class="secondary">🖼️ Export Visual (.svg)</button>
+            <button onclick="exportMarkdown()" class="secondary">📝 Export Markdown</button>
+            <button onclick="copyClaudePrompt()" class="secondary">🤖 Claude Prompt</button>
+            <button onclick="copyToClipboard()" class="secondary">📋 Copy to Clipboard</button>
+            <button onclick="clearAll()" class="secondary">Clear All</button>
+            <div class="toolbar-help">
+                <span><strong>Save:</strong> JSON to reload later</span>
+                <span><strong>Claude:</strong> Prompt for further analysis</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let attackVectors = [];
+        let mitigations = [];
+        let nextAttackId = 1;
+        let nextMitigationId = 1;
+        let systemCompleted = false;
+        let adversaryCompleted = false;
+
+        // ============ Worked Example ============
+        
+        function loadExample() {
+            if (attackVectors.length > 0 || mitigations.length > 0 || 
+                document.getElementById('system').value.trim() ||
+                document.getElementById('adversaryType').value.trim()) {
+                if (!confirm('This will replace your current work with a worked example. Continue?')) {
+                    return;
+                }
+            }
+            
+            // Set system
+            document.getElementById('system').value = `Community Solar Microgrid Project
+
+A neighborhood of 45 households is installing a shared solar array with battery storage, managed through a local energy cooperative. The system aims to provide 60% of participating households' electricity needs and generate surplus revenue through grid feed-in.
+
+Key assumptions:
+- Households will maintain $50/month contributions for 10 years
+- Technical maintenance can be handled by two trained community volunteers
+- Local utility will honor current feed-in tariff rates
+- Battery storage will retain 80%+ capacity for 8 years
+
+Key uncertainties:
+- Actual household commitment during economic stress
+- Regulatory stability of feed-in tariffs
+- Long-term volunteer availability for maintenance`;
+
+            // Set adversary
+            document.getElementById('adversaryType').value = `Economic Recession (systemic stressor)
+
+Not a malicious actor, but a force that will stress-test every financial and social assumption the project relies on.`;
+            
+            document.getElementById('adversaryCapabilities').value = `Affects all households simultaneously. Can persist for 2-4 years. Reduces discretionary spending across the board. May trigger job losses, housing instability, changed priorities.
+
+Uncertainty: Depth and duration unpredictable. May affect different households very differently based on their sectors/savings.`;
+            
+            document.getElementById('adversaryMotivations').value = `"Success" for this adversary = financial stress forcing households to withdraw from cooperative commitments, reducing the collective's ability to maintain equipment or meet loan obligations.
+
+The recession doesn't "want" to break the project—but it will apply pressure that reveals every weakness.`;
+            
+            document.getElementById('adversaryConstraints').value = `Eventually ends (18-48 months typical). Affects everyone, so creates some solidarity/mutual aid opportunities. Government may introduce support programs. Doesn't physically damage equipment.`;
+
+            // Set attack vectors
+            attackVectors = [
+                {
+                    id: 1,
+                    name: 'Contribution Default Cascade',
+                    description: 'Several households stop paying $50/month contributions due to job loss or competing expenses. This increases burden on remaining households, causing more defaults. Below a threshold (maybe 30 households?), the project can\'t meet loan payments.',
+                    severity: 'critical',
+                    likelihood: 'High during deep recession. Historical data: 15-25% of households likely to experience significant income disruption. Uncertainty: whether disruption is temporary or permanent.'
+                },
+                {
+                    id: 2,
+                    name: 'Volunteer Burnout & Departure',
+                    description: 'The two trained maintenance volunteers face personal economic pressures—may need to take second jobs, move away for work, or simply burn out from unpaid labor during stressful times. Technical maintenance lapses.',
+                    severity: 'high',
+                    likelihood: 'Medium-high. Volunteer labor is fragile under stress. Single points of failure in expertise.'
+                },
+                {
+                    id: 3,
+                    name: 'Feed-in Tariff Reduction',
+                    description: 'Government, also under recession pressure, reduces or restructures feed-in tariffs. Revenue projections no longer hold. May happen with short notice.',
+                    severity: 'high',
+                    likelihood: 'Medium. Regulatory change is common during fiscal stress. Uncertainty: degree and timing.'
+                },
+                {
+                    id: 4,
+                    name: 'Equipment Damage During Maintenance Gap',
+                    description: 'Without consistent maintenance during volunteer absence, minor issues compound. Battery degradation accelerates. Inverter faults go unaddressed. System efficiency drops or fails.',
+                    severity: 'medium',
+                    likelihood: 'Medium. Depends on volunteer continuity attack succeeding first. Conditional probability.'
+                }
+            ];
+            nextAttackId = 5;
+
+            // Set mitigations
+            mitigations = [
+                {
+                    id: 1,
+                    name: 'Hardship Fund & Flexible Contributions',
+                    description: 'Establish a 6-month reserve fund from initial contributions. Allow temporary contribution pauses (up to 6 months) for households facing hardship, with community decision-making about extensions.',
+                    addressesAttack: 'Contribution Default Cascade'
+                },
+                {
+                    id: 2,
+                    name: 'Tiered Training Program',
+                    description: 'Train 6 volunteers to different levels (2 full expertise, 4 basic monitoring). Cross-train at least 2 people in each critical function. Document all procedures. Arrange backup contract with local solar installer for emergencies.',
+                    addressesAttack: 'Volunteer Burnout & Departure'
+                },
+                {
+                    id: 3,
+                    name: 'Diversified Revenue Model',
+                    description: 'Design financial model to survive 50% reduction in feed-in rates. Explore battery arbitrage, EV charging, and direct household sale as alternative revenue. Keep 12-month operating reserve.',
+                    addressesAttack: 'Feed-in Tariff Reduction'
+                },
+                {
+                    id: 4,
+                    name: 'Remote Monitoring + Maintenance Contract',
+                    description: 'Install remote monitoring system that alerts to anomalies. Pre-negotiate maintenance contract with installer at fixed rates, activated if volunteer capacity drops below threshold.',
+                    addressesAttack: 'Equipment Damage During Maintenance Gap, Volunteer Burnout & Departure'
+                }
+            ];
+            nextMitigationId = 5;
+            
+            // Reset completion states
+            systemCompleted = false;
+            adversaryCompleted = false;
+            document.getElementById('systemSummary').style.display = 'none';
+            document.getElementById('adversarySummary').style.display = 'none';
+            
+            renderAttackVectors();
+            renderMitigations();
+            updateAnalysisSummary();
+            updateFullRender();
+        }
+
+        // ============ Section Completion ============
+        
+        function completeSystemSection() {
+            const system = document.getElementById('system').value.trim();
+            if (!system) {
+                alert('Please describe the system under analysis first.');
+                return;
+            }
+            systemCompleted = true;
+            
+            const summary = document.getElementById('systemSummary');
+            summary.style.display = 'block';
+            summary.innerHTML = `
+                <h4>✓ System Defined</h4>
+                <div class="summary-item">
+                    <div class="summary-content">${escapeHtml(system)}</div>
+                </div>
+            `;
+            
+            // Scroll to next section
+            document.getElementById('adversarySection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            updateAnalysisSummary();
+            updateFullRender();
+        }
+        
+        function completeAdversarySection() {
+            const type = document.getElementById('adversaryType').value.trim();
+            if (!type) {
+                alert('Please describe at least the adversary type.');
+                return;
+            }
+            adversaryCompleted = true;
+            
+            const summary = document.getElementById('adversarySummary');
+            summary.style.display = 'block';
+            
+            const caps = document.getElementById('adversaryCapabilities').value.trim();
+            const motives = document.getElementById('adversaryMotivations').value.trim();
+            const constraints = document.getElementById('adversaryConstraints').value.trim();
+            
+            let html = '<h4>✓ Adversary Profiled</h4>';
+            html += `<div class="summary-item"><div class="summary-label">Identity</div><div class="summary-content">${escapeHtml(type)}</div></div>`;
+            if (caps) html += `<div class="summary-item"><div class="summary-label">Capabilities</div><div class="summary-content">${escapeHtml(caps)}</div></div>`;
+            if (motives) html += `<div class="summary-item"><div class="summary-label">Motivations</div><div class="summary-content">${escapeHtml(motives)}</div></div>`;
+            if (constraints) html += `<div class="summary-item"><div class="summary-label">Constraints</div><div class="summary-content">${escapeHtml(constraints)}</div></div>`;
+            
+            summary.innerHTML = html;
+            
+            // Scroll to next section
+            document.getElementById('attackSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            updateAnalysisSummary();
+            updateFullRender();
+        }
+
+        // ============ Attack Vectors ============
+        
+        function addAttackVector() {
+            attackVectors.push({
+                id: nextAttackId++,
+                name: '',
+                description: '',
+                severity: 'medium',
+                likelihood: ''
+            });
+            renderAttackVectors();
+        }
+
+        function removeAttackVector(id) {
+            attackVectors = attackVectors.filter(a => a.id !== id);
+            renderAttackVectors();
+            updateAnalysisSummary();
+            updateFullRender();
+        }
+
+        function updateAttackVector(id, field, value) {
+            const attack = attackVectors.find(a => a.id === id);
+            if (attack) {
+                attack[field] = value;
+                if (field === 'severity') {
+                    renderAttackVectors();
+                }
+            }
+            updateAnalysisSummary();
+            updateFullRender();
+        }
+
+        function renderAttackVectors() {
+            const container = document.getElementById('attackVectors');
+            
+            if (attackVectors.length === 0) {
+                container.innerHTML = '<div class="empty-state">No attack vectors identified yet. Think like an adversary—how would you break this system?</div>';
+                return;
+            }
+
+            container.innerHTML = attackVectors.map(a => `
+                <div class="attack-vector severity-${a.severity}">
+                    <div class="attack-header">
+                        <input type="text" 
+                               value="${escapeHtml(a.name)}"
+                               placeholder="Attack name (e.g., 'Social engineering of key volunteer')"
+                               onchange="updateAttackVector(${a.id}, 'name', this.value)"
+                               style="flex: 1; font-weight: 600;">
+                        <div class="attack-controls">
+                            <span class="severity-label">Severity:</span>
+                            <select class="select" onchange="updateAttackVector(${a.id}, 'severity', this.value)">
+                                <option value="low" ${a.severity === 'low' ? 'selected' : ''}>Low</option>
+                                <option value="medium" ${a.severity === 'medium' ? 'selected' : ''}>Medium</option>
+                                <option value="high" ${a.severity === 'high' ? 'selected' : ''}>High</option>
+                                <option value="critical" ${a.severity === 'critical' ? 'selected' : ''}>Critical</option>
+                            </select>
+                            <span class="severity-badge ${a.severity}">${a.severity.toUpperCase()}</span>
+                            <button class="remove-btn" onclick="removeAttackVector(${a.id})">✕ Remove</button>
+                        </div>
+                    </div>
+                    <textarea placeholder="Describe the attack: How would the adversary execute this? What vulnerability does it exploit? What's your confidence level?"
+                              onchange="updateAttackVector(${a.id}, 'description', this.value)"
+                              style="min-height: 80px; margin-bottom: 10px;">${escapeHtml(a.description)}</textarea>
+                    <textarea placeholder="Likelihood & context: How probable is this attack? What conditions make it more or less likely? What are you uncertain about?"
+                              onchange="updateAttackVector(${a.id}, 'likelihood', this.value)"
+                              style="min-height: 50px; background: #f8fafc;">${escapeHtml(a.likelihood)}</textarea>
+                </div>
+            `).join('');
+        }
+
+        // ============ Mitigations ============
+        
+        function addMitigation() {
+            mitigations.push({
+                id: nextMitigationId++,
+                name: '',
+                description: '',
+                addressesAttack: ''
+            });
+            renderMitigations();
+        }
+
+        function removeMitigation(id) {
+            mitigations = mitigations.filter(m => m.id !== id);
+            renderMitigations();
+            updateAnalysisSummary();
+            updateFullRender();
+        }
+
+        function updateMitigation(id, field, value) {
+            const mitigation = mitigations.find(m => m.id === id);
+            if (mitigation) {
+                mitigation[field] = value;
+            }
+            updateAnalysisSummary();
+            updateFullRender();
+        }
+
+        function renderMitigations() {
+            const container = document.getElementById('mitigations');
+            
+            if (mitigations.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No mitigations defined yet. For each attack vector, consider how you could eliminate, detect, or contain the threat.</div>';
+                return;
+            }
+
+            container.innerHTML = mitigations.map(m => `
+                <div class="mitigation-card">
+                    <div class="mitigation-header">
+                        <input type="text" 
+                               value="${escapeHtml(m.name)}"
+                               placeholder="Mitigation name"
+                               onchange="updateMitigation(${m.id}, 'name', this.value)"
+                               style="flex: 1; font-weight: 600;">
+                        <button class="remove-btn" onclick="removeMitigation(${m.id})">✕</button>
+                    </div>
+                    <textarea placeholder="Describe the defense: What does it do? How does it work? How would you know if it's working?"
+                              onchange="updateMitigation(${m.id}, 'description', this.value)"
+                              style="min-height: 70px; margin-bottom: 10px;">${escapeHtml(m.description)}</textarea>
+                    <input type="text" 
+                           value="${escapeHtml(m.addressesAttack)}"
+                           placeholder="Which attack(s) does this address?"
+                           onchange="updateMitigation(${m.id}, 'addressesAttack', this.value)">
+                </div>
+            `).join('');
+        }
+
+        // ============ Analysis Summary ============
+
+        function updateAnalysisSummary() {
+            const hasContent = attackVectors.length > 0 || mitigations.length > 0;
+            
+            document.getElementById('analysisSummarySection').style.display = hasContent ? 'block' : 'none';
+            document.getElementById('nextStepsBox').style.display = hasContent ? 'block' : 'none';
+            
+            if (!hasContent) return;
+
+            // Count severities
+            const criticalCount = attackVectors.filter(a => a.severity === 'critical').length;
+            const highCount = attackVectors.filter(a => a.severity === 'high').length;
+            
+            // Count coverage
+            let coveredCount = 0;
+            attackVectors.forEach(attack => {
+                const attackName = attack.name.toLowerCase();
+                const isCovered = mitigations.some(m => 
+                    m.addressesAttack.toLowerCase().includes(attackName) && attackName
+                );
+                if (isCovered) coveredCount++;
+            });
+            
+            const coveragePercent = attackVectors.length > 0 
+                ? Math.round((coveredCount / attackVectors.length) * 100) 
+                : 0;
+
+            document.getElementById('summaryStats').innerHTML = `
+                <div class="summary-stat">
+                    <div class="value">${attackVectors.length}</div>
+                    <div class="label">Attack Vectors</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="value">${mitigations.length}</div>
+                    <div class="label">Mitigations</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="value" style="color: ${criticalCount > 0 ? '#c53030' : '#2c5282'}">${criticalCount}</div>
+                    <div class="label">Critical</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="value" style="color: ${coveragePercent < 50 ? '#c53030' : coveragePercent < 80 ? '#dd6b20' : '#38a169'}">${coveragePercent}%</div>
+                    <div class="label">Coverage</div>
+                </div>
+            `;
+
+            // Coverage matrix
+            const matrixHtml = attackVectors.map(attack => {
+                const attackName = attack.name || 'Unnamed';
+                const isCovered = mitigations.some(m => 
+                    m.addressesAttack.toLowerCase().includes(attackName.toLowerCase()) && attackName
+                );
+                return `
+                    <div class="coverage-item ${isCovered ? 'covered' : 'uncovered'}">
+                        <div class="coverage-dot ${isCovered ? 'covered' : 'uncovered'}"></div>
+                        <span style="flex: 1; font-weight: 500;">${escapeHtml(attackName)}</span>
+                        <span class="severity-badge ${attack.severity}" style="font-size: 11px;">${attack.severity.toUpperCase()}</span>
+                        <span style="color: ${isCovered ? '#276749' : '#c53030'}; font-size: 14px;">
+                            ${isCovered ? '✓ Mitigated' : '✗ No mitigation'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('coverageMatrix').innerHTML = matrixHtml || '<div class="empty-state">Add attack vectors to see coverage status</div>';
+        }
+
+        // ============ Full Analysis Render ============
+
+        function updateFullRender() {
+            const hasContent = systemCompleted || adversaryCompleted || attackVectors.length > 0 || mitigations.length > 0;
+            const renderSection = document.getElementById('fullAnalysisRender');
+            
+            if (!hasContent) {
+                renderSection.style.display = 'none';
+                return;
+            }
+            
+            renderSection.style.display = 'block';
+            
+            let html = '';
+            
+            // System
+            const system = document.getElementById('system').value.trim();
+            if (system) {
+                html += `
+                    <div class="render-section">
+                        <h4>System Under Analysis</h4>
+                        <div class="render-content">${escapeHtml(system)}</div>
+                    </div>
+                `;
+            }
+            
+            // Adversary
+            const advType = document.getElementById('adversaryType').value.trim();
+            if (advType) {
+                const advCaps = document.getElementById('adversaryCapabilities').value.trim();
+                const advMotives = document.getElementById('adversaryMotivations').value.trim();
+                const advConstraints = document.getElementById('adversaryConstraints').value.trim();
+                
+                html += `
+                    <div class="render-section">
+                        <h4>Adversary Profile</h4>
+                        <div class="render-card">
+                            <div class="render-card-title">${escapeHtml(advType)}</div>
+                            ${advCaps ? `<div class="render-content" style="margin-top: 8px;"><strong>Capabilities:</strong> ${escapeHtml(advCaps)}</div>` : ''}
+                            ${advMotives ? `<div class="render-content" style="margin-top: 8px;"><strong>Motivations:</strong> ${escapeHtml(advMotives)}</div>` : ''}
+                            ${advConstraints ? `<div class="render-content" style="margin-top: 8px;"><strong>Constraints:</strong> ${escapeHtml(advConstraints)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Attack Vectors
+            if (attackVectors.length > 0) {
+                html += `
+                    <div class="render-section">
+                        <h4>Attack Vectors</h4>
+                        ${attackVectors.map(a => `
+                            <div class="render-card">
+                                <div class="render-card-title">${escapeHtml(a.name || 'Unnamed')}</div>
+                                <div class="render-card-meta">Severity: ${a.severity.toUpperCase()}</div>
+                                ${a.description ? `<div class="render-content">${escapeHtml(a.description)}</div>` : ''}
+                                ${a.likelihood ? `<div class="render-content" style="margin-top: 6px; color: #718096;"><em>Likelihood: ${escapeHtml(a.likelihood)}</em></div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // Mitigations
+            if (mitigations.length > 0) {
+                html += `
+                    <div class="render-section">
+                        <h4>Mitigations</h4>
+                        ${mitigations.map(m => `
+                            <div class="render-card" style="border-left: 3px solid #48bb78;">
+                                <div class="render-card-title">${escapeHtml(m.name || 'Unnamed')}</div>
+                                ${m.addressesAttack ? `<div class="render-card-meta">Addresses: ${escapeHtml(m.addressesAttack)}</div>` : ''}
+                                ${m.description ? `<div class="render-content">${escapeHtml(m.description)}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('renderContent').innerHTML = html;
+        }
+
+        // ============ Save/Load/Export ============
+        
+        function saveAnalysis() {
+            const data = {
+                version: '2.0',
+                timestamp: new Date().toISOString(),
+                system: document.getElementById('system').value,
+                adversary: {
+                    type: document.getElementById('adversaryType').value,
+                    capabilities: document.getElementById('adversaryCapabilities').value,
+                    motivations: document.getElementById('adversaryMotivations').value,
+                    constraints: document.getElementById('adversaryConstraints').value
+                },
+                attackVectors: attackVectors,
+                mitigations: mitigations
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `red_team_analysis_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    document.getElementById('system').value = data.system || '';
+                    document.getElementById('adversaryType').value = data.adversary?.type || '';
+                    document.getElementById('adversaryCapabilities').value = data.adversary?.capabilities || '';
+                    document.getElementById('adversaryMotivations').value = data.adversary?.motivations || '';
+                    document.getElementById('adversaryConstraints').value = data.adversary?.constraints || '';
+                    
+                    attackVectors = data.attackVectors || [];
+                    mitigations = data.mitigations || [];
+                    nextAttackId = attackVectors.length > 0 ? Math.max(...attackVectors.map(a => a.id)) + 1 : 1;
+                    nextMitigationId = mitigations.length > 0 ? Math.max(...mitigations.map(m => m.id)) + 1 : 1;
+                    
+                    // Reset completed states
+                    systemCompleted = false;
+                    adversaryCompleted = false;
+                    document.getElementById('systemSummary').style.display = 'none';
+                    document.getElementById('adversarySummary').style.display = 'none';
+                    
+                    renderAttackVectors();
+                    renderMitigations();
+                    updateAnalysisSummary();
+                    updateFullRender();
+                    
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ============ SVG Export for Workshopping Tools ============
+
+        function exportSVG() {
+            const system = document.getElementById('system').value.trim();
+            const advType = document.getElementById('adversaryType').value.trim();
+            const advCaps = document.getElementById('adversaryCapabilities').value.trim();
+            const advMotives = document.getElementById('adversaryMotivations').value.trim();
+            
+            // Calculate dimensions based on content
+            const cardWidth = 280;
+            const cardHeight = 160;
+            const padding = 30;
+            const columnGap = 40;
+            const rowGap = 30;
+            
+            const maxCols = 4;
+            const attackCols = Math.min(attackVectors.length, maxCols);
+            const mitigationCols = Math.min(mitigations.length, maxCols);
+            const maxWidth = Math.max(2, attackCols, mitigationCols);
+            
+            const attackRows = Math.ceil(attackVectors.length / maxCols);
+            const mitigationRows = Math.ceil(mitigations.length / maxCols);
+            
+            let svgWidth = padding * 2 + maxWidth * cardWidth + (maxWidth - 1) * columnGap;
+            svgWidth = Math.max(svgWidth, 700);
+            
+            // Calculate heights for each section
+            const headerHeight = 80;
+            const systemHeight = system ? 140 : 0;
+            const adversaryHeight = advType ? 180 : 0;
+            const attackSectionHeight = attackVectors.length > 0 ? 60 + attackRows * (cardHeight + rowGap) : 0;
+            const mitigationSectionHeight = mitigations.length > 0 ? 60 + mitigationRows * (cardHeight + rowGap) : 0;
+            
+            const svgHeight = padding + headerHeight + systemHeight + adversaryHeight + 
+                             attackSectionHeight + mitigationSectionHeight + padding * 2;
+            
+            let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+    <defs>
+        <style>
+            .title { font: bold 24px -apple-system, BlinkMacSystemFont, sans-serif; fill: #2c5282; }
+            .section-title { font: bold 16px -apple-system, BlinkMacSystemFont, sans-serif; fill: #4a5568; }
+            .card-title { font: bold 14px -apple-system, BlinkMacSystemFont, sans-serif; fill: #2d3748; }
+            .card-text { font: 12px -apple-system, BlinkMacSystemFont, sans-serif; fill: #4a5568; }
+            .card-meta { font: 11px -apple-system, BlinkMacSystemFont, sans-serif; fill: #718096; }
+            .severity-badge { font: bold 10px -apple-system, BlinkMacSystemFont, sans-serif; fill: white; }
+        </style>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="#f7fafc"/>
+    
+    <!-- Title -->
+    <text x="${padding}" y="${padding + 30}" class="title">Red Team Analysis</text>
+    <text x="${padding}" y="${padding + 50}" class="card-meta">Generated: ${new Date().toLocaleString()}</text>
+`;
+
+            let yOffset = padding + headerHeight;
+            
+            // System section
+            if (system) {
+                svg += `
+    <!-- System -->
+    <rect x="${padding}" y="${yOffset}" width="${svgWidth - padding * 2}" height="120" rx="8" fill="white" stroke="#2c5282" stroke-width="2"/>
+    <text x="${padding + 15}" y="${yOffset + 25}" class="section-title">System Under Analysis</text>
+    <foreignObject x="${padding + 15}" y="${yOffset + 35}" width="${svgWidth - padding * 2 - 30}" height="75">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font: 12px -apple-system, sans-serif; color: #4a5568; overflow: hidden;">${escapeHtml(system).substring(0, 300)}${system.length > 300 ? '...' : ''}</div>
+    </foreignObject>
+`;
+                yOffset += systemHeight;
+            }
+            
+            // Adversary section
+            if (advType) {
+                svg += `
+    <!-- Adversary -->
+    <rect x="${padding}" y="${yOffset}" width="${svgWidth - padding * 2}" height="160" rx="8" fill="white" stroke="#667eea" stroke-width="2"/>
+    <text x="${padding + 15}" y="${yOffset + 25}" class="section-title">Adversary Profile</text>
+    <text x="${padding + 15}" y="${yOffset + 50}" class="card-title">${escapeHtml(advType).substring(0, 60)}</text>
+    <foreignObject x="${padding + 15}" y="${yOffset + 60}" width="${svgWidth - padding * 2 - 30}" height="90">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font: 11px -apple-system, sans-serif; color: #718096;">
+            ${advCaps ? `<div style="margin-bottom: 4px;"><strong>Capabilities:</strong> ${escapeHtml(advCaps).substring(0, 100)}...</div>` : ''}
+            ${advMotives ? `<div><strong>Motivations:</strong> ${escapeHtml(advMotives).substring(0, 100)}...</div>` : ''}
+        </div>
+    </foreignObject>
+`;
+                yOffset += adversaryHeight;
+            }
+            
+            // Attack Vectors
+            if (attackVectors.length > 0) {
+                svg += `
+    <text x="${padding}" y="${yOffset + 25}" class="section-title">Attack Vectors</text>
+`;
+                yOffset += 40;
+                
+                attackVectors.forEach((attack, i) => {
+                    const col = i % maxCols;
+                    const row = Math.floor(i / maxCols);
+                    const x = padding + col * (cardWidth + columnGap);
+                    const y = yOffset + row * (cardHeight + rowGap);
+                    
+                    const severityColors = {
+                        critical: '#c53030',
+                        high: '#dd6b20',
+                        medium: '#3182ce',
+                        low: '#718096'
+                    };
+                    const color = severityColors[attack.severity] || '#718096';
+                    
+                    svg += `
+    <rect x="${x}" y="${y}" width="${cardWidth}" height="${cardHeight}" rx="6" fill="white" stroke="${color}" stroke-width="2"/>
+    <rect x="${x}" y="${y}" width="4" height="${cardHeight}" fill="${color}"/>
+    <text x="${x + 15}" y="${y + 22}" class="card-title">${escapeHtml((attack.name || 'Unnamed').substring(0, 30))}</text>
+    <rect x="${x + cardWidth - 70}" y="${y + 8}" width="60" height="18" rx="9" fill="${color}"/>
+    <text x="${x + cardWidth - 40}" y="${y + 20}" class="severity-badge" text-anchor="middle">${attack.severity.toUpperCase()}</text>
+    <foreignObject x="${x + 10}" y="${y + 35}" width="${cardWidth - 20}" height="${cardHeight - 45}">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font: 11px -apple-system, sans-serif; color: #4a5568; overflow: hidden;">${escapeHtml((attack.description || '').substring(0, 180))}${(attack.description || '').length > 180 ? '...' : ''}</div>
+    </foreignObject>
+`;
+                });
+                
+                yOffset += attackRows * (cardHeight + rowGap) + 20;
+            }
+            
+            // Mitigations
+            if (mitigations.length > 0) {
+                svg += `
+    <text x="${padding}" y="${yOffset + 25}" class="section-title">Mitigations</text>
+`;
+                yOffset += 40;
+                
+                mitigations.forEach((m, i) => {
+                    const col = i % maxCols;
+                    const row = Math.floor(i / maxCols);
+                    const x = padding + col * (cardWidth + columnGap);
+                    const y = yOffset + row * (cardHeight + rowGap);
+                    
+                    svg += `
+    <rect x="${x}" y="${y}" width="${cardWidth}" height="${cardHeight}" rx="6" fill="white" stroke="#48bb78" stroke-width="2"/>
+    <rect x="${x}" y="${y}" width="4" height="${cardHeight}" fill="#48bb78"/>
+    <text x="${x + 15}" y="${y + 22}" class="card-title">${escapeHtml((m.name || 'Unnamed').substring(0, 30))}</text>
+    ${m.addressesAttack ? `<text x="${x + 15}" y="${y + 38}" class="card-meta">↳ ${escapeHtml(m.addressesAttack.substring(0, 35))}</text>` : ''}
+    <foreignObject x="${x + 10}" y="${y + 45}" width="${cardWidth - 20}" height="${cardHeight - 55}">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font: 11px -apple-system, sans-serif; color: #4a5568; overflow: hidden;">${escapeHtml((m.description || '').substring(0, 180))}${(m.description || '').length > 180 ? '...' : ''}</div>
+    </foreignObject>
+`;
+                });
+            }
+            
+            svg += `
+</svg>`;
+            
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `red_team_analysis_${date}.svg`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportMarkdown() {
+            let md = '# Red Team Analysis\n\n';
+            md += `*Generated: ${new Date().toLocaleString()}*\n\n`;
+            
+            const system = document.getElementById('system').value;
+            if (system) {
+                md += '## System Under Analysis\n\n';
+                md += system + '\n\n';
+            }
+            
+            md += '## Adversary Profile\n\n';
+            
+            const advType = document.getElementById('adversaryType').value;
+            const advCaps = document.getElementById('adversaryCapabilities').value;
+            const advMotives = document.getElementById('adversaryMotivations').value;
+            const advConstraints = document.getElementById('adversaryConstraints').value;
+            
+            if (advType) md += `**Type:** ${advType}\n\n`;
+            if (advCaps) md += `**Capabilities:** ${advCaps}\n\n`;
+            if (advMotives) md += `**Motivations:** ${advMotives}\n\n`;
+            if (advConstraints) md += `**Constraints:** ${advConstraints}\n\n`;
+            
+            if (attackVectors.length > 0) {
+                md += '## Attack Vectors\n\n';
+                md += '| # | Attack | Severity | Description | Likelihood |\n';
+                md += '|---|--------|----------|-------------|------------|\n';
+                
+                attackVectors.forEach((a, i) => {
+                    md += `| ${i + 1} | ${a.name || 'Unnamed'} | ${a.severity.toUpperCase()} | ${(a.description || '-').replace(/\n/g, ' ').substring(0, 100)} | ${(a.likelihood || '-').replace(/\n/g, ' ').substring(0, 80)} |\n`;
+                });
+                md += '\n';
+            }
+            
+            if (mitigations.length > 0) {
+                md += '## Mitigations\n\n';
+                md += '| # | Mitigation | Description | Addresses |\n';
+                md += '|---|------------|-------------|----------|\n';
+                
+                mitigations.forEach((m, i) => {
+                    md += `| ${i + 1} | ${m.name || 'Unnamed'} | ${(m.description || '-').replace(/\n/g, ' ').substring(0, 100)} | ${m.addressesAttack || '-'} |\n`;
+                });
+                md += '\n';
+            }
+            
+            md += '## Coverage Status\n\n';
+            attackVectors.forEach(attack => {
+                const attackName = attack.name || 'Unnamed';
+                const isCovered = mitigations.some(m => 
+                    m.addressesAttack.toLowerCase().includes(attackName.toLowerCase()) && attackName
+                );
+                md += `- ${isCovered ? '✅' : '❌'} **${attackName}** (${attack.severity}) - ${isCovered ? 'Mitigated' : 'No mitigation'}\n`;
+            });
+            
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `red_team_analysis_${date}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            let report = 'RED TEAM ANALYSIS\n';
+            report += '═'.repeat(60) + '\n\n';
+            report += 'Generated: ' + new Date().toLocaleString() + '\n\n';
+            
+            const system = document.getElementById('system').value;
+            if (system) {
+                report += '─'.repeat(60) + '\n';
+                report += 'SYSTEM UNDER ANALYSIS\n';
+                report += '─'.repeat(60) + '\n\n';
+                report += system + '\n\n';
+            }
+            
+            report += '─'.repeat(60) + '\n';
+            report += 'ADVERSARY PROFILE\n';
+            report += '─'.repeat(60) + '\n\n';
+            
+            const advType = document.getElementById('adversaryType').value;
+            const advCaps = document.getElementById('adversaryCapabilities').value;
+            const advMotives = document.getElementById('adversaryMotivations').value;
+            const advConstraints = document.getElementById('adversaryConstraints').value;
+            
+            if (advType) report += 'Type: ' + advType + '\n\n';
+            if (advCaps) report += 'Capabilities: ' + advCaps + '\n\n';
+            if (advMotives) report += 'Motivations: ' + advMotives + '\n\n';
+            if (advConstraints) report += 'Constraints: ' + advConstraints + '\n\n';
+            
+            if (attackVectors.length > 0) {
+                report += '─'.repeat(60) + '\n';
+                report += 'ATTACK VECTORS\n';
+                report += '─'.repeat(60) + '\n\n';
+                
+                attackVectors.forEach((a, i) => {
+                    report += `${i + 1}. ${a.name || 'Unnamed'} [${a.severity.toUpperCase()}]\n`;
+                    if (a.description) report += `   Description: ${a.description}\n`;
+                    if (a.likelihood) report += `   Likelihood: ${a.likelihood}\n`;
+                    report += '\n';
+                });
+            }
+            
+            if (mitigations.length > 0) {
+                report += '─'.repeat(60) + '\n';
+                report += 'MITIGATIONS\n';
+                report += '─'.repeat(60) + '\n\n';
+                
+                mitigations.forEach((m, i) => {
+                    report += `${i + 1}. ${m.name || 'Unnamed'}\n`;
+                    if (m.description) report += `   Description: ${m.description}\n`;
+                    if (m.addressesAttack) report += `   Addresses: ${m.addressesAttack}\n`;
+                    report += '\n';
+                });
+            }
+            
+            // Coverage summary
+            report += '─'.repeat(60) + '\n';
+            report += 'COVERAGE SUMMARY\n';
+            report += '─'.repeat(60) + '\n\n';
+            
+            attackVectors.forEach(attack => {
+                const attackName = attack.name || 'Unnamed';
+                const isCovered = mitigations.some(m => 
+                    m.addressesAttack.toLowerCase().includes(attackName.toLowerCase()) && attackName
+                );
+                report += `[${isCovered ? '✓' : '✗'}] ${attackName} (${attack.severity}) - ${isCovered ? 'Mitigated' : 'NO MITIGATION'}\n`;
+            });
+            
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Report copied to clipboard! You can now paste it into a document, email, or conversation with Claude for further analysis.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = report;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Report copied to clipboard!');
+            });
+        }
+
+        function copyClaudePrompt() {
+            const system = document.getElementById('system').value.trim();
+            const advType = document.getElementById('adversaryType').value.trim();
+            const advCaps = document.getElementById('adversaryCapabilities').value.trim();
+            const advMotives = document.getElementById('adversaryMotivations').value.trim();
+            const advConstraints = document.getElementById('adversaryConstraints').value.trim();
+            
+            let analysisData = '';
+            
+            if (system) {
+                analysisData += `SYSTEM UNDER ANALYSIS:\n${system}\n\n`;
+            }
+            
+            if (advType) {
+                analysisData += `ADVERSARY PROFILE:\nType: ${advType}\n`;
+                if (advCaps) analysisData += `Capabilities: ${advCaps}\n`;
+                if (advMotives) analysisData += `Motivations: ${advMotives}\n`;
+                if (advConstraints) analysisData += `Constraints: ${advConstraints}\n`;
+                analysisData += '\n';
+            }
+            
+            if (attackVectors.length > 0) {
+                analysisData += 'ATTACK VECTORS IDENTIFIED:\n';
+                attackVectors.forEach((a, i) => {
+                    analysisData += `${i + 1}. ${a.name || 'Unnamed'} [${a.severity.toUpperCase()}]\n`;
+                    if (a.description) analysisData += `   ${a.description}\n`;
+                    if (a.likelihood) analysisData += `   Likelihood: ${a.likelihood}\n`;
+                });
+                analysisData += '\n';
+            }
+            
+            if (mitigations.length > 0) {
+                analysisData += 'MITIGATIONS DESIGNED:\n';
+                mitigations.forEach((m, i) => {
+                    analysisData += `${i + 1}. ${m.name || 'Unnamed'}`;
+                    if (m.addressesAttack) analysisData += ` (addresses: ${m.addressesAttack})`;
+                    analysisData += '\n';
+                    if (m.description) analysisData += `   ${m.description}\n`;
+                });
+                analysisData += '\n';
+            }
+            
+            // Calculate coverage
+            const uncoveredAttacks = attackVectors.filter(attack => {
+                const attackName = attack.name?.toLowerCase() || '';
+                return !mitigations.some(m => 
+                    m.addressesAttack.toLowerCase().includes(attackName) && attackName
+                );
+            });
+            
+            if (uncoveredAttacks.length > 0) {
+                analysisData += 'ATTACKS WITHOUT MITIGATIONS:\n';
+                uncoveredAttacks.forEach(a => {
+                    analysisData += `- ${a.name || 'Unnamed'} [${a.severity.toUpperCase()}]\n`;
+                });
+                analysisData += '\n';
+            }
+            
+            const prompt = `I've completed a red team analysis and would like your help stress-testing and extending it. Please approach this as a rigorous thinking partner—I'm looking for genuine critique and blind spots, not reassurance.
+
+Context for how to help me: This analysis came from a structured red-teaming exercise. I've tried to think adversarially, but I know my models have gaps. You can help by:
+- Thinking in threat classes I might not have considered (not just variations on my listed attacks)
+- Noticing where my world-model might be "too smooth"—where I'm assuming the territory fills in nicely between the points I'm tracking
+- Being direct about weaknesses rather than diplomatic
+- Asking clarifying questions if my descriptions are too vague to analyze properly
+
+Here's my analysis:
+
+${analysisData}
+---
+
+Please help me with the following (be direct and specific):
+
+1. **Blind spot detection**: What attack vectors have I likely missed entirely? Think about:
+   - Threat classes I'm not tracking at all (not just variations on listed attacks)
+   - Second-order effects and emergent failures
+   - Attacks at the intersection of multiple assumptions
+   - Places where my model is "too low-resolution" and the real world has dangerous texture I'm missing
+
+2. **Chain analysis**: How might the attacks I've identified chain together? What cascade failures could a sophisticated adversary construct by combining these vulnerabilities? Which attacks enable which other attacks?
+
+3. **Adversary model critique**: Is my adversary profile realistic and specific enough? 
+   - What capabilities or motivations might I be over- or under-estimating?
+   - Am I thinking about this adversary as a full agent with their own coherent logic, or as an optimization algorithm?
+   - What would this adversary actually do if they were smart and patient?
+
+4. **Mitigation stress-test**: For each mitigation I've designed:
+   - How might it fail or be bypassed?
+   - What new attack surface does it introduce? (Every defense creates new vulnerabilities)
+   - Is it addressing the root vulnerability, or just a symptom?
+   - Has it actually been tested, or am I just imagining it works?
+
+5. **Uncomfortable truths**: Is there anything in this analysis that feels like I'm avoiding looking at it directly? Places where my confidence seems too high given the uncertainty? Assumptions I'm treating as fixed that are actually fragile?
+
+6. **Priority recommendation**: If I could only address three things, what should they be and why?
+
+Please be concrete and actionable. If you see a critical gap, say so directly—I need honest assessment more than diplomatic framing. If something in my analysis doesn't make sense or needs clarification, ask rather than guessing.`;
+            
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert('Claude prompt copied to clipboard!\\n\\nPaste this into a new conversation with Claude for in-depth analysis of your red team work.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = prompt;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Claude prompt copied to clipboard!');
+            });
+        }
+
+        function clearAll() {
+            if (!confirm('Clear all data? This cannot be undone.')) return;
+            
+            document.getElementById('system').value = '';
+            document.getElementById('adversaryType').value = '';
+            document.getElementById('adversaryCapabilities').value = '';
+            document.getElementById('adversaryMotivations').value = '';
+            document.getElementById('adversaryConstraints').value = '';
+            
+            attackVectors = [];
+            mitigations = [];
+            nextAttackId = 1;
+            nextMitigationId = 1;
+            systemCompleted = false;
+            adversaryCompleted = false;
+            
+            document.getElementById('systemSummary').style.display = 'none';
+            document.getElementById('adversarySummary').style.display = 'none';
+            document.getElementById('fullAnalysisRender').style.display = 'none';
+            
+            renderAttackVectors();
+            renderMitigations();
+            updateAnalysisSummary();
+        }
+
+        // ============ Utilities ============
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Initialize
+        renderAttackVectors();
+        renderMitigations();
+    </script>
+</body>
+</html>

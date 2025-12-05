@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicators of Change</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px;
+            background: #f0f4f8;
+            color: #1a202c;
+            font-size: 15px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h1 { 
+            color: #2c5282; 
+            margin-bottom: 8px;
+            font-size: 1.9em;
+        }
+        h2 { 
+            color: #2c5282; 
+            margin-bottom: 16px; 
+            font-size: 1.35em;
+            font-weight: 600;
+        }
+        h3 { 
+            color: #2c5282; 
+            margin: 0 0 12px 0;
+            font-size: 1.15em;
+        }
+        .subtitle { 
+            color: #4a5568; 
+            margin-bottom: 28px;
+            font-size: 1.05em;
+        }
+        
+        /* Load Previous Banner */
+        .load-banner {
+            background: #f0f7ff;
+            border: 1px solid #a3c5f0;
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .load-banner-text {
+            font-size: 14px;
+            color: #2c5282;
+        }
+        
+        /* Intro box */
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 22px;
+            margin-bottom: 28px;
+            border-radius: 6px;
+        }
+        .intro-box p { 
+            margin: 0 0 14px 0;
+            color: #2d3748;
+        }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box ul { 
+            margin: 10px 0; 
+            padding-left: 22px;
+            color: #2d3748;
+        }
+        .intro-box li { margin-bottom: 8px; }
+        
+        /* Example box - teal */
+        .example-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 18px;
+        }
+        .example-box h4 {
+            color: #234e52;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .example-box p {
+            margin: 0 0 10px 0;
+            color: #285e61;
+            font-size: 14px;
+            line-height: 1.65;
+        }
+        .example-box p:last-child { margin-bottom: 0; }
+        
+        /* Sections */
+        .section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .section-help {
+            font-size: 15px;
+            color: #4a5568;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+        
+        /* Setup nudge - teal, appears once */
+        .setup-nudge {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .setup-nudge-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .setup-nudge-text {
+            color: #234e52;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* Scenario cards - edit mode */
+        .scenario-container {
+            margin-top: 20px;
+        }
+        
+        .scenario-card {
+            background: white;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .scenario-name {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #2c5282;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+        .scenario-name:focus {
+            outline: none;
+            border-color: #1a365d;
+            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.15);
+        }
+        
+        .scenario-description {
+            width: 100%;
+            min-height: 70px;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 15px;
+            resize: vertical;
+            font-family: inherit;
+            color: #1a202c;
+        }
+        .scenario-description:focus {
+            outline: none;
+            border-color: #2c5282;
+            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+        }
+        
+        /* Indicators */
+        .indicator-item {
+            background: #f8fafc;
+            border-left: 4px solid #2c5282;
+            padding: 18px;
+            margin: 16px 0;
+            border-radius: 6px;
+        }
+        
+        .indicator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .indicator-text {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #1a202c;
+        }
+        .indicator-text:focus {
+            outline: none;
+            border-color: #2c5282;
+            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+        }
+        
+        .indicator-details {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 700px) {
+            .indicator-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .detail-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 6px;
+        }
+        
+        .detail-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1a202c;
+        }
+        .detail-input:focus {
+            outline: none;
+            border-color: #2c5282;
+            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+        }
+        
+        /* Next step field - full width, slightly different styling */
+        .next-step-group {
+            margin-top: 14px;
+            grid-column: 1 / -1;
+        }
+        .next-step-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #319795;
+            margin-bottom: 6px;
+        }
+        .next-step-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #81e6d9;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1a202c;
+            background: #f0ffff;
+        }
+        .next-step-input:focus {
+            outline: none;
+            border-color: #319795;
+            box-shadow: 0 0 0 3px rgba(49, 151, 149, 0.15);
+        }
+        
+        /* View analysis button */
+        .view-analysis-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .view-analysis-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
+        }
+        .view-analysis-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Analysis section */
+        .analysis-section {
+            display: none;
+            margin-top: 32px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 2px solid #2c5282;
+        }
+        .analysis-section.visible {
+            display: block;
+        }
+        .analysis-section h2 {
+            margin-top: 0;
+        }
+        
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .hide-analysis-btn {
+            background: #64748b;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .hide-analysis-btn:hover {
+            background: #475569;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 28px;
+            padding: 20px 24px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .format-note {
+            width: 100%;
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        
+        /* Monitoring tips - teal */
+        .monitoring-tips {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            padding: 22px;
+            border-radius: 10px;
+            margin-top: 28px;
+        }
+        .monitoring-tips h4 {
+            color: #234e52;
+            margin: 0 0 14px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .monitoring-tips > p {
+            font-size: 15px;
+            color: #285e61;
+            margin: 0 0 18px 0;
+        }
+        .monitoring-tips ul {
+            margin: 0;
+            padding-left: 22px;
+            color: #285e61;
+        }
+        .monitoring-tips li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .monitoring-tips li:last-child { margin-bottom: 0; }
+        
+        .tip-category {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #b2f5ea;
+        }
+        .tip-category:first-of-type {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+        .tip-category-title {
+            font-weight: 600;
+            color: #234e52;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        /* Next steps box */
+        .next-steps-box {
+            background: #f0f7ff;
+            border: 1px solid #a3c5f0;
+            padding: 22px;
+            border-radius: 10px;
+            margin-top: 28px;
+        }
+        .next-steps-box h4 {
+            color: #2c5282;
+            margin: 0 0 14px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 22px;
+            color: #2d3748;
+        }
+        .next-steps-box li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .next-steps-box li:last-child { margin-bottom: 0; }
+        
+        /* Insight box - teal */
+        .insight-box {
+            background: #e6fffa;
+            border-left: 4px solid #319795;
+            padding: 20px;
+            margin-top: 28px;
+            border-radius: 6px;
+        }
+        .insight-box h4 {
+            color: #234e52;
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .insight-box ul {
+            margin: 0;
+            padding-left: 22px;
+            color: #285e61;
+        }
+        .insight-box li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .insight-box li:last-child { margin-bottom: 0; }
+        
+        /* Buttons */
+        button {
+            padding: 11px 22px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 10px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary { 
+            background: #64748b;
+        }
+        button.secondary:hover { background: #475569; }
+        button.add-btn { 
+            background: #319795; 
+            font-size: 14px; 
+            padding: 10px 18px; 
+        }
+        button.add-btn:hover { background: #2c7a7b; }
+        button.remove-btn {
+            background: #94a3b8;
+            font-size: 12px;
+            padding: 6px 12px;
+            margin: 0;
+        }
+        button.remove-btn:hover { background: #64748b; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #4a5568;
+        }
+        .empty-state p {
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+        
+        /* ===== RENDER VIEW STYLES ===== */
+        .render-container {
+            margin-top: 20px;
+        }
+        
+        .render-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed #cbd5e0;
+        }
+        
+        .render-scenario {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .render-scenario-header {
+            background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+            color: white;
+            padding: 18px 22px;
+        }
+        .render-scenario-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+        .render-scenario-desc {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .render-scenario-body {
+            padding: 20px 22px;
+        }
+        
+        .render-indicator-count {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+        
+        .render-indicator {
+            background: #f8fafc;
+            border-left: 4px solid #319795;
+            border-radius: 6px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+        }
+        .render-indicator:last-child {
+            margin-bottom: 0;
+        }
+        
+        .render-indicator-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a202c;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .render-indicator-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 600px) {
+            .render-indicator-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .render-meta-item {
+            background: white;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .render-meta-item.full-width {
+            grid-column: 1 / -1;
+        }
+        .render-meta-item.action-item {
+            background: #f0ffff;
+            border-color: #81e6d9;
+        }
+        .render-meta-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+        .render-meta-item.action-item .render-meta-label {
+            color: #319795;
+        }
+        .render-meta-value {
+            font-size: 14px;
+            color: #2d3748;
+            line-height: 1.5;
+        }
+        .render-meta-empty {
+            color: #a0aec0;
+            font-style: italic;
+        }
+        
+        .render-summary {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+        }
+        .render-summary-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c5282;
+            margin-bottom: 10px;
+        }
+        .render-summary-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .render-stat {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        .render-stat-value {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c5282;
+        }
+        .render-stat-label {
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .section { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Indicators of Change</h1>
+        <p class="subtitle">Define observable signals that reveal which future is unfolding</p>
+        
+        <!-- Load Previous Banner -->
+        <div class="load-banner">
+            <span class="load-banner-text">Have a previous analysis? Load it to continue working.</span>
+            <button onclick="document.getElementById('loadInput').click()" class="secondary" style="margin: 0;">📂 Load Previous (.json)</button>
+            <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadAnalysis(event)">
+        </div>
+        
+        <div class="intro-box">
+            <p><strong>What this tool does:</strong> When you've identified possible futures (through scenario planning, alternative futures analysis, or strategic foresight), each scenario implies specific observable events. This tool helps you define those indicators in advance, plan how you'll monitor them, and export your analysis for ongoing use.</p>
+            
+            <p><strong>The principle:</strong> Scenarios aren't predictions—they're hypotheses. Good indicators let reality guide your understanding. By deciding what evidence would support each hypothesis <em>before</em> events unfold, you avoid the trap of retrofitting observations to preferred narratives.</p>
+            
+            <div class="example-box">
+                <h4>Historical Example: The 2008 Financial Crisis</h4>
+                <p>In retrospect, several indicators signaled the approaching crisis years in advance: rising subprime mortgage default rates, credit default swap spreads widening, declining home sales in overheated markets, and increasing leverage ratios at major banks. Those who tracked these signals systematically had time to prepare; most institutions that failed were not monitoring the right indicators—or weren't taking them seriously.</p>
+                <p>Your goal: identify what signals you should be watching <em>now</em> so you're not caught in hindsight bias later.</p>
+            </div>
+        </div>
+
+        <!-- Edit Scenarios Section -->
+        <div class="section">
+            <h2>Scenarios & Their Indicators</h2>
+            <p class="section-help">For each scenario you're tracking, define specific observable events that would suggest it's materializing. Good indicators are concrete, time-bound where possible, and observable without requiring special access.</p>
+            
+            <div class="setup-nudge">
+                <span class="setup-nudge-icon">💡</span>
+                <span class="setup-nudge-text">As you add indicators, capture a concrete next step for each one—setting up a Google Alert, subscribing to a newsletter, scheduling a calendar reminder. Do it now rather than letting it become another item on your mental backlog.</span>
+            </div>
+            
+            <div class="scenario-container" id="scenarios"></div>
+            
+            <button onclick="addScenario()" class="add-btn" id="addScenarioBtn">+ Add Scenario</button>
+            
+            <button onclick="showAnalysis()" class="view-analysis-btn" id="viewAnalysisBtn" disabled>
+                👁 View Your Analysis
+            </button>
+        </div>
+
+        <!-- Analysis Section (hidden by default) -->
+        <div class="analysis-section" id="analysisSection">
+            <div class="analysis-header">
+                <h2 style="margin: 0;">Your Analysis</h2>
+                <button onclick="hideAnalysis()" class="hide-analysis-btn">✕ Close</button>
+            </div>
+            <div id="renderContainer" class="render-container"></div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button onclick="saveAnalysis()">💾 Save (.json)</button>
+            <button onclick="copyReport()" class="secondary">📋 Copy Report</button>
+            <button onclick="clearAll()" class="secondary">Clear All</button>
+            <div class="format-note">
+                <strong>Save:</strong> Downloads a .json file you can reload later to continue editing.<br>
+                <strong>Copy Report:</strong> Copies a human-readable text summary to your clipboard for pasting into documents or conversations.
+            </div>
+        </div>
+        
+        <!-- Guidance sections -->
+        <div class="monitoring-tips">
+            <h4>Ideas for Monitoring Your Indicators</h4>
+            <p>The value of indicators depends on actually noticing when they trigger. Here are concrete ways to set up your "sensors":</p>
+            
+            <div class="tip-category">
+                <div class="tip-category-title">📰 News & Media Monitoring</div>
+                <ul>
+                    <li><strong>Google Alerts:</strong> Set up keyword alerts for specific terms, names, or phrases related to your indicators</li>
+                    <li><strong>RSS feeds:</strong> Follow relevant trade publications, regulatory bodies, or industry blogs via Feedly or similar</li>
+                    <li><strong>Newsletter subscriptions:</strong> Industry-specific newsletters often surface niche developments before mainstream coverage</li>
+                    <li><strong>Social media:</strong> Twitter/X lists for key experts; LinkedIn for company announcements; Reddit for community sentiment</li>
+                </ul>
+            </div>
+            
+            <div class="tip-category">
+                <div class="tip-category-title">📊 Data Sources</div>
+                <ul>
+                    <li><strong>Government statistics:</strong> Bureau of Labor Statistics, SEC filings, regulatory disclosures, patent databases</li>
+                    <li><strong>Academic preprints:</strong> arXiv, bioRxiv, SSRN for early research signals</li>
+                    <li><strong>Industry reports:</strong> Gartner, McKinsey, industry associations often publish tracking data</li>
+                    <li><strong>Financial indicators:</strong> Stock movements, commodity prices, bond yields, venture funding announcements</li>
+                    <li><strong>Alternative data:</strong> Satellite imagery, web traffic data, job postings (often signal company direction)</li>
+                </ul>
+            </div>
+            
+            <div class="tip-category">
+                <div class="tip-category-title">🤝 Human Networks</div>
+                <ul>
+                    <li><strong>Conference attendance:</strong> Key events where developments get announced or discussed</li>
+                    <li><strong>Expert relationships:</strong> Regular check-ins with people who have relevant domain knowledge</li>
+                    <li><strong>Community participation:</strong> Slack/Discord communities, professional forums, working groups</li>
+                    <li><strong>Informal networks:</strong> Coffee chats with people at relevant organizations; alumni networks</li>
+                </ul>
+            </div>
+            
+            <div class="tip-category">
+                <div class="tip-category-title">🔄 Structured Review</div>
+                <ul>
+                    <li><strong>Calendar reminders:</strong> Monthly or quarterly indicator reviews—actually schedule these</li>
+                    <li><strong>Team check-ins:</strong> Distribute monitoring responsibility; different people watch different domains</li>
+                    <li><strong>Trigger thresholds:</strong> Define in advance what level of signal warrants action or escalation</li>
+                    <li><strong>Collaborative workshopping:</strong> Discuss your indicators with colleagues, domain experts, or an AI assistant to identify gaps</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <h4>Interpreting Your Indicators</h4>
+            <ul>
+                <li><strong>Pattern over signal:</strong> A single indicator firing means little; multiple aligned indicators across a scenario strengthen the case</li>
+                <li><strong>Absence is data:</strong> Expected indicators that <em>don't</em> appear are as informative as those that do—they suggest the scenario may not be materializing</li>
+                <li><strong>Contradictions reveal complexity:</strong> Indicators from competing scenarios observed simultaneously suggest reality may be more nuanced than your models—or that scenarios need revision</li>
+                <li><strong>Update honestly:</strong> When evidence contradicts your preferred scenario, take it seriously. Reality has no obligation to your hopes</li>
+            </ul>
+        </div>
+
+        <div class="next-steps-box">
+            <h4>What to Do With This Analysis</h4>
+            <ul>
+                <li><strong>Export for project management:</strong> Use "Copy Report" to get a text summary you can paste into Notion, Confluence, or your team's planning docs</li>
+                <li><strong>Save for iteration:</strong> Use "Save (.json)" to preserve your work—you can reload it later to update scenarios or add new indicators as your understanding evolves</li>
+                <li><strong>Set up your sensors now:</strong> Don't just list indicators—actually create the Google Alerts, subscribe to the newsletters, schedule the calendar reminders. An indicator you're not monitoring is just decoration</li>
+                <li><strong>Schedule regular reviews:</strong> Block time (monthly? quarterly?) to systematically review which indicators have fired, which haven't, and what that implies</li>
+                <li><strong>Pair with other tools:</strong> Consider using <em>Alternative Futures (2×2)</em> to develop scenarios, <em>Key Assumptions Check</em> to examine assumptions behind your indicators, or <em>Uncertainty Cascades</em> to map how scenarios might unfold</li>
+                <li><strong>Discuss with collaborators:</strong> Paste the report into a conversation with colleagues or an AI assistant to stress-test your indicator choices, identify gaps, or generate additional monitoring ideas</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let scenarios = [];
+        let nextScenarioId = 1;
+        let nextIndicatorId = 1;
+
+        function updateViewButton() {
+            const btn = document.getElementById('viewAnalysisBtn');
+            const hasContent = scenarios.length > 0 && scenarios.some(s => s.name || s.indicators.length > 0);
+            btn.disabled = !hasContent;
+        }
+
+        function showAnalysis() {
+            renderAnalysis();
+            document.getElementById('analysisSection').classList.add('visible');
+            document.getElementById('analysisSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function hideAnalysis() {
+            document.getElementById('analysisSection').classList.remove('visible');
+        }
+
+        function addScenario() {
+            const scenario = {
+                id: nextScenarioId++,
+                name: '',
+                description: '',
+                indicators: []
+            };
+            scenarios.push(scenario);
+            renderScenarios();
+            
+            setTimeout(() => {
+                const nameInputs = document.querySelectorAll('.scenario-name');
+                if (nameInputs.length > 0) {
+                    nameInputs[nameInputs.length - 1].focus();
+                }
+            }, 50);
+        }
+
+        function removeScenario(id) {
+            if (confirm('Remove this scenario and all its indicators?')) {
+                scenarios = scenarios.filter(s => s.id !== id);
+                renderScenarios();
+            }
+        }
+
+        function updateScenario(id, field, value) {
+            const scenario = scenarios.find(s => s.id === id);
+            if (scenario) {
+                scenario[field] = value;
+            }
+            updateViewButton();
+        }
+
+        function addIndicator(scenarioId) {
+            const scenario = scenarios.find(s => s.id === scenarioId);
+            if (scenario) {
+                scenario.indicators.push({
+                    id: nextIndicatorId++,
+                    text: '',
+                    source: '',
+                    monitoringPlan: '',
+                    nextStep: ''
+                });
+                renderScenarios();
+                
+                setTimeout(() => {
+                    const card = document.querySelector(`[data-scenario-id="${scenarioId}"]`);
+                    if (card) {
+                        const indicators = card.querySelectorAll('.indicator-text');
+                        if (indicators.length > 0) {
+                            indicators[indicators.length - 1].focus();
+                        }
+                    }
+                }, 50);
+            }
+        }
+
+        function removeIndicator(scenarioId, indicatorId) {
+            const scenario = scenarios.find(s => s.id === scenarioId);
+            if (scenario) {
+                scenario.indicators = scenario.indicators.filter(i => i.id !== indicatorId);
+                renderScenarios();
+            }
+        }
+
+        function updateIndicator(scenarioId, indicatorId, field, value) {
+            const scenario = scenarios.find(s => s.id === scenarioId);
+            if (scenario) {
+                const indicator = scenario.indicators.find(i => i.id === indicatorId);
+                if (indicator) {
+                    indicator[field] = value;
+                }
+            }
+            updateViewButton();
+        }
+
+        function renderScenarios() {
+            const container = document.getElementById('scenarios');
+            const addBtn = document.getElementById('addScenarioBtn');
+            
+            if (scenarios.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No scenarios yet. Add a scenario to begin defining indicators.</p>
+                        <p style="color: #64748b;">Each scenario represents a possible future you want to monitor for.</p>
+                    </div>
+                `;
+                container.appendChild(addBtn);
+                updateViewButton();
+                return;
+            }
+
+            container.innerHTML = scenarios.map(scenario => {
+                const totalIndicators = scenario.indicators.length;
+
+                return `
+                    <div class="scenario-card" data-scenario-id="${scenario.id}">
+                        <div class="scenario-header">
+                            <div style="flex: 1;">
+                                <input type="text" 
+                                       class="scenario-name" 
+                                       value="${escapeHtml(scenario.name)}"
+                                       placeholder="Scenario name (e.g., 'Rapid AI adoption', 'Regulatory slowdown')"
+                                       onchange="updateScenario(${scenario.id}, 'name', this.value)">
+                            </div>
+                            <button class="remove-btn" onclick="removeScenario(${scenario.id})">✕ Remove</button>
+                        </div>
+                        
+                        <textarea class="scenario-description"
+                                  placeholder="Briefly describe this scenario—what does this future look like?"
+                                  onchange="updateScenario(${scenario.id}, 'description', this.value)">${escapeHtml(scenario.description)}</textarea>
+                        
+                        <div style="margin-top: 22px;">
+                            <div style="font-size: 15px; font-weight: 600; color: #2c5282; margin-bottom: 6px;">Indicators (${totalIndicators})</div>
+                            <p style="font-size: 14px; color: #64748b; margin: 0 0 14px 0;">What observable events would suggest this scenario is materializing?</p>
+                            
+                            ${scenario.indicators.map(indicator => `
+                                <div class="indicator-item">
+                                    <div class="indicator-header">
+                                        <input type="text" 
+                                               class="indicator-text"
+                                               value="${escapeHtml(indicator.text)}"
+                                               placeholder="Observable signal (e.g., 'Major tech company announces layoffs in AI safety')"
+                                               onchange="updateIndicator(${scenario.id}, ${indicator.id}, 'text', this.value)">
+                                        <button class="remove-btn" onclick="removeIndicator(${scenario.id}, ${indicator.id})">✕</button>
+                                    </div>
+                                    
+                                    <div class="indicator-details">
+                                        <div class="detail-group">
+                                            <label>Likely source / where to look</label>
+                                            <input type="text" 
+                                                   class="detail-input"
+                                                   value="${escapeHtml(indicator.source || '')}"
+                                                   placeholder="e.g., SEC filings, arXiv, industry newsletter"
+                                                   onchange="updateIndicator(${scenario.id}, ${indicator.id}, 'source', this.value)">
+                                        </div>
+                                        <div class="detail-group">
+                                            <label>How will you monitor this?</label>
+                                            <input type="text" 
+                                                   class="detail-input"
+                                                   value="${escapeHtml(indicator.monitoringPlan || '')}"
+                                                   placeholder="e.g., Google Alert, quarterly review, conference attendance"
+                                                   onchange="updateIndicator(${scenario.id}, ${indicator.id}, 'monitoringPlan', this.value)">
+                                        </div>
+                                        <div class="next-step-group">
+                                            <label>Concrete next step to track this</label>
+                                            <input type="text" 
+                                                   class="next-step-input"
+                                                   value="${escapeHtml(indicator.nextStep || '')}"
+                                                   placeholder="e.g., 'Create Google Alert for [keywords] now' or 'Add to March review agenda'"
+                                                   onchange="updateIndicator(${scenario.id}, ${indicator.id}, 'nextStep', this.value)">
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            
+                            <button onclick="addIndicator(${scenario.id})" 
+                                    class="add-btn" 
+                                    style="width: 100%; margin-top: 14px;">+ Add Indicator</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.appendChild(addBtn);
+            updateViewButton();
+        }
+
+        function renderAnalysis() {
+            const container = document.getElementById('renderContainer');
+            
+            if (scenarios.length === 0) {
+                container.innerHTML = `
+                    <div class="render-empty">
+                        <p style="font-size: 16px; margin-bottom: 8px;">No scenarios defined yet.</p>
+                        <p style="margin: 0;">Add scenarios above to see your analysis.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalScenarios = scenarios.length;
+            const totalIndicators = scenarios.reduce((sum, s) => sum + s.indicators.length, 0);
+            const withNextStep = scenarios.reduce((sum, s) => 
+                sum + s.indicators.filter(i => i.nextStep && i.nextStep.trim()).length, 0
+            );
+
+            let html = `
+                <div class="render-summary">
+                    <div class="render-summary-title">Summary</div>
+                    <div class="render-summary-stats">
+                        <div class="render-stat">
+                            <span class="render-stat-value">${totalScenarios}</span>
+                            <span class="render-stat-label">scenario${totalScenarios !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="render-stat">
+                            <span class="render-stat-value">${totalIndicators}</span>
+                            <span class="render-stat-label">indicator${totalIndicators !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="render-stat">
+                            <span class="render-stat-value">${withNextStep}</span>
+                            <span class="render-stat-label">with action planned</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            html += scenarios.map(scenario => {
+                const indicatorCount = scenario.indicators.length;
+                
+                return `
+                    <div class="render-scenario">
+                        <div class="render-scenario-header">
+                            <div class="render-scenario-name">${escapeHtml(scenario.name) || 'Unnamed Scenario'}</div>
+                            ${scenario.description ? `<p class="render-scenario-desc">${escapeHtml(scenario.description)}</p>` : ''}
+                        </div>
+                        <div class="render-scenario-body">
+                            <div class="render-indicator-count">${indicatorCount} indicator${indicatorCount !== 1 ? 's' : ''}</div>
+                            ${indicatorCount === 0 ? `
+                                <p style="color: #64748b; font-style: italic;">No indicators defined for this scenario.</p>
+                            ` : scenario.indicators.map(ind => `
+                                <div class="render-indicator">
+                                    <div class="render-indicator-text">${escapeHtml(ind.text) || '(No description)'}</div>
+                                    <div class="render-indicator-meta">
+                                        <div class="render-meta-item">
+                                            <div class="render-meta-label">Source</div>
+                                            <div class="render-meta-value ${!ind.source ? 'render-meta-empty' : ''}">
+                                                ${escapeHtml(ind.source) || 'Not specified'}
+                                            </div>
+                                        </div>
+                                        <div class="render-meta-item">
+                                            <div class="render-meta-label">Monitoring Plan</div>
+                                            <div class="render-meta-value ${!ind.monitoringPlan ? 'render-meta-empty' : ''}">
+                                                ${escapeHtml(ind.monitoringPlan) || 'Not specified'}
+                                            </div>
+                                        </div>
+                                        ${ind.nextStep ? `
+                                            <div class="render-meta-item full-width action-item">
+                                                <div class="render-meta-label">Next Step</div>
+                                                <div class="render-meta-value">${escapeHtml(ind.nextStep)}</div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function saveAnalysis() {
+            if (scenarios.length === 0) {
+                alert('Add at least one scenario before saving.');
+                return;
+            }
+            
+            const data = {
+                version: '2.1',
+                tool: 'indicators_of_change',
+                scenarios: scenarios,
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `indicators_of_change_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyReport() {
+            if (scenarios.length === 0) {
+                alert('Add at least one scenario before copying report.');
+                return;
+            }
+            
+            let report = 'INDICATORS OF CHANGE - ANALYSIS REPORT\n';
+            report += '═'.repeat(50) + '\n\n';
+            report += `Generated: ${new Date().toLocaleString()}\n\n`;
+
+            const totalIndicators = scenarios.reduce((sum, s) => sum + s.indicators.length, 0);
+            report += `Summary: ${scenarios.length} scenario(s), ${totalIndicators} indicator(s)\n\n`;
+
+            scenarios.forEach((scenario, idx) => {
+                const total = scenario.indicators.length;
+
+                report += `${'─'.repeat(50)}\n`;
+                report += `SCENARIO ${idx + 1}: ${scenario.name || 'Unnamed'}\n`;
+                report += `${'─'.repeat(50)}\n`;
+                if (scenario.description) {
+                    report += `${scenario.description}\n`;
+                }
+                report += `\nIndicators (${total}):\n\n`;
+                
+                if (scenario.indicators.length === 0) {
+                    report += '  (No indicators defined)\n';
+                } else {
+                    scenario.indicators.forEach((ind, indIdx) => {
+                        report += `  ${indIdx + 1}. ${ind.text || '(No description)'}\n`;
+                        if (ind.source) {
+                            report += `     Source: ${ind.source}\n`;
+                        }
+                        if (ind.monitoringPlan) {
+                            report += `     Monitoring: ${ind.monitoringPlan}\n`;
+                        }
+                        if (ind.nextStep) {
+                            report += `     → Next step: ${ind.nextStep}\n`;
+                        }
+                        report += '\n';
+                    });
+                }
+                report += '\n';
+            });
+
+            report += `${'─'.repeat(50)}\n`;
+            report += 'NEXT STEPS\n';
+            report += `${'─'.repeat(50)}\n`;
+            report += '• Complete any "next step" actions you haven\'t done yet\n';
+            report += '• Schedule regular review sessions to assess which indicators have fired\n';
+            report += '• Update scenarios as new information emerges\n';
+            report += '• Discuss with colleagues or an AI assistant to identify gaps\n\n';
+            
+            report += 'QUESTIONS FOR REFLECTION\n';
+            report += '• Are your indicators specific and observable enough?\n';
+            report += '• Have you covered both leading indicators (early signals) and lagging indicators (confirmation)?\n';
+            report += '• What would it actually take to notice when these trigger?\n';
+            report += '• Are there scenarios you should add that you haven\'t considered?\n';
+
+            navigator.clipboard.writeText(report).then(() => {
+                alert('Report copied to clipboard!');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = report;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Report copied to clipboard!');
+            });
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    scenarios = data.scenarios || [];
+                    
+                    // Migrate old format if needed
+                    scenarios.forEach(s => {
+                        s.indicators.forEach(ind => {
+                            if (ind.source === undefined) ind.source = '';
+                            if (ind.monitoringPlan === undefined) {
+                                ind.monitoringPlan = ind.notes || '';
+                            }
+                            if (ind.nextStep === undefined) ind.nextStep = '';
+                            delete ind.status;
+                            delete ind.observationDate;
+                            delete ind.notes;
+                        });
+                    });
+                    
+                    nextScenarioId = Math.max(...scenarios.map(s => s.id), 0) + 1;
+                    nextIndicatorId = Math.max(...scenarios.flatMap(s => s.indicators.map(i => i.id)), 0) + 1;
+                    
+                    renderScenarios();
+                    hideAnalysis();
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAll() {
+            if (scenarios.length === 0) return;
+            
+            if (confirm('Clear all scenarios and indicators? This cannot be undone.')) {
+                scenarios = [];
+                nextScenarioId = 1;
+                nextIndicatorId = 1;
+                renderScenarios();
+                hideAnalysis();
+            }
+        }
+
+        // Initialize
+        renderScenarios();
+    </script>
+</body>
+</html>

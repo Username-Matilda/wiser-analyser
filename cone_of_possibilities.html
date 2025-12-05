@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cone of Possibilities</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 10px; }
+        h2 { color: #2c5282; margin-bottom: 15px; font-size: 1.3em; }
+        h3 { color: #2c5282; margin: 0 0 12px 0; }
+        h4 { color: #2c5282; margin: 0 0 8px 0; font-size: 1em; }
+        .subtitle { color: #555; margin-bottom: 25px; }
+        
+        /* Intro guidance box */
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box ul { margin: 8px 0; padding-left: 20px; }
+        .intro-box li { margin-bottom: 6px; }
+        
+        /* Example box */
+        .example-box {
+            background: #fffaf0;
+            border: 1px solid #e8a838;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .example-box h4 {
+            color: #8b5a00;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .example-box p {
+            margin: 0 0 8px 0;
+            color: #5c4a1f;
+            font-size: 14px;
+        }
+        .example-box p:last-child { margin-bottom: 0; }
+        
+        /* Motivation box */
+        .motivation-box {
+            background: #fef2f2;
+            border: 1px solid #e8a8a8;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .motivation-box h4 {
+            color: #8b3a3a;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .motivation-box p {
+            margin: 0 0 8px 0;
+            color: #5c3a3a;
+            font-size: 14px;
+        }
+        .motivation-box p:last-child { margin-bottom: 0; }
+        
+        /* Working with cone box */
+        .guidance-box {
+            background: #f8faf8;
+            border: 1px solid #c8d8c8;
+            padding: 18px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .guidance-box h4 {
+            color: #3d5a3d;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+        .guidance-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .guidance-box li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4a5a4a;
+        }
+        .guidance-box li:last-child { margin-bottom: 0; }
+        
+        .methodology-link {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #d8e8d8;
+            font-size: 13px;
+        }
+        
+        .methodology-link a {
+            color: #2c5282;
+            text-decoration: none;
+        }
+        
+        .methodology-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .section-help {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .toolbar-hint {
+            font-size: 13px;
+            color: #64748b;
+            margin-left: auto;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary {
+            background: #6b7280;
+        }
+        button.secondary:hover { background: #565d69; }
+        button.add-btn {
+            background: #3d8a5f;
+        }
+        button.add-btn:hover { background: #2d6a4f; }
+        button.danger { background: #9f5849; }
+        button.danger:hover { background: #874a3d; }
+        
+        /* Form inputs */
+        input[type="text"], input[type="number"], textarea, select {
+            padding: 10px 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 12px;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .question-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #2c5282;
+            border-radius: 6px;
+            font-size: 16px;
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        /* Drivers - vertical stack */
+        .drivers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .driver-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        
+        .driver-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .baseline-assumption {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            background: #f8f8f8;
+            min-height: 60px;
+            resize: vertical;
+        }
+        
+        /* Scenario cards - vertical stack */
+        .scenarios-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .scenario-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px solid #ddd;
+        }
+        
+        .scenario-card.baseline {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+        }
+        
+        .scenario-card.plausible {
+            border-color: #eab308;
+            background: linear-gradient(135deg, #fefce8 0%, #ffffff 100%);
+        }
+        
+        .scenario-card.wildcard {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+        }
+        
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+        
+        .scenario-label {
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .assumption-item {
+            background: #f8f8f8;
+            border-left: 3px solid #94a3b8;
+            padding: 10px 12px;
+            margin: 8px 0;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .assumption-item.changed {
+            background: #fef9e7;
+            border-left-color: #f59e0b;
+        }
+        
+        .assumption-select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+        
+        .assumption-text {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+            min-height: 50px;
+            resize: vertical;
+        }
+        
+        .implications-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+        
+        .implications-text {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            min-height: 80px;
+            resize: vertical;
+            margin-top: 8px;
+        }
+        
+        /* ========== FULL-WIDTH CONE VISUALIZATION ========== */
+        /* Scenario tabs - clean horizontal row */
+        .scenario-tabs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .scenario-tab {
+            padding: 14px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid;
+            text-align: center;
+            min-width: 140px;
+            background: white;
+        }
+        
+        .scenario-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .scenario-tab.baseline {
+            border-color: #3b82f6;
+        }
+        .scenario-tab.baseline.active {
+            background: #eff6ff;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .scenario-tab.plausible {
+            border-color: #eab308;
+        }
+        .scenario-tab.plausible.active {
+            background: #fefce8;
+            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
+        }
+        
+        .scenario-tab.wildcard {
+            border-color: #ef4444;
+        }
+        .scenario-tab.wildcard.active {
+            background: #fef2f2;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .tab-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .tab-title {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+        
+        .tab-title.baseline { color: #1d4ed8; }
+        .tab-title.plausible { color: #a16207; }
+        .tab-title.wildcard { color: #b91c1c; }
+        
+        .tab-subtitle {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* Focused scenario panel - below cone */
+        .focused-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            border: 3px solid #2c5282;
+            box-shadow: 0 4px 20px rgba(44, 82, 130, 0.12);
+            transition: border-color 0.3s ease;
+        }
+        
+        .focused-panel.baseline-focus {
+            border-color: #3b82f6;
+        }
+        
+        .focused-panel.plausible-focus {
+            border-color: #eab308;
+        }
+        
+        .focused-panel.wildcard-focus {
+            border-color: #ef4444;
+        }
+        
+        .focused-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+        
+        .focused-icon {
+            font-size: 32px;
+        }
+        
+        .focused-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .focused-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        
+        .focused-drivers {
+            margin-bottom: 20px;
+        }
+        
+        .focused-driver {
+            background: #f8fafc;
+            border-left: 4px solid #94a3b8;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .focused-driver.changed {
+            background: #fef9e7;
+            border-left-color: #f59e0b;
+        }
+        
+        .focused-driver-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+        
+        .focused-driver-assumption {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .focused-implications {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .focused-implications-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #16a34a;
+            margin-bottom: 8px;
+        }
+        
+        .focused-implications-text {
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        /* Strategic prompt in focused panel */
+        .strategic-prompt {
+            background: #f8f7fc;
+            border: 1px solid #d8d0e8;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .strategic-prompt h5 {
+            color: #5c4a7a;
+            font-size: 13px;
+            margin: 0 0 10px 0;
+        }
+        
+        .strategic-prompt ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 13px;
+            color: #5c5270;
+        }
+        
+        .strategic-prompt li {
+            margin-bottom: 6px;
+        }
+        
+        .cone-empty {
+            text-align: center;
+            padding: 60px 30px;
+            color: #64748b;
+        }
+        
+        .cone-empty p {
+            margin: 0 0 10px 0;
+        }
+        
+        /* Next steps box */
+        .next-steps-box {
+            background: #f9f7fc;
+            border: 1px solid #d8d0e8;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 25px;
+        }
+        .next-steps-box h4 {
+            color: #5c4a7a;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #5c5270;
+        }
+        .next-steps-box li {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .next-steps-box li:last-child { margin-bottom: 0; }
+        
+        /* Static Cone Illustration */
+        .cone-illustration-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .cone-illustration-box h4 {
+            color: #2c5282;
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+        
+        .cone-illustration-caption {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0 0 20px 0;
+        }
+        
+        .cone-illustration {
+            max-width: 650px;
+            margin: 0 auto 20px auto;
+        }
+        
+        .cone-illustration svg {
+            width: 100%;
+            height: auto;
+        }
+        
+        .cone-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: #475569;
+        }
+        
+        .legend-color {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            border: 2px solid;
+            margin-top: 1px;
+        }
+        
+        .legend-item em {
+            color: #2c5282;
+            font-style: normal;
+            font-weight: 600;
+        }
+        
+        .cone-download {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .download-hint {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        /* Prompt template box */
+        .prompt-template {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            color: #334155;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        
+        .prompt-template-header {
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 180px;
+        }
+        
+        /* Indicators callout */
+        .indicators-callout {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 2px solid #34d399;
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+        
+        .indicators-callout h4 {
+            color: #047857;
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .indicators-callout p {
+            margin: 0;
+            font-size: 14px;
+            color: #065f46;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .section { padding: 15px; }
+            .toolbar-hint { display: none; }
+            
+            .scenario-tabs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .scenario-tab {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cone of Possibilities</h1>
+        <p class="subtitle">The future branches on our assumptions. Make them explicit.</p>
+        
+        <div class="intro-box">
+            <p><strong>What this tool does:</strong> The Cone of Possibilities helps you explore how the future might unfold depending on which assumptions hold true. Rather than predicting a single outcome, you map out a structured range of scenarios — from baseline expectations to plausible alternatives to low-probability wildcards.</p>
+            
+            <p><strong>The core insight:</strong> Most organizations operate with an implicit "official future" — a set of shared assumptions about what will happen. The Cone makes these assumptions explicit and systematically varies them, revealing the branching structure of possibility. The cone widens as time extends: near-term futures are more constrained, while distant futures branch into wider possibility space.</p>
+            
+            <p><strong>How it works:</strong></p>
+            <ul>
+                <li><strong>Identify key drivers</strong> — the forces that will shape your situation</li>
+                <li><strong>State baseline assumptions</strong> — your current best guess for each driver</li>
+                <li><strong>Vary the assumptions</strong> — create alternative scenarios by changing 1-2 drivers (plausible) or making more extreme shifts (wildcard)</li>
+                <li><strong>Explore the cone</strong> — visualize your scenarios and consider how to anticipate, plan, and respond</li>
+            </ul>
+            
+            <div class="example-box">
+                <h4>Example: AI Development Trajectories</h4>
+                <p><strong>Question:</strong> "How might the AI capabilities landscape evolve over the next 2 years?"</p>
+                <p><strong>Drivers:</strong> Compute scaling trends, algorithmic breakthroughs, regulatory response, lab coordination dynamics</p>
+                <p><strong>Baseline:</strong> Compute costs decline 30%/year, incremental algorithmic progress, fragmented regulatory landscape, labs compete independently</p>
+                <p><strong>Plausible:</strong> Major algorithmic efficiency breakthrough (10x compute-equivalent gain) shifts capability timelines forward</p>
+                <p><strong>Wildcard:</strong> Coordinated international framework emerges requiring capability eval gates before deployment; development pace constrained but more predictable</p>
+            </div>
+            
+            <div class="motivation-box">
+                <h4>Why This Matters: The Pattern of Surprise</h4>
+                <p>History repeatedly shows that our models underweight discontinuous change. The Soviet Union's collapse in 1991 caught intelligence agencies with sophisticated models off-guard — their frameworks couldn't process cascade dynamics. COVID-19's emergence and spread pattern surprised pandemic preparedness experts despite years of planning. More recently, the capability jumps in large language models surprised even many AI researchers on timeline expectations.</p>
+                <p>Wildcards aren't exotic edge cases — they're the parts of reality that our comfortable models systematically miss. This tool helps you explicitly map that territory rather than leaving it as a blind spot.</p>
+            </div>
+        </div>
+        
+        <div class="guidance-box">
+            <h4>Working with the Cone</h4>
+            <ul>
+                <li><strong>Be specific with assumptions:</strong> Not "AI progresses" but "Frontier model capabilities improve ~50% annually on standard benchmarks"</li>
+                <li><strong>Prefer fewer changes per scenario:</strong> Changing 1-2 drivers keeps the causal story clean. If changing multiple, ensure each is independently justified and you can articulate why they'd shift together.</li>
+                <li><strong>Plausible ≠ likely:</strong> These should feel realistic but not obvious — things that could reasonably happen and would meaningfully change your situation</li>
+                <li><strong>Wildcards test boundaries:</strong> Low probability, high impact — what would break your current mental model? As futurist Wendy Schultz notes, focusing only on "plausible" futures can be maladaptive; reality doesn't care what we consider plausible.</li>
+                <li><strong>Consider preposterous futures:</strong> Dator's Second Law states that any useful idea about the future must first appear ridiculous. The "preposterous" zone is where seeds of transformation often hide.</li>
+                <li><strong>Name your scenarios:</strong> Give each a memorable title to reference in discussions (e.g., "Regulatory Reset", "Capability Surprise")</li>
+                <li><strong>Define indicators:</strong> What early signals would suggest each scenario is starting to unfold?</li>
+            </ul>
+            <div class="methodology-link">
+                📚 <strong>Learn more:</strong> <a href="https://foresightpresent.substack.com/p/the-futures-cone" target="_blank">The Futures Cone methodology</a> — a deeper dive into the framework's origins and applications.
+            </div>
+        </div>
+        
+        <!-- Static Futures Cone Illustration -->
+        <div class="cone-illustration-box">
+            <h4>The Futures Cone</h4>
+            <p class="cone-illustration-caption">The classic framework shows how possibility space expands as we look further into the future. Our scenarios map to these zones:</p>
+            <div class="cone-illustration" id="coneIllustration">
+                <svg id="futuresCone" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet">
+                    <!-- Define filter for text backgrounds -->
+                    <defs>
+                        <filter x="-0.1" y="-0.1" width="1.2" height="1.3" id="textBg">
+                            <feFlood flood-color="white" flood-opacity="0.85"/>
+                            <feComposite in="SourceGraphic" operator="over"/>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Outer boundary: Potential/Preposterous (widest) -->
+                    <polygon points="80,200 720,20 720,380" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/>
+                    
+                    <!-- Possible -->
+                    <polygon points="80,200 720,55 720,345" fill="#fef9c3" stroke="#fcd34d" stroke-width="1.5"/>
+                    
+                    <!-- Plausible -->
+                    <polygon points="80,200 720,95 720,305" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+                    
+                    <!-- Probable -->
+                    <polygon points="80,200 720,135 720,265" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.5"/>
+                    
+                    <!-- Projected (narrowest - the baseline) -->
+                    <polygon points="80,200 720,170 720,230" fill="#bfdbfe" stroke="#3b82f6" stroke-width="2"/>
+                    
+                    <!-- Center line -->
+                    <line x1="80" y1="200" x2="720" y2="200" stroke="#1e40af" stroke-width="2" stroke-dasharray="8,4"/>
+                    
+                    <!-- Valence arrow (left side) -->
+                    <line x1="45" y1="60" x2="45" y2="340" stroke="#64748b" stroke-width="2"/>
+                    <polygon points="45,50 38,70 52,70" fill="#64748b"/>
+                    <polygon points="45,350 38,330 52,330" fill="#64748b"/>
+                    <text x="45" y="35" fill="#16a34a" font-size="11" font-weight="600" text-anchor="middle">Optimistic</text>
+                    <text x="45" y="370" fill="#dc2626" font-size="11" font-weight="600" text-anchor="middle">Pessimistic</text>
+                    
+                    <!-- Zone labels with white background effect -->
+                    <text x="660" y="200" fill="#1e40af" font-size="13" font-weight="700" text-anchor="end" dominant-baseline="middle" filter="url(#textBg)">Projected</text>
+                    <text x="680" y="152" fill="#2563eb" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Probable</text>
+                    <text x="690" y="113" fill="#d97706" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Plausible</text>
+                    <text x="695" y="72" fill="#ca8a04" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Possible</text>
+                    <text x="695" y="35" fill="#dc2626" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Preposterous</text>
+                    
+                    <!-- Mirror labels for bottom half -->
+                    <text x="680" y="250" fill="#2563eb" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Probable</text>
+                    <text x="690" y="290" fill="#d97706" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Plausible</text>
+                    <text x="695" y="328" fill="#ca8a04" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Possible</text>
+                    <text x="695" y="368" fill="#dc2626" font-size="12" font-weight="600" text-anchor="end" filter="url(#textBg)">Preposterous</text>
+                    
+                    <!-- Time axis labels -->
+                    <text x="80" y="200" fill="#334155" font-size="14" font-weight="700" text-anchor="end" dx="-12" dominant-baseline="middle">NOW</text>
+                    <text x="720" y="200" fill="#334155" font-size="14" font-weight="700" text-anchor="start" dx="12" dominant-baseline="middle">FUTURE</text>
+                </svg>
+            </div>
+            <div class="cone-legend">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #bfdbfe; border-color: #3b82f6;"></span>
+                    <span><strong>Projected</strong> — "The official future." Current trends extrapolated. <em>Our Baseline.</em></span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #dbeafe; border-color: #60a5fa;"></span>
+                    <span><strong>Probable</strong> — Likely variations around the baseline.</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #fef3c7; border-color: #f59e0b;"></span>
+                    <span><strong>Plausible</strong> — Could happen; realistic shifts in key assumptions. <em>Our Plausible scenario.</em></span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #fef9c3; border-color: #fcd34d;"></span>
+                    <span><strong>Possible</strong> — Requires larger changes; stretches current models.</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #fef2f2; border-color: #fca5a5;"></span>
+                    <span><strong>Preposterous</strong> — Seems absurd today; may contain seeds of transformation. <em>Our Wildcard.</em></span>
+                </div>
+            </div>
+            <div class="cone-download">
+                <button onclick="downloadConeSVG()" class="secondary">📥 Download Cone Template (SVG)</button>
+                <span class="download-hint">Use in Miro, Figma, or other workshop tools — add post-its to map your scenarios</span>
+            </div>
+        </div>
+        
+        <div class="toolbar">
+            <button onclick="document.getElementById('loadInput').click()" class="secondary">📂 Load Previous</button>
+            <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadAnalysis(event)">
+            <button onclick="loadExample()">Load Example</button>
+            <span class="toolbar-hint">Load Previous: restore a saved .json file from an earlier session</span>
+        </div>
+
+        <div class="section">
+            <h2>Step 1: Frame the Question</h2>
+            <p class="section-help">What situation are you exploring? Be specific about scope and timeframe.</p>
+            
+            <div style="margin-bottom: 15px;">
+                <label>Your Question</label>
+                <textarea id="question" 
+                          class="question-input" 
+                          placeholder="e.g., 'How might the AI capabilities landscape evolve?' or 'What could our organization's position look like?'"></textarea>
+            </div>
+            <div style="max-width: 250px;">
+                <label>Timeframe</label>
+                <input type="text" 
+                       id="timeframe" 
+                       class="timeline-input" 
+                       placeholder="e.g., '2 years'"
+                       style="width: 100%;"
+                       onchange="renderCone()">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Identify Key Drivers</h2>
+            <p class="section-help">What forces will shape the outcome? For each driver, state your baseline assumption — your current best guess about how it will behave.</p>
+            
+            <button onclick="addDriver()" class="add-btn">+ Add Driver</button>
+            <div id="drivers" class="drivers-list"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Develop Scenarios</h2>
+            <p class="section-help">For each scenario type, decide which assumptions to keep and which to change. Then describe what that world looks like.</p>
+            
+            <div class="scenarios-stack" id="scenariosStack">
+                <!-- Baseline Scenario -->
+                <div class="scenario-card baseline">
+                    <div class="scenario-header">
+                        <span class="scenario-label" style="color: #2563eb;">📍 BASELINE</span>
+                    </div>
+                    <p style="font-size: 13px; color: #555; margin-bottom: 12px;">
+                        All drivers follow your baseline assumptions. This is the "projected" future — what happens if current trends continue.
+                    </p>
+                    <div id="baselineAssumptions"></div>
+                    <div class="implications-box">
+                        <strong style="font-size: 13px; color: #16a34a;">What happens in this scenario?</strong>
+                        <textarea id="baselineImplications" 
+                                  class="implications-text" 
+                                  placeholder="Describe this future. What does the situation look like? What are you doing?"
+                                  onchange="renderCone()"></textarea>
+                    </div>
+                </div>
+
+                <!-- Plausible Scenario -->
+                <div class="scenario-card plausible">
+                    <div class="scenario-header">
+                        <span class="scenario-label" style="color: #ca8a04;">⚡ PLAUSIBLE ALTERNATIVE</span>
+                    </div>
+                    <p style="font-size: 13px; color: #555; margin-bottom: 12px;">
+                        Change 1-2 key assumptions. What's a realistic but non-obvious shift that would meaningfully change outcomes?
+                    </p>
+                    <div id="plausibleAssumptions"></div>
+                    <div class="implications-box">
+                        <strong style="font-size: 13px; color: #16a34a;">What happens in this scenario?</strong>
+                        <textarea id="plausibleImplications" 
+                                  class="implications-text" 
+                                  placeholder="How does this differ from baseline? What new dynamics emerge? What would you do differently?"
+                                  onchange="renderCone()"></textarea>
+                    </div>
+                </div>
+
+                <!-- Wildcard Scenario -->
+                <div class="scenario-card wildcard">
+                    <div class="scenario-header">
+                        <span class="scenario-label" style="color: #dc2626;">🔥 WILDCARD</span>
+                    </div>
+                    <p style="font-size: 13px; color: #555; margin-bottom: 12px;">
+                        Extreme but possible changes. Low probability, high impact. What would break your current model?
+                    </p>
+                    <div id="wildcardAssumptions"></div>
+                    <div class="implications-box">
+                        <strong style="font-size: 13px; color: #16a34a;">What happens in this scenario?</strong>
+                        <textarea id="wildcardImplications" 
+                                  class="implications-text" 
+                                  placeholder="What breaks? What unexpected opportunities emerge? How would you respond?"
+                                  onchange="renderCone()"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Scenario Exploration -->
+        <div class="section">
+            <h2>Step 4: Explore Your Scenarios</h2>
+            <p class="section-help">Select each scenario to see its full details. As you review each one, consider: What would I do if this became reality? What early signals would tell me it's unfolding?</p>
+            
+            <div id="coneVisualization">
+                <!-- Scenario tabs and panel render here -->
+            </div>
+        </div>
+
+        <div class="indicators-callout">
+            <h4>🎯 Essential Next Step: Set Up Monitoring</h4>
+            <p>Scenarios are only useful if you can recognize which one is unfolding. The <strong>Indicators of Change</strong> tool helps you define early signals for each scenario — specific, observable markers that would tell you the plausible or wildcard is becoming reality. Without indicators, your cone analysis becomes a one-time intellectual exercise rather than an ongoing strategic asset.</p>
+        </div>
+
+        <div class="next-steps-box">
+            <h4>What to Do With This Analysis</h4>
+            <ul>
+                <li><strong>Validate your baseline:</strong> Are these actually your best estimates, or comfortable defaults? Use <em>Key Assumptions Check</em> to stress-test them. The assumptions you're least confident about deserve the most scrutiny.</li>
+                
+                <li><strong>Find robust strategies:</strong> Identify actions that work across both baseline and plausible worlds. These "no-regret moves" reduce exposure regardless of which future unfolds.</li>
+                
+                <li><strong>Set circuit breakers for wildcards:</strong> Don't plan wildcards in detail, but define decision points — specific triggers where you'd recognize the wildcard unfolding and need to pivot.</li>
+                
+                <li><strong>Connect to monitoring:</strong> Use the <em>Indicators of Change</em> tool to operationalize your scenarios. For each one, define 2-3 early signals you could actually observe. This transforms analysis into ongoing situational awareness.</li>
+                
+                <li><strong>Schedule reviews:</strong> Cone analyses decay. Revisit quarterly or when major drivers shift. Update assumptions based on what you've learned, and check which indicators have moved.</li>
+                
+                <li><strong>When to use Alternative Futures (2x2) instead:</strong> If you have two dominant uncertainties that interact in interesting ways, the 2x2 matrix approach may give you cleaner scenario structure. CoP is better for exploring multiple drivers; 2x2 is better for deep-diving two critical uncertainties.</li>
+                
+                <li><strong>Discuss with others:</strong> Share your scenarios with colleagues, domain experts, or stakeholders. Fresh perspectives often reveal blind spots in your assumptions. The best stress-testing comes from people who think differently than you do. Export your report and use it as a conversation starter.</li>
+                
+                <li><strong>For deeper exploration with Claude:</strong> Export your report and paste it into a new conversation with this prompt:
+                    <div class="prompt-template">
+                        <div class="prompt-template-header">Prompt template for Claude:</div>I've done a Cone of Possibilities analysis. Here's my current thinking:
+
+[PASTE EXPORTED REPORT]
+
+Please help me:
+1. Stress-test my baseline assumptions — what am I likely overconfident about?
+2. Identify any important drivers I might be missing
+3. Suggest specific, observable indicators for each scenario
+4. Find "no-regret" actions that would be valuable across multiple scenarios
+5. Highlight any logical inconsistencies or gaps in my reasoning
+6. Suggest people or roles I should consult to validate this analysis</div>
+                </li>
+                
+                <li><strong>Companion tools:</strong> Pair with <em>Uncertainty Cascades</em> to map how driver changes compound through chains of consequences, <em>Pre-mortem Analysis</em> to stress-test your baseline plan, or <em>Reference Class Forecasting</em> to calibrate your probability intuitions against historical base rates.</li>
+            </ul>
+        </div>
+
+        <div class="toolbar" style="margin-top: 20px;">
+            <button onclick="saveAnalysis()">💾 Save Analysis</button>
+            <button onclick="exportAnalysis()" class="secondary">📄 Export Report</button>
+            <button onclick="clearAll()" class="danger">Clear All</button>
+        </div>
+    </div>
+
+    <script>
+        let drivers = [];
+        let nextId = 1;
+        
+        let plausibleChanges = {};
+        let wildcardChanges = {};
+        
+        let currentFocus = 'baseline';
+
+        function addDriver() {
+            const driver = {
+                id: nextId++,
+                name: '',
+                baselineAssumption: ''
+            };
+            drivers.push(driver);
+            renderDrivers();
+            renderScenarios();
+            renderCone();
+        }
+
+        function removeDriver(id) {
+            drivers = drivers.filter(d => d.id !== id);
+            delete plausibleChanges[id];
+            delete wildcardChanges[id];
+            renderDrivers();
+            renderScenarios();
+            renderCone();
+        }
+
+        function updateDriver(id, field, value) {
+            const driver = drivers.find(d => d.id === id);
+            if (driver) {
+                driver[field] = value;
+                renderScenarios();
+                renderCone();
+            }
+        }
+
+        function renderDrivers() {
+            const container = document.getElementById('drivers');
+            
+            if (drivers.length === 0) {
+                container.innerHTML = '<p style="color: #666; padding: 30px; text-align: center; background: #f8f8f8; border-radius: 6px;">No drivers yet. Add drivers to begin exploring scenarios.</p>';
+                return;
+            }
+
+            container.innerHTML = drivers.map(d => `
+                <div class="driver-card">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <input type="text" 
+                               class="driver-input" 
+                               value="${escapeHtml(d.name)}"
+                               placeholder="Driver name (e.g., 'Regulatory environment')"
+                               onchange="updateDriver(${d.id}, 'name', this.value)"
+                               style="flex: 1; margin-right: 8px;">
+                        <button class="danger" style="padding: 6px 10px; font-size: 12px;" onclick="removeDriver(${d.id})">✕</button>
+                    </div>
+                    <div style="font-size: 12px; color: #555; margin-bottom: 6px; font-weight: 500;">Baseline assumption:</div>
+                    <textarea class="baseline-assumption"
+                              placeholder="What's your current best guess for this driver?"
+                              onchange="updateDriver(${d.id}, 'baselineAssumption', this.value)">${escapeHtml(d.baselineAssumption)}</textarea>
+                </div>
+            `).join('');
+        }
+
+        function updateScenarioChange(scenario, driverId, field, value) {
+            const changes = scenario === 'plausible' ? plausibleChanges : wildcardChanges;
+            if (!changes[driverId]) changes[driverId] = {};
+            changes[driverId][field] = value;
+            renderCone();
+        }
+
+        function renderScenarios() {
+            renderBaselineAssumptions();
+            renderPlausibleAssumptions();
+            renderWildcardAssumptions();
+        }
+
+        function renderBaselineAssumptions() {
+            const container = document.getElementById('baselineAssumptions');
+            
+            if (drivers.length === 0) {
+                container.innerHTML = '<p style="color: #888; font-size: 13px; font-style: italic;">Add drivers in Step 2 to see assumptions here.</p>';
+                return;
+            }
+
+            container.innerHTML = drivers.map(d => `
+                <div class="assumption-item">
+                    <strong style="font-size: 13px; color: #2563eb;">${escapeHtml(d.name) || 'Unnamed driver'}</strong>
+                    <div style="font-size: 12px; color: #555; margin-top: 4px;">
+                        ${escapeHtml(d.baselineAssumption) || '<em style="color: #999;">No baseline set</em>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPlausibleAssumptions() {
+            const container = document.getElementById('plausibleAssumptions');
+            
+            if (drivers.length === 0) {
+                container.innerHTML = '<p style="color: #888; font-size: 13px; font-style: italic;">Add drivers in Step 2 to define scenario changes.</p>';
+                return;
+            }
+
+            container.innerHTML = drivers.map(d => {
+                const change = plausibleChanges[d.id] || {};
+                const hasChange = change.status === 'changed';
+                
+                return `
+                    <div class="assumption-item ${hasChange ? 'changed' : ''}">
+                        <strong style="font-size: 13px; color: #ca8a04;">${escapeHtml(d.name) || 'Unnamed driver'}</strong>
+                        <select class="assumption-select"
+                                onchange="updateScenarioChange('plausible', ${d.id}, 'status', this.value); renderPlausibleAssumptions();">
+                            <option value="same" ${!hasChange ? 'selected' : ''}>Keep baseline</option>
+                            <option value="changed" ${hasChange ? 'selected' : ''}>Change assumption</option>
+                        </select>
+                        ${hasChange ? `
+                            <textarea class="assumption-text"
+                                      placeholder="What's the alternative assumption?"
+                                      onchange="updateScenarioChange('plausible', ${d.id}, 'text', this.value)">${escapeHtml(change.text || '')}</textarea>
+                        ` : `
+                            <div style="font-size: 12px; color: #666; padding: 4px 0;">
+                                ${escapeHtml(d.baselineAssumption) || '<em style="color: #999;">No baseline set</em>'}
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderWildcardAssumptions() {
+            const container = document.getElementById('wildcardAssumptions');
+            
+            if (drivers.length === 0) {
+                container.innerHTML = '<p style="color: #888; font-size: 13px; font-style: italic;">Add drivers in Step 2 to define scenario changes.</p>';
+                return;
+            }
+
+            container.innerHTML = drivers.map(d => {
+                const change = wildcardChanges[d.id] || {};
+                const hasChange = change.status === 'changed';
+                
+                return `
+                    <div class="assumption-item ${hasChange ? 'changed' : ''}">
+                        <strong style="font-size: 13px; color: #dc2626;">${escapeHtml(d.name) || 'Unnamed driver'}</strong>
+                        <select class="assumption-select"
+                                onchange="updateScenarioChange('wildcard', ${d.id}, 'status', this.value); renderWildcardAssumptions();">
+                            <option value="same" ${!hasChange ? 'selected' : ''}>Keep baseline</option>
+                            <option value="changed" ${hasChange ? 'selected' : ''}>Change assumption</option>
+                        </select>
+                        ${hasChange ? `
+                            <textarea class="assumption-text"
+                                      placeholder="What's the extreme but possible assumption?"
+                                      onchange="updateScenarioChange('wildcard', ${d.id}, 'text', this.value)">${escapeHtml(change.text || '')}</textarea>
+                        ` : `
+                            <div style="font-size: 12px; color: #666; padding: 4px 0;">
+                                ${escapeHtml(d.baselineAssumption) || '<em style="color: #999;">No baseline set</em>'}
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderCone() {
+            const container = document.getElementById('coneVisualization');
+            
+            if (drivers.length === 0) {
+                container.innerHTML = `
+                    <div class="cone-empty">
+                        <p><strong>Add drivers and develop your scenarios above.</strong></p>
+                        <p>Your scenarios will appear here once you have content to explore.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <!-- Scenario tabs -->
+                <div class="scenario-tabs">
+                    <div class="scenario-tab baseline ${currentFocus === 'baseline' ? 'active' : ''}" onclick="focusScenario('baseline')">
+                        <div class="tab-icon">📍</div>
+                        <div class="tab-title baseline">BASELINE</div>
+                        <div class="tab-subtitle">Expected path</div>
+                    </div>
+                    <div class="scenario-tab plausible ${currentFocus === 'plausible' ? 'active' : ''}" onclick="focusScenario('plausible')">
+                        <div class="tab-icon">⚡</div>
+                        <div class="tab-title plausible">PLAUSIBLE</div>
+                        <div class="tab-subtitle">Realistic shift</div>
+                    </div>
+                    <div class="scenario-tab wildcard ${currentFocus === 'wildcard' ? 'active' : ''}" onclick="focusScenario('wildcard')">
+                        <div class="tab-icon">🔥</div>
+                        <div class="tab-title wildcard">WILDCARD</div>
+                        <div class="tab-subtitle">High impact</div>
+                    </div>
+                </div>
+                
+                <!-- Focused panel below tabs -->
+                <div class="focused-panel ${currentFocus}-focus" id="focusedPanel">
+                    ${buildFocusedContent(currentFocus)}
+                </div>
+            `;
+        }
+
+        function focusScenario(scenario) {
+            currentFocus = scenario;
+            renderCone();
+        }
+
+        function buildFocusedContent(scenario) {
+            const config = {
+                baseline: {
+                    icon: '📍',
+                    title: 'Baseline Scenario',
+                    subtitle: 'The projected future if current assumptions hold',
+                    color: '#2563eb',
+                    prompts: [
+                        'Is this truly your most likely future, or just the most comfortable to imagine?',
+                        'What would need to stay constant for this to unfold?',
+                        'What are you implicitly assuming won\'t change?'
+                    ]
+                },
+                plausible: {
+                    icon: '⚡',
+                    title: 'Plausible Alternative',
+                    subtitle: 'A realistic shift that changes the game',
+                    color: '#ca8a04',
+                    prompts: [
+                        'What early signals would indicate this is unfolding?',
+                        'What actions would you take now if you knew this was coming?',
+                        'Who would benefit or lose in this scenario?'
+                    ]
+                },
+                wildcard: {
+                    icon: '🔥',
+                    title: 'Wildcard Scenario',
+                    subtitle: 'Low probability, high impact disruption',
+                    color: '#dc2626',
+                    prompts: [
+                        'What would break in your current plans?',
+                        'What unexpected opportunities might emerge?',
+                        'Do you have any circuit breakers or pivot points defined?'
+                    ]
+                }
+            };
+            
+            const c = config[scenario];
+            const changes = scenario === 'plausible' ? plausibleChanges : 
+                           scenario === 'wildcard' ? wildcardChanges : {};
+            
+            // Build driver display
+            const driversHtml = drivers.map(d => {
+                const change = changes[d.id];
+                const isChanged = change?.status === 'changed';
+                const assumption = isChanged ? change.text : d.baselineAssumption;
+                
+                return `
+                    <div class="focused-driver ${isChanged ? 'changed' : ''}">
+                        <div class="focused-driver-name">${escapeHtml(d.name) || 'Unnamed driver'}</div>
+                        <div class="focused-driver-assumption">
+                            ${isChanged ? '<strong style="color: #d97706;">[Changed]</strong> ' : ''}
+                            ${escapeHtml(assumption) || '<em style="color: #999;">Not specified</em>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Get implications
+            const implicationsId = scenario + 'Implications';
+            const implications = document.getElementById(implicationsId)?.value || '';
+            
+            // Strategic prompts
+            const promptsHtml = c.prompts.map(p => `<li>${p}</li>`).join('');
+            
+            return `
+                <div class="focused-header">
+                    <span class="focused-icon">${c.icon}</span>
+                    <div>
+                        <div class="focused-title" style="color: ${c.color};">${c.title}</div>
+                        <div class="focused-subtitle">${c.subtitle}</div>
+                    </div>
+                </div>
+                
+                <div class="focused-drivers">
+                    ${driversHtml}
+                </div>
+                
+                ${implications ? `
+                    <div class="focused-implications">
+                        <div class="focused-implications-label">What happens in this scenario:</div>
+                        <div class="focused-implications-text">${escapeHtml(implications)}</div>
+                    </div>
+                ` : `
+                    <div style="color: #888; font-style: italic; font-size: 13px; padding: 15px; background: #f8f8f8; border-radius: 6px;">
+                        Describe implications in Step 3 above to see them here.
+                    </div>
+                `}
+                
+                <div class="strategic-prompt">
+                    <h5>🤔 Questions to consider for this scenario:</h5>
+                    <ul>${promptsHtml}</ul>
+                </div>
+            `;
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // ========== SAVE / LOAD / EXPORT ==========
+
+        function saveAnalysis() {
+            const data = {
+                version: '5.0',
+                question: document.getElementById('question').value,
+                timeframe: document.getElementById('timeframe').value,
+                drivers: drivers,
+                scenarios: {
+                    baseline: {
+                        implications: document.getElementById('baselineImplications').value
+                    },
+                    plausible: {
+                        changes: plausibleChanges,
+                        implications: document.getElementById('plausibleImplications').value
+                    },
+                    wildcard: {
+                        changes: wildcardChanges,
+                        implications: document.getElementById('wildcardImplications').value
+                    }
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `cone_of_possibilities_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportAnalysis() {
+            let report = 'CONE OF POSSIBILITIES ANALYSIS\n';
+            report += '='.repeat(60) + '\n\n';
+            
+            const question = document.getElementById('question').value;
+            const timeframe = document.getElementById('timeframe').value;
+            
+            if (question) {
+                report += 'QUESTION:\n' + question + '\n';
+                if (timeframe) report += 'TIMEFRAME: ' + timeframe + '\n';
+                report += '\n' + '-'.repeat(60) + '\n\n';
+            }
+            
+            report += 'KEY DRIVERS & BASELINE ASSUMPTIONS:\n\n';
+            drivers.forEach((d, i) => {
+                report += `${i + 1}. ${d.name || 'Unnamed'}\n`;
+                report += `   Baseline: ${d.baselineAssumption || '(not specified)'}\n\n`;
+            });
+            report += '-'.repeat(60) + '\n\n';
+            
+            // Baseline
+            report += '📍 BASELINE SCENARIO\n';
+            report += 'All drivers follow baseline assumptions.\n\n';
+            const baselineImpl = document.getElementById('baselineImplications').value;
+            if (baselineImpl) {
+                report += 'Implications:\n' + baselineImpl + '\n';
+            }
+            report += '\n' + '-'.repeat(60) + '\n\n';
+            
+            // Plausible
+            report += '⚡ PLAUSIBLE SCENARIO\n\n';
+            report += 'Changed assumptions:\n';
+            let plausibleHasChanges = false;
+            drivers.forEach(d => {
+                if (plausibleChanges[d.id]?.status === 'changed') {
+                    report += `• ${d.name}: ${plausibleChanges[d.id].text}\n`;
+                    plausibleHasChanges = true;
+                }
+            });
+            if (!plausibleHasChanges) report += '(no changes from baseline)\n';
+            report += '\n';
+            const plausibleImpl = document.getElementById('plausibleImplications').value;
+            if (plausibleImpl) {
+                report += 'Implications:\n' + plausibleImpl + '\n';
+            }
+            report += '\n' + '-'.repeat(60) + '\n\n';
+            
+            // Wildcard
+            report += '🔥 WILDCARD SCENARIO\n\n';
+            report += 'Changed assumptions:\n';
+            let wildcardHasChanges = false;
+            drivers.forEach(d => {
+                if (wildcardChanges[d.id]?.status === 'changed') {
+                    report += `• ${d.name}: ${wildcardChanges[d.id].text}\n`;
+                    wildcardHasChanges = true;
+                }
+            });
+            if (!wildcardHasChanges) report += '(no changes from baseline)\n';
+            report += '\n';
+            const wildcardImpl = document.getElementById('wildcardImplications').value;
+            if (wildcardImpl) {
+                report += 'Implications:\n' + wildcardImpl + '\n';
+            }
+            report += '\n' + '='.repeat(60) + '\n';
+            report += `Generated: ${new Date().toLocaleString()}\n\n`;
+            
+            report += 'QUESTIONS FOR FURTHER ANALYSIS:\n';
+            report += '• What early signals would indicate each scenario is unfolding?\n';
+            report += '• What actions would be robust across multiple scenarios?\n';
+            report += '• Which assumptions am I least confident about?\n';
+            report += '• What would cause me to update my baseline?\n';
+            report += '• What am I implicitly assuming won\'t happen?\n';
+            report += '• Who should I discuss this analysis with to stress-test it?\n';
+
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `cone_of_possibilities_report_${date}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    document.getElementById('question').value = data.question || '';
+                    document.getElementById('timeframe').value = data.timeframe || '';
+                    drivers = data.drivers || [];
+                    nextId = Math.max(...drivers.map(d => d.id), 0) + 1;
+                    
+                    if (data.scenarios) {
+                        document.getElementById('baselineImplications').value = data.scenarios.baseline?.implications || '';
+                        document.getElementById('plausibleImplications').value = data.scenarios.plausible?.implications || '';
+                        document.getElementById('wildcardImplications').value = data.scenarios.wildcard?.implications || '';
+                        plausibleChanges = data.scenarios.plausible?.changes || {};
+                        wildcardChanges = data.scenarios.wildcard?.changes || {};
+                    }
+                    
+                    renderDrivers();
+                    renderScenarios();
+                    renderCone();
+                    
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function loadExample() {
+            if (drivers.length > 0) {
+                if (!confirm('This will replace your current work. Continue?')) {
+                    return;
+                }
+            }
+            
+            // Reset
+            drivers = [];
+            plausibleChanges = {};
+            wildcardChanges = {};
+            nextId = 1;
+            currentFocus = 'baseline';
+            
+            // Set question
+            document.getElementById('question').value = 'How might the AI capabilities landscape evolve?';
+            document.getElementById('timeframe').value = '2 years';
+            
+            // Add example drivers
+            drivers = [
+                { id: 1, name: 'Compute scaling', baselineAssumption: 'Training compute continues growing ~4x/year; inference costs decline 30%/year' },
+                { id: 2, name: 'Algorithmic progress', baselineAssumption: 'Incremental improvements; no fundamental breakthroughs beyond current paradigm' },
+                { id: 3, name: 'Regulatory environment', baselineAssumption: 'Fragmented national approaches; no binding international framework emerges' },
+                { id: 4, name: 'Lab coordination', baselineAssumption: 'Major labs compete independently; limited safety coordination beyond voluntary commitments' }
+            ];
+            nextId = 5;
+            
+            // Set plausible changes
+            plausibleChanges = {
+                2: { status: 'changed', text: 'Major algorithmic efficiency breakthrough enables 10x compute-equivalent capability gains; timelines shift forward 12-18 months' }
+            };
+            
+            // Set wildcard changes
+            wildcardChanges = {
+                3: { status: 'changed', text: 'Coordinated international framework emerges requiring capability evaluations before deployment; development pace constrained but more predictable' },
+                4: { status: 'changed', text: 'Major incident triggers industry-wide pause; labs coordinate on safety standards under external pressure' }
+            };
+            
+            // Set implications
+            document.getElementById('baselineImplications').value = 'Continued rapid capability growth. Competition drives deployment speed. Safety work proceeds but without hard constraints. Need to maintain flexibility and monitor for capability jumps.';
+            document.getElementById('plausibleImplications').value = 'Accelerated timeline creates urgency. Plans calibrated to 2-year horizons may need to compress. First-mover advantages amplify. More pressure on safety research to keep pace.';
+            document.getElementById('wildcardImplications').value = 'Slower but more predictable development. Compliance becomes a strategic capability. Organizations with eval infrastructure have advantages. More time for alignment research but also more constraints on experimentation.';
+            
+            renderDrivers();
+            renderScenarios();
+            renderCone();
+        }
+
+        function clearAll() {
+            if (drivers.length === 0 && !document.getElementById('question').value) {
+                return;
+            }
+            
+            if (confirm('Clear all data and start fresh?')) {
+                document.getElementById('question').value = '';
+                document.getElementById('timeframe').value = '';
+                document.getElementById('baselineImplications').value = '';
+                document.getElementById('plausibleImplications').value = '';
+                document.getElementById('wildcardImplications').value = '';
+                drivers = [];
+                plausibleChanges = {};
+                wildcardChanges = {};
+                nextId = 1;
+                currentFocus = 'baseline';
+                renderDrivers();
+                renderScenarios();
+                renderCone();
+            }
+        }
+
+        // Download cone as SVG for workshop use
+        function downloadConeSVG() {
+            const svgElement = document.getElementById('futuresCone');
+            
+            // Clone the SVG to modify for export
+            const clone = svgElement.cloneNode(true);
+            
+            // Add XML declaration and namespace for standalone SVG
+            clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+            
+            // Set explicit dimensions for better compatibility
+            clone.setAttribute('width', '1200');
+            clone.setAttribute('height', '600');
+            
+            // Serialize to string
+            const serializer = new XMLSerializer();
+            let svgString = serializer.serializeToString(clone);
+            
+            // Add XML declaration
+            svgString = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgString;
+            
+            // Create blob and download
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'futures_cone_template.svg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        renderDrivers();
+        renderScenarios();
+        renderCone();
+    </script>
+</body>
+</html>

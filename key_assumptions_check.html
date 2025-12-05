@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Assumptions Check</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 10px; }
+        h2 { color: #2c5282; margin-bottom: 15px; font-size: 1.3em; }
+        h3 { color: #2c5282; margin: 0 0 10px 0; }
+        h4 { color: #2c5282; margin: 0 0 8px 0; font-size: 1em; }
+        .subtitle { color: #555; margin-bottom: 25px; }
+        
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        
+        .example-box {
+            background: #fffaf0;
+            border: 1px solid #e8a838;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .example-box h4 {
+            color: #8b5a00;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .example-box p {
+            margin: 0;
+            color: #5c4a1f;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .prompt-section {
+            background: #f8f5ff;
+            border: 1px solid #d4c4f0;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .prompt-section h3 {
+            color: #5b3d99;
+            margin-bottom: 15px;
+        }
+        
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .prompt-card {
+            background: white;
+            border: 1px solid #e0d6f0;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        .prompt-card h4 {
+            color: #5b3d99;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .prompt-card p {
+            font-size: 13px;
+            color: #555;
+            margin: 0;
+        }
+        
+        .epistemic-warning {
+            background: #fff8f0;
+            border-left: 4px solid #e8a838;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .epistemic-warning strong {
+            color: #8b5a00;
+        }
+        
+        .hypothesis-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        .hypothesis-input:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        .hypothesis-tip {
+            background: #f0f7ff;
+            border: 1px solid #90caf9;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+        
+        .assumption-card {
+            background: white;
+            border: 2px solid #d0d0d0;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+        .assumption-card.critical {
+            border-color: #d32f2f;
+            background: linear-gradient(135deg, #ffebee 0%, #fff 100%);
+        }
+        .assumption-card.warning {
+            border-color: #f57c00;
+            background: linear-gradient(135deg, #fff3e0 0%, #fff 100%);
+        }
+        .assumption-card.solid {
+            border-color: #388e3c;
+            background: linear-gradient(135deg, #e8f5e9 0%, #fff 100%);
+        }
+        
+        .assumption-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .assumption-number {
+            background: #2c5282;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .assumption-text {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 60px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .assumption-text:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        .scoring-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        @media (max-width: 900px) {
+            .scoring-grid { grid-template-columns: 1fr; }
+        }
+        
+        .score-group {
+            background: #f5f5f5;
+            padding: 14px;
+            border-radius: 4px;
+        }
+        .score-group-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #2c5282;
+        }
+        .score-group-hint {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            padding: 7px 9px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #444;
+            transition: background 0.15s;
+        }
+        .radio-option:hover {
+            background: #e8e8e8;
+        }
+        .radio-option input {
+            margin-right: 8px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        .radio-option.selected {
+            background: #e3f2fd;
+        }
+        
+        .notes-area {
+            width: 100%;
+            min-height: 70px;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            margin-top: 15px;
+        }
+        .notes-area:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        .matrix-view {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #d0d0d0;
+        }
+        .matrix-explanation {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .matrix-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .matrix-tab {
+            padding: 8px 16px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px 4px 0 0;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+        }
+        .matrix-tab:hover {
+            background: #e8e8e8;
+        }
+        .matrix-tab.active {
+            background: white;
+            border-bottom-color: white;
+            font-weight: 600;
+            color: #2c5282;
+        }
+        
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr 1fr;
+            gap: 2px;
+            background: #d0d0d0;
+            border: 2px solid #d0d0d0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .matrix-cell {
+            background: white;
+            padding: 12px 8px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+        .matrix-header {
+            background: #2c5282;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .matrix-row-header {
+            background: #e8eef5;
+            font-weight: 600;
+            color: #2c5282;
+            font-size: 12px;
+        }
+        .matrix-assumption-chip {
+            display: inline-block;
+            background: #2c5282;
+            color: white;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            line-height: 26px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 2px;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .matrix-assumption-chip:hover {
+            transform: scale(1.15);
+        }
+        .matrix-assumption-chip.untestable {
+            background: #7b1fa2;
+        }
+        .critical-zone { background: #ffcdd2; }
+        .warning-zone { background: #ffe0b2; }
+        .caution-zone { background: #fff8e1; }
+        .safe-zone { background: #c8e6c9; }
+        .neutral-zone { background: #f5f5f5; }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #555;
+        }
+        .legend-swatch {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            transition: background 0.15s;
+        }
+        button:hover { background: #1a3a5c; }
+        button.secondary { background: #5a6978; }
+        button.secondary:hover { background: #4a5968; }
+        button.danger { background: #c53030; }
+        button.danger:hover { background: #a02020; }
+        button.small {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .critical-section {
+            background: #fff8f8;
+            border: 1px solid #e57373;
+            border-radius: 6px;
+            padding: 20px;
+        }
+        .critical-header {
+            color: #c62828;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .critical-item {
+            background: white;
+            border-left: 4px solid #d32f2f;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .critical-item:last-child { margin-bottom: 0; }
+        .critical-item-text {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .critical-item-meta {
+            font-size: 13px;
+            color: #666;
+        }
+        .critical-item-tags {
+            margin-top: 8px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .tag-untestable {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        .tag-essential {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .tag-unsupported {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .tag-plausible {
+            background: #fff8e1;
+            color: #f57f17;
+        }
+        
+        .insight-box {
+            background: #f0f7ff;
+            border: 1px solid #90caf9;
+            padding: 18px;
+            border-radius: 6px;
+        }
+        .insight-box h4 {
+            color: #1565c0;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+        .insight-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #444;
+        }
+        .insight-box li {
+            margin-bottom: 6px;
+        }
+        
+        .next-steps-box {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 25px;
+        }
+        .next-steps-box h4 {
+            color: #2e7d32;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+        .next-steps-box p {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #444;
+        }
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #444;
+            font-size: 14px;
+        }
+        .next-steps-box li {
+            margin-bottom: 6px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        
+        .button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .add-assumption-sticky {
+            position: sticky;
+            bottom: 0;
+            background: linear-gradient(transparent, #fafafa 20%);
+            padding: 20px 0 0 0;
+            margin-top: 10px;
+        }
+        
+        .help-text {
+            font-size: 13px;
+            color: #555;
+            margin-top: 6px;
+        }
+        
+        .caution-state {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+            background: #fff8e1;
+            border: 1px solid #ffcc02;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Key Assumptions Check</h1>
+        <p class="subtitle">Surface the hidden beliefs your analysis depends on</p>
+        
+        <div class="intro-box">
+            <p>Every conclusion rests on premises — some explicit, many invisible. This tool helps you find the <strong>shaky load-bearing assumptions</strong>: beliefs that are critical to your hypothesis, poorly supported by evidence, or difficult to test. These are where your analysis is most vulnerable.</p>
+            
+            <p>The goal isn't to prove you're right. It's to discover where you might be wrong before reality teaches you the hard way.</p>
+            
+            <p><strong>This exercise works solo or as a team.</strong></p>
+            
+            <div style="background: #fff0f0; border: 1px solid #e57373; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                <strong style="color: #c62828;">Before you proceed, ask yourself honestly:</strong>
+                <p style="margin: 10px 0 0 0; color: #555;">Are you actually committed to uncovering things that might cause you to change your mind? Are you too attached to your current viewpoint or trajectory — such that you might rationalise certain assumptions as more solid or less load-bearing than they really are?</p>
+                <p style="margin: 10px 0 0 0; color: #555;">This tool is a compass, not a rubber stamp. If you're not willing to question approximately everything, it won't serve you. Don't use it to give yourself undue confidence.</p>
+            </div>
+            
+            <div class="example-box">
+                <h4>💡 Why This Matters: The Maginot Line</h4>
+                <p>In the 1930s, France built the most sophisticated defensive fortifications in history. The assumption? Germany would attack through the same routes as WWI. French planners were brilliant, methodical, and catastrophically wrong. They never stress-tested their core assumption: that the Ardennes forest was "impenetrable" to tanks. In May 1940, German armour punched through those "impassable" woods in days. The assumption wasn't examined because it felt obvious — precisely the kind of belief this tool is designed to surface.</p>
+            </div>
+            
+            <div class="example-box" style="margin-top: 12px;">
+                <h4>💡 When Good Intentions Rest on Unchecked Assumptions</h4>
+                <p>OpenAI was founded with the explicit goal of ensuring AI development would be safe and beneficial. Yet their entry into the market arguably accelerated AI development and intensified arms-race dynamics — potentially worsening the risks they aimed to mitigate. What assumptions might the founding team have needed to examine? Perhaps: "Being at the frontier gives us more safety influence than staying out"; "We can maintain our safety-first culture under competitive pressure"; "Open publication helps safety more than it helps capabilities." Each seemed reasonable. Together, they may have produced the opposite of the intended outcome.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Your Hypothesis or Analytic Line</h3>
+            <p class="help-text">State clearly what you currently believe to be true. This is the structure we'll examine for hidden supports.</p>
+            <textarea id="hypothesis" 
+                      class="hypothesis-input" 
+                      placeholder="Example: 'The area of mechanistic interpretability research I am focusing on is, all else being equal, my best focus area if my goal is to reduce catastrophic risks from advanced AI systems.'"
+                      oninput="updateAnalysis()"></textarea>
+            <div class="hypothesis-tip">
+                <strong>Tip:</strong> Specificity matters. "Our area of research is valuable" hides assumptions in vague wording. Better: "The specific mechanistic interpretability work I'm doing on [X] is, all else being equal, my best focus area given my goal of [Y]." The more precise your statement, the harder for shaky assumptions to hide in ambiguous phrasing.
+            </div>
+        </div>
+
+        <div class="insight-box" style="margin-bottom: 25px;">
+            <h4>Questions to Deepen Your Analysis</h4>
+            <ul>
+                <li>What would it take to <strong>disprove</strong> your hypothesis? What evidence would change your mind?</li>
+                <li>Have any of these assumptions been true <strong>historically</strong> but may be changing?</li>
+                <li>Who would <strong>disagree</strong> with your hypothesis, and what's their strongest argument?</li>
+                <li>If your most critical assumption turns out to be wrong, what's your <strong>plan B</strong>?</li>
+                <li>Which assumptions can you test <strong>quickly and cheaply</strong>?</li>
+                <li>What's the <strong>base rate</strong>? How often do hypotheses like this turn out to be correct?</li>
+            </ul>
+        </div>
+
+        <div class="prompt-section">
+            <h3>Before You List Assumptions: Excavation Prompts</h3>
+            <p style="font-size: 14px; color: #555; margin-bottom: 15px;">Assumptions hide in plain sight. These prompts help you dig deeper than surface-level reasoning.</p>
+            
+            <div class="prompt-grid">
+                <div class="prompt-card">
+                    <h4>🎭 The Devil's Advocate</h4>
+                    <p>If you had to argue <em>against</em> your hypothesis in a debate, what would be your strongest three points? The assumptions you'd attack are likely your weakest.</p>
+                </div>
+                
+                <div class="prompt-card">
+                    <h4>👶 The Five-Year-Old Test</h4>
+                    <p>Explain your hypothesis as if to a curious child who keeps asking "but why?" and "how do you know?" The places where you say "it just is" or "everyone knows" are hidden assumptions.</p>
+                </div>
+                
+                <div class="prompt-card">
+                    <h4>🔬 The Evidence Audit</h4>
+                    <p>For each belief: Is your evidence <em>direct observation</em>, <em>trusted testimony</em>, <em>logical inference</em>, or <em>gut feeling</em>? Testimony from whom? What's their track record? Could they be wrong together?</p>
+                </div>
+                
+                <div class="prompt-card">
+                    <h4>⏰ The Time Traveller</h4>
+                    <p>Imagine someone from 2050 looking back at your hypothesis. What would they find quaint, naive, or obviously wrong? What "obvious truths" of today might be tomorrow's misconceptions?</p>
+                </div>
+                
+                <div class="prompt-card">
+                    <h4>🌊 The Consensus Trap</h4>
+                    <p>Is your confidence partly based on "everyone seems to think this"? Consensus isn't evidence of truth. Experts in a field often share the same blind spots. What if the herd is wrong?</p>
+                </div>
+                
+                <div class="prompt-card">
+                    <h4>🔗 The Dependency Chain</h4>
+                    <p>Your hypothesis probably depends on A, which depends on B, which depends on C. Map the full chain. Uncertainty compounds: if each link is 80% likely, a chain of 5 is only 33% likely to hold.</p>
+                </div>
+            </div>
+            
+            <div class="epistemic-warning">
+                <strong>A note on epistemic humility:</strong> This tool exists because humans run on assumptions to function in an extremely complex, fast-moving world. It's not a character flaw — it's cognitive necessity. But it means nobody is immune to relying on unchecked assumptions, including experts, authorities, and you. The goal isn't to eliminate assumptions (impossible) but to know which ones you're betting on.
+            </div>
+        </div>
+
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">Underlying Assumptions</h3>
+            </div>
+            <p class="help-text" style="margin-bottom: 15px;">List every premise — stated and unstated — that must be true for your hypothesis to hold. Include the "obvious" ones; those are often the most dangerous.</p>
+            
+            <div id="assumptions"></div>
+            
+            <div class="add-assumption-sticky">
+                <button onclick="addAssumption()">+ Add Assumption</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Assessment Matrix</h3>
+            <div class="matrix-view">
+                <p class="matrix-explanation">This matrix maps assumptions across three dimensions: <strong>Relevance</strong> (how critical), <strong>Support</strong> (how verified), and <strong>Testability</strong> (how checkable). Toggle views to explore different risk profiles.</p>
+                
+                <div class="matrix-tabs">
+                    <div class="matrix-tab active" onclick="setMatrixView('support')" id="tab-support">Relevance × Support</div>
+                    <div class="matrix-tab" onclick="setMatrixView('testability')" id="tab-testability">Relevance × Testability</div>
+                </div>
+                
+                <div class="matrix-grid" id="matrixGrid"></div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-swatch critical-zone"></div>
+                        <span>Critical — needs immediate attention</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-swatch warning-zone"></div>
+                        <span>Warning — verify before proceeding</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-swatch caution-zone"></div>
+                        <span>Caution — worth investigating</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-swatch safe-zone"></div>
+                        <span>Solid ground</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Assumptions Requiring Attention</h3>
+            <div id="criticalAssumptions"></div>
+        </div>
+
+        <div class="next-steps-box">
+            <h4>🚀 Where To Go From Here</h4>
+            <p>You've mapped your assumptions. Now what?</p>
+            <ul>
+                <li><strong>Test the testable:</strong> For assumptions marked "Testable" — design a quick experiment or find disconfirming evidence. What's the fastest way to learn you're wrong?</li>
+                <li><strong>Return to the Tool Navigator</strong> to find complementary analysis methods: <strong>Red Team Analysis</strong> to systematically attack your hypothesis; <strong>Monte Carlo Simulation</strong> if your hypothesis involves quantities or timelines and you want to see how uncertainty propagates; <strong>Reference Class Forecasting</strong> to check your predictions against base rates.</li>
+                <li><strong>Deepen with dialogue:</strong> Click "Copy to Clipboard" below and paste your export into a conversation with well-informed, truth-seeking humans (ideally those with sharp critical minds, different perspectives from yours, or relevant expertise) — or with a competent AI assistant. Ask for rigorous, critical analysis; request that your assumptions be challenged from multiple perspectives, including unconventional ones.</li>
+            </ul>
+        </div>
+
+        <div class="button-row">
+            <button onclick="saveAnalysis()">💾 Save Analysis</button>
+            <button onclick="copyToClipboard()" class="secondary">📋 Copy to Clipboard</button>
+            <button onclick="document.getElementById('loadInput').click()" class="secondary" title="Load a previously saved .json analysis file">📂 Load Saved Analysis</button>
+            <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadAnalysis(event)">
+            <button onclick="clearAll()" class="danger">Clear All</button>
+        </div>
+    </div>
+
+    <script>
+        let assumptions = [];
+        let nextId = 1;
+        let currentMatrixView = 'support';
+
+        function addAssumption() {
+            const assumption = {
+                id: nextId++,
+                text: '',
+                relevance: null,
+                support: null,
+                testability: null,
+                rationale: ''
+            };
+            assumptions.push(assumption);
+            renderAssumptions();
+            updateAnalysis();
+            
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.assumption-card');
+                if (cards.length > 0) {
+                    cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 50);
+        }
+
+        function removeAssumption(id) {
+            assumptions = assumptions.filter(a => a.id !== id);
+            renderAssumptions();
+            updateAnalysis();
+        }
+
+        function updateAssumption(id, field, value) {
+            const assumption = assumptions.find(a => a.id === id);
+            if (assumption) {
+                assumption[field] = value;
+                updateAnalysis();
+                if (field === 'relevance' || field === 'support' || field === 'testability') {
+                    renderAssumptions();
+                }
+            }
+        }
+
+        function getAssumptionIndex(id) {
+            return assumptions.findIndex(a => a.id === id) + 1;
+        }
+
+        function renderAssumptions() {
+            const container = document.getElementById('assumptions');
+            
+            if (assumptions.length === 0) {
+                container.innerHTML = '<div class="empty-state">No assumptions added yet. Click "Add Assumption" to begin examining your hypothesis.</div>';
+                return;
+            }
+
+            container.innerHTML = assumptions.map((a, index) => {
+                let cardClass = 'assumption-card';
+                if (a.relevance === 2 && a.support === 0) cardClass += ' critical';
+                else if ((a.relevance === 2 && a.support === 1) || (a.relevance === 1 && a.support === 0)) cardClass += ' warning';
+                else if (a.relevance === 1 && a.support === 1) cardClass += ' warning'; // Important + Plausible = warning
+                else if (a.support === 2 && a.relevance !== null) cardClass += ' solid';
+
+                return `
+                <div class="${cardClass}" id="assumption-${a.id}">
+                    <div class="assumption-header">
+                        <div class="assumption-number">${index + 1}</div>
+                        <div style="flex: 1; margin-right: 10px;">
+                            <textarea class="assumption-text" 
+                                      placeholder="e.g., 'Reaching AGI within a relevant time frame seems plausible given context (incentives, regulation, inputs availability, technical ceilings...)'"
+                                      onchange="updateAssumption(${a.id}, 'text', this.value)">${a.text}</textarea>
+                        </div>
+                        <button class="danger small" onclick="removeAssumption(${a.id})">✕</button>
+                    </div>
+                    
+                    <div class="scoring-grid">
+                        <div class="score-group">
+                            <span class="score-group-label">Relevance</span>
+                            <div class="score-group-hint">If false, what happens to your hypothesis?</div>
+                            <div class="radio-group">
+                                <label class="radio-option ${a.relevance === 0 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="relevance-${a.id}" 
+                                           value="0"
+                                           ${a.relevance === 0 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'relevance', 0)">
+                                    <span>Peripheral — hypothesis survives</span>
+                                </label>
+                                <label class="radio-option ${a.relevance === 1 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="relevance-${a.id}" 
+                                           value="1"
+                                           ${a.relevance === 1 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'relevance', 1)">
+                                    <span>Important — hypothesis weakened</span>
+                                </label>
+                                <label class="radio-option ${a.relevance === 2 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="relevance-${a.id}" 
+                                           value="2"
+                                           ${a.relevance === 2 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'relevance', 2)">
+                                    <span>Essential — hypothesis collapses</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="score-group">
+                            <span class="score-group-label">Support</span>
+                            <div class="score-group-hint">What's your actual evidence? How reliable is the source? Have you verified it yourself?</div>
+                            <div class="radio-group">
+                                <label class="radio-option ${a.support === 0 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="support-${a.id}" 
+                                           value="0"
+                                           ${a.support === 0 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'support', 0)">
+                                    <span>Unsupported — no evidence, or contradictory data</span>
+                                </label>
+                                <label class="radio-option ${a.support === 1 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="support-${a.id}" 
+                                           value="1"
+                                           ${a.support === 1 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'support', 1)">
+                                    <span>Plausible — seems reasonable, not directly verified</span>
+                                </label>
+                                <label class="radio-option ${a.support === 2 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="support-${a.id}" 
+                                           value="2"
+                                           ${a.support === 2 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'support', 2)">
+                                    <span>Well verified — strong evidence from reliable sources</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="score-group">
+                            <span class="score-group-label">Testability</span>
+                            <div class="score-group-hint">Can you check this before committing?</div>
+                            <div class="radio-group">
+                                <label class="radio-option ${a.testability === 0 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="testability-${a.id}" 
+                                           value="0"
+                                           ${a.testability === 0 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'testability', 0)">
+                                    <span>Untestable — can't verify in advance</span>
+                                </label>
+                                <label class="radio-option ${a.testability === 1 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="testability-${a.id}" 
+                                           value="1"
+                                           ${a.testability === 1 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'testability', 1)">
+                                    <span>Partially testable — proxies exist, or part can be checked</span>
+                                </label>
+                                <label class="radio-option ${a.testability === 2 ? 'selected' : ''}">
+                                    <input type="radio" 
+                                           name="testability-${a.id}" 
+                                           value="2"
+                                           ${a.testability === 2 ? 'checked' : ''}
+                                           onchange="updateAssumption(${a.id}, 'testability', 2)">
+                                    <span>Testable — can check directly</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <textarea class="notes-area" 
+                              placeholder="Notes: What's your evidence? Who's the source and are they reliable? What would disprove this? How might it change over time?"
+                              onchange="updateAssumption(${a.id}, 'rationale', this.value)">${a.rationale}</textarea>
+                </div>
+            `}).join('');
+        }
+
+        function updateAnalysis() {
+            renderMatrix();
+            renderCriticalAssumptions();
+        }
+
+        function setMatrixView(view) {
+            currentMatrixView = view;
+            document.querySelectorAll('.matrix-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${view}`).classList.add('active');
+            renderMatrix();
+        }
+
+        function scrollToAssumption(id) {
+            const element = document.getElementById(`assumption-${id}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.style.boxShadow = '0 0 0 3px #2c5282';
+                setTimeout(() => {
+                    element.style.boxShadow = '';
+                }, 2000);
+            }
+        }
+
+        function renderMatrix() {
+            const grid = document.getElementById('matrixGrid');
+            
+            const scored = assumptions.filter(a => {
+                if (currentMatrixView === 'support') {
+                    return a.relevance !== null && a.support !== null && a.text.trim();
+                } else {
+                    return a.relevance !== null && a.testability !== null && a.text.trim();
+                }
+            });
+
+            const secondDim = currentMatrixView === 'support' ? 'support' : 'testability';
+            const colLabels = currentMatrixView === 'support' 
+                ? ['Unsupported', 'Plausible', 'Well Verified']
+                : ['Untestable', 'Partial', 'Testable'];
+
+            let html = `
+                <div class="matrix-cell matrix-header"></div>
+                <div class="matrix-cell matrix-header">${colLabels[0]}</div>
+                <div class="matrix-cell matrix-header">${colLabels[1]}</div>
+                <div class="matrix-cell matrix-header">${colLabels[2]}</div>
+            `;
+
+            const relevanceLabels = ['Peripheral', 'Important', 'Essential'];
+
+            for (let r = 2; r >= 0; r--) {
+                html += `<div class="matrix-cell matrix-row-header">${relevanceLabels[r]}</div>`;
+                
+                for (let s = 0; s <= 2; s++) {
+                    const cellAssumptions = scored.filter(a => 
+                        a.relevance === r && a[secondDim] === s
+                    );
+                    
+                    let cellClass = 'matrix-cell';
+                    // Zone logic: Essential+Unsupported = critical, Essential+Plausible = warning,
+                    // Important+Unsupported = warning, Important+Plausible = caution (orange-yellow)
+                    if (r === 2 && s === 0) cellClass += ' critical-zone';
+                    else if ((r === 2 && s === 1) || (r === 1 && s === 0)) cellClass += ' warning-zone';
+                    else if (r === 1 && s === 1) cellClass += ' caution-zone'; // Important + Plausible
+                    else if (s === 2) cellClass += ' safe-zone';
+                    else cellClass += ' neutral-zone';
+                    
+                    if (cellAssumptions.length > 0) {
+                        const chips = cellAssumptions.map(a => {
+                            const idx = getAssumptionIndex(a.id);
+                            const chipClass = (currentMatrixView === 'support' && a.testability === 0) ? 'matrix-assumption-chip untestable' : 'matrix-assumption-chip';
+                            return `<span class="${chipClass}" onclick="scrollToAssumption(${a.id})" title="${a.text.substring(0, 50)}...">${idx}</span>`;
+                        }).join('');
+                        html += `<div class="${cellClass}">${chips}</div>`;
+                    } else {
+                        html += `<div class="${cellClass}">—</div>`;
+                    }
+                }
+            }
+
+            grid.innerHTML = html;
+        }
+
+        function renderCriticalAssumptions() {
+            const container = document.getElementById('criticalAssumptions');
+            
+            // Critical: Essential + Unsupported
+            const critical = assumptions.filter(a => 
+                a.relevance === 2 && a.support === 0 && a.text.trim()
+            ).sort((a, b) => {
+                return (a.testability || 0) - (b.testability || 0);
+            });
+
+            // Warning: Essential + Plausible OR Important + Unsupported
+            const warnings = assumptions.filter(a =>
+                ((a.relevance === 2 && a.support === 1) || (a.relevance === 1 && a.support === 0)) && a.text.trim()
+            );
+
+            // Caution: Important + Plausible (new category)
+            const caution = assumptions.filter(a =>
+                a.relevance === 1 && a.support === 1 && a.text.trim()
+            );
+
+            // Untestable essential (even if supported)
+            const untestableEssential = assumptions.filter(a =>
+                a.relevance === 2 && a.testability === 0 && a.support === 2 && a.text.trim()
+            );
+
+            const allFlagged = [...critical, ...warnings, ...caution, ...untestableEssential];
+            // Remove duplicates
+            const uniqueFlagged = allFlagged.filter((a, index) => 
+                allFlagged.findIndex(b => b.id === a.id) === index
+            );
+
+            if (uniqueFlagged.length === 0) {
+                const scored = assumptions.filter(a => a.relevance !== null && a.support !== null && a.text.trim());
+                if (scored.length === 0) {
+                    container.innerHTML = '<div class="empty-state">Add assumptions and score them to identify gaps.</div>';
+                } else {
+                    // Check if there are any "Plausible" assumptions at all
+                    const hasPlausible = scored.some(a => a.support === 1);
+                    if (hasPlausible) {
+                        container.innerHTML = `<div class="caution-state">
+                            <strong>⚠️ Caution:</strong> Your hypothesis rests partly on "plausible" assumptions — beliefs that seem reasonable but haven't been directly verified. 
+                            Consider: what would it take to upgrade these to "well verified"? Is there evidence you could check?
+                        </div>`;
+                    } else {
+                        container.innerHTML = '<div class="empty-state" style="color: #388e3c; background: #e8f5e9; border: 1px solid #a5d6a7;">✓ No critical assumptions identified. Your hypothesis appears to rest on well-supported, testable foundations — but keep questioning.</div>';
+                    }
+                }
+                return;
+            }
+
+            const supportLabels = { 0: 'Unsupported', 1: 'Plausible', 2: 'Well verified' };
+            const testLabels = { 0: 'Untestable', 1: 'Partially testable', 2: 'Testable' };
+            const relLabels = { 0: 'Peripheral', 1: 'Important', 2: 'Essential' };
+
+            let html = '<div class="critical-section">';
+            html += `<div class="critical-header">⚠️ ${uniqueFlagged.length} assumption${uniqueFlagged.length > 1 ? 's' : ''} requiring attention</div>`;
+            
+            uniqueFlagged.forEach(a => {
+                const idx = getAssumptionIndex(a.id);
+                const isUntestable = a.testability === 0;
+                const isCritical = a.relevance === 2 && a.support === 0;
+                const isWarning = (a.relevance === 2 && a.support === 1) || (a.relevance === 1 && a.support === 0);
+                const isCaution = a.relevance === 1 && a.support === 1;
+                const isUntestableVerified = a.relevance === 2 && a.testability === 0 && a.support === 2;
+                
+                let borderColor = '#f57c00'; // default warning orange
+                if (isCritical) borderColor = '#d32f2f';
+                else if (isUntestableVerified) borderColor = '#7b1fa2';
+                else if (isCaution) borderColor = '#fbc02d';
+                
+                html += `
+                    <div class="critical-item" style="border-left-color: ${borderColor}; cursor: pointer;" onclick="scrollToAssumption(${a.id})">
+                        <div class="critical-item-text">#${idx}: ${a.text}</div>
+                        <div class="critical-item-meta">
+                            ${relLabels[a.relevance]} · ${supportLabels[a.support]}${a.testability !== null ? ` · ${testLabels[a.testability]}` : ''}
+                        </div>
+                        <div class="critical-item-tags">
+                            ${a.relevance === 2 ? '<span class="tag tag-essential">Essential</span>' : ''}
+                            ${a.relevance === 1 ? '<span class="tag" style="background: #e3f2fd; color: #1565c0;">Important</span>' : ''}
+                            ${a.support === 0 ? '<span class="tag tag-unsupported">Unsupported</span>' : ''}
+                            ${a.support === 1 ? '<span class="tag tag-plausible">Plausible only</span>' : ''}
+                            ${isUntestable ? '<span class="tag tag-untestable">Untestable</span>' : ''}
+                        </div>
+                        ${a.rationale ? `<div style="margin-top: 8px; font-size: 13px; color: #555; font-style: italic;">"${a.rationale.substring(0, 150)}${a.rationale.length > 150 ? '...' : ''}"</div>` : ''}
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="margin-top: 15px; padding: 12px; background: white; border-radius: 4px; font-size: 14px; color: #555;">
+                    <strong>Priority action:</strong> Focus first on assumptions that are <em>Essential + Unsupported + Testable</em> — these are both critical and actionable. 
+                    For "Plausible" assumptions, ask yourself honestly: what would it actually take to verify this? Have you checked, or are you relying on inference, consensus, or authority?
+                    For untestable assumptions, consider: Can you restructure your plan to be robust even if they're wrong?
+                </div>
+            `;
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        function saveAnalysis() {
+            const data = {
+                version: '4.0',
+                hypothesis: document.getElementById('hypothesis').value,
+                assumptions: assumptions,
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            a.download = `assumptions_check_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            const hypothesis = document.getElementById('hypothesis').value;
+            const scored = assumptions.filter(a => 
+                a.relevance !== null && a.support !== null && a.text.trim()
+            );
+
+            const relevanceLabels = ['Peripheral', 'Important', 'Essential'];
+            const supportLabels = ['Unsupported', 'Plausible', 'Well Verified'];
+            const testLabels = ['Untestable', 'Partially Testable', 'Testable'];
+
+            let text = "KEY ASSUMPTIONS CHECK - ANALYSIS EXPORT\n";
+            text += "=".repeat(45) + "\n\n";
+            
+            text += "HYPOTHESIS:\n";
+            text += hypothesis || "(No hypothesis entered)";
+            text += "\n\n";
+
+            text += "ASSUMPTIONS ASSESSED:\n";
+            text += "-".repeat(30) + "\n\n";
+
+            if (scored.length === 0) {
+                text += "(No assumptions scored yet)\n";
+            } else {
+                scored.forEach((a, i) => {
+                    text += `${i + 1}. ${a.text}\n`;
+                    text += `   Relevance: ${relevanceLabels[a.relevance]}\n`;
+                    text += `   Support: ${supportLabels[a.support]}\n`;
+                    if (a.testability !== null) {
+                        text += `   Testability: ${testLabels[a.testability]}\n`;
+                    }
+                    if (a.rationale) {
+                        text += `   Notes: ${a.rationale}\n`;
+                    }
+                    text += "\n";
+                });
+            }
+
+            const critical = scored.filter(a => a.relevance === 2 && a.support <= 1);
+            if (critical.length > 0) {
+                text += "CRITICAL GAPS (Essential + Weak Support):\n";
+                text += "-".repeat(30) + "\n";
+                critical.forEach(a => {
+                    text += `• ${a.text}\n`;
+                });
+                text += "\n";
+            }
+
+            const cautionary = scored.filter(a => a.relevance === 1 && a.support === 1);
+            if (cautionary.length > 0) {
+                text += "CAUTIONARY (Important + Plausible only):\n";
+                text += "-".repeat(30) + "\n";
+                cautionary.forEach(a => {
+                    text += `• ${a.text}\n`;
+                });
+                text += "\n";
+            }
+
+            const untestable = scored.filter(a => a.relevance === 2 && a.testability === 0);
+            if (untestable.length > 0) {
+                text += "UNTESTABLE ESSENTIAL ASSUMPTIONS:\n";
+                text += "-".repeat(30) + "\n";
+                untestable.forEach(a => {
+                    text += `• ${a.text}\n`;
+                });
+                text += "\n";
+            }
+
+            text += "REQUEST FOR ANALYSIS:\n";
+            text += "-".repeat(30) + "\n";
+            text += "Please review this assumptions analysis with rigorous, critical thinking:\n";
+            text += "1. What blind spots or hidden assumptions might I have missed?\n";
+            text += "2. For the critical gaps identified, what's the strongest evidence for and against each?\n";
+            text += "3. For 'Plausible' assumptions, am I being epistemically lazy? What would actual verification look like?\n";
+            text += "4. How could I efficiently test the testable assumptions?\n";
+            text += "5. For untestable assumptions, how might I restructure my approach to be robust if they're wrong?\n";
+            text += "6. What's the overall strength of this hypothesis given its assumption dependencies?\n";
+            text += "\nPlease be direct and challenging rather than reassuring.";
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Analysis copied to clipboard! Paste into a conversation for rigorous review.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Analysis copied to clipboard!');
+            });
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    document.getElementById('hypothesis').value = data.hypothesis || '';
+                    assumptions = data.assumptions || [];
+                    assumptions.forEach(a => {
+                        if (a.testability === undefined) a.testability = null;
+                    });
+                    nextId = Math.max(...assumptions.map(a => a.id), 0) + 1;
+                    renderAssumptions();
+                    updateAnalysis();
+                    alert('Analysis loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAll() {
+            if (confirm('Clear all data and start fresh?')) {
+                document.getElementById('hypothesis').value = '';
+                assumptions = [];
+                nextId = 1;
+                renderAssumptions();
+                updateAnalysis();
+            }
+        }
+
+        // Initialize
+        renderAssumptions();
+        updateAnalysis();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternative Futures Analysis (2×2)</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c5282; margin-bottom: 10px; }
+        h2 { color: #2c5282; margin-bottom: 15px; font-size: 1.3em; }
+        h3 { color: #2c5282; margin: 0 0 15px 0; }
+        .subtitle { color: #555; margin-bottom: 25px; }
+        
+        /* Load Previous Banner */
+        .load-banner {
+            background: #f0f7ff;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 12px 18px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .load-banner-text {
+            font-size: 14px;
+            color: #1565c0;
+        }
+        .load-banner button {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .intro-box {
+            background: #f0f7ff;
+            border-left: 4px solid #2c5282;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .intro-box p { margin: 0 0 12px 0; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        
+        .example-box {
+            background: #fffaf0;
+            border: 1px solid #e8a838;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        .example-box h4 {
+            color: #8b5a00;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+        .example-box p, .example-box li {
+            color: #5c4a1f;
+            font-size: 14px;
+        }
+        .example-box p { margin: 0 0 10px 0; }
+        .example-box p:last-child { margin-bottom: 0; }
+        .example-box ul { margin: 8px 0 0 0; padding-left: 20px; }
+        .example-box li { margin-bottom: 4px; }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 6px;
+        }
+        .question-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #2c5282;
+            border-radius: 6px;
+            font-size: 16px;
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .axis-config {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .axis-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+        }
+        .axis-label {
+            font-weight: bold;
+            color: #2c5282;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .axis-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        .endpoint-label {
+            font-size: 13px;
+            color: #555;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        .matrix-container {
+            background: white;
+            border: 3px solid #2c5282;
+            border-radius: 8px;
+            padding: 30px;
+            padding-left: 50px;
+            margin: 30px 0;
+            position: relative;
+        }
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            min-height: 600px;
+        }
+        .quadrant {
+            background: #f8f8f8;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .quadrant:hover {
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .quadrant-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2c5282;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .quadrant-title-input {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c5282;
+            margin-bottom: 8px;
+            padding-right: 60px;
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-family: inherit;
+        }
+        .quadrant-title-input::placeholder {
+            color: #999;
+        }
+        .quadrant-hint {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 4px 8px;
+            background: #e8f4f8;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .quadrant-content {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        .implications {
+            width: 100%;
+            min-height: 70px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+            background: #fffbeb;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .axis-x {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            padding: 0 10px;
+        }
+        .axis-y {
+            position: absolute;
+            top: 30px;
+            bottom: 60px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+        }
+        .axis-center-label {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #2c5282;
+            font-weight: 600;
+        }
+        button {
+            padding: 10px 20px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #1a365d; }
+        button.secondary { background: #718096; }
+        button.secondary:hover { background: #5a6b7a; }
+        button.danger { background: #c53030; }
+        button.danger:hover { background: #9c2626; }
+        .insight-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .insight-box ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+        .insight-box li {
+            margin-bottom: 6px;
+        }
+        .hint-text {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        /* Visualization Section */
+        .viz-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+        .viz-container {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 15px;
+        }
+        .futures-chart {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            margin: 0 auto;
+        }
+        .futures-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        
+        /* Completion Section */
+        .completion-section {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+        }
+        .completion-section h3 {
+            color: #166534;
+            margin-bottom: 12px;
+        }
+        
+        /* Related Tools */
+        .related-tools {
+            background: #f8f5ff;
+            border: 1px solid #d4c4f0;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 25px;
+        }
+        .related-tools h4 {
+            color: #5b21b6;
+            margin: 0 0 10px 0;
+        }
+        .related-tools ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .related-tools li {
+            margin-bottom: 6px;
+            color: #4c4c4c;
+        }
+        
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .axis-config {
+                grid-template-columns: 1fr;
+            }
+            .matrix-grid {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+            .matrix-container {
+                padding-left: 30px;
+            }
+            .axis-y {
+                left: 5px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Alternative Futures Analysis (2×2)</h1>
+        <p class="subtitle">Uncertainty is not an error. Map the possibility space.</p>
+        
+        <!-- Load Previous Banner -->
+        <div class="load-banner">
+            <span class="load-banner-text">📂 Have a previous analysis? Load it to continue.</span>
+            <button onclick="document.getElementById('loadInput').click()" class="secondary">Load Previous</button>
+            <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadAnalysis(event)">
+        </div>
+        
+        <div class="intro-box">
+            <p><strong>What this tool does:</strong> The future isn't a single line extending from today—it's a space of possibility shaped by critical uncertainties. This tool helps you identify two key uncertain factors, use them as axes, and systematically explore the four distinct worlds they create.</p>
+            
+            <p><strong>Why it matters:</strong> Predicting "the most likely" outcome is a fool's game in complex systems — such as those that make up much of today's world. Smart people routinely make confident decisions that history reveals as obviously flawed—not because they lacked intelligence, but because they failed to genuinely consider alternative futures.</p>
+            
+            <p><strong>The method:</strong> Select two factors that are both <em>critical</em> (they matter enormously to your situation) AND <em>genuinely uncertain</em> (reasonable people could disagree on which way they'll go). These become your axes. The four quadrants they create represent four plausible futures, each deserving serious strategic consideration.</p>
+            
+            <div class="example-box">
+                <h4>💡 Historical Intuition Pump: The Maginot Line (1930s)</h4>
+                <p>France built the most sophisticated fortification system in history along its border with Germany—and Germany simply went around it through Belgium. French planners weren't stupid; they were brilliant engineers. But they optimized for a single future ("Germany attacks where they attacked in 1914") rather than mapping the possibility space. Had they used 2×2 thinking with axes like "German military doctrine: conventional vs. innovative" and "Belgian neutrality: holds vs. violated," they'd have seen their vulnerability immediately.</p>
+                <p style="margin-top: 10px;">Confident preparation for one future creates blind spots to others. This tool forces you to genuinely inhabit worlds you'd rather not imagine.</p>
+            </div>
+            
+            <div class="example-box" style="margin-top: 15px;">
+                <h4>💡 Example Application: AI Development Trajectory</h4>
+                <p>Imagine you're a policymaker or researcher trying to prepare for AI's evolution over the next decade. Two critical uncertainties might be:</p>
+                <ul>
+                    <li><strong>X-Axis - Capability Progress:</strong> "Slow, incremental improvement" vs. "Rapid capability jumps"</li>
+                    <li><strong>Y-Axis - Global Coordination:</strong> "Fragmented national approaches" vs. "Strong international governance"</li>
+                </ul>
+                <p style="margin-top: 8px;">This creates four distinct worlds—each requiring different strategies, institutions, and preparations. Your current plans may work brilliantly in one quadrant and fail catastrophically in another. Better to discover this now.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>The Question</h3>
+            <p class="hint-text">What situation or decision are you analyzing? What do you need to understand about its possible future states?</p>
+            <textarea id="question" 
+                      class="question-input" 
+                      placeholder="e.g., 'How might our organization need to adapt over the next 3 years?' or 'What futures should we prepare for regarding [specific domain]?'"></textarea>
+        </div>
+
+        <div class="section">
+            <h3>Define Your Axes</h3>
+            <p class="hint-text">
+                Select two factors that are both <strong>critical</strong> AND <strong>uncertain</strong>. The key test: could thoughtful, informed people genuinely disagree about which direction this factor will go? Avoid factors where the outcome is predictable (even if important) or where only one direction seems plausible.
+            </p>
+            <p class="hint-text" style="margin-top: 8px;">
+                <strong>Good axis:</strong> "Will international AI governance emerge as cooperative or competitive?" (genuinely uncertain, high-impact)<br>
+                <strong>Poor axis:</strong> "Will computing power continue increasing?" (predictable direction, even if pace uncertain)
+            </p>
+            <div class="axis-config">
+                <div class="axis-card">
+                    <div class="axis-label">📊 Horizontal Axis (X)</div>
+                    <input type="text" 
+                           id="xAxisName" 
+                           class="axis-input" 
+                           placeholder="Factor name (e.g., 'Economic Conditions')"
+                           oninput="updateMatrix()">
+                    <div class="endpoint-label">Left endpoint (one extreme):</div>
+                    <input type="text" 
+                           id="xAxisLow" 
+                           class="axis-input" 
+                           placeholder="e.g., 'Severe recession'"
+                           oninput="updateMatrix()">
+                    <div class="endpoint-label">Right endpoint (opposite extreme):</div>
+                    <input type="text" 
+                           id="xAxisHigh" 
+                           class="axis-input" 
+                           placeholder="e.g., 'Economic boom'"
+                           oninput="updateMatrix()">
+                </div>
+                
+                <div class="axis-card">
+                    <div class="axis-label">📊 Vertical Axis (Y)</div>
+                    <input type="text" 
+                           id="yAxisName" 
+                           class="axis-input" 
+                           placeholder="Factor name (e.g., 'Regulatory Environment')"
+                           oninput="updateMatrix()">
+                    <div class="endpoint-label">Bottom endpoint (one extreme):</div>
+                    <input type="text" 
+                           id="yAxisLow" 
+                           class="axis-input" 
+                           placeholder="e.g., 'Highly permissive'"
+                           oninput="updateMatrix()">
+                    <div class="endpoint-label">Top endpoint (opposite extreme):</div>
+                    <input type="text" 
+                           id="yAxisHigh" 
+                           class="axis-input" 
+                           placeholder="e.g., 'Highly restrictive'"
+                           oninput="updateMatrix()">
+                </div>
+            </div>
+            <div class="axis-center-label">
+                <span id="xAxisCenterLabel"></span> ↔ | <span id="yAxisCenterLabel"></span> ↕
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>The Four Futures</h3>
+            <p class="hint-text">Give each quadrant a memorable name. Describe what life looks like in that world. Then identify what you'd need to do if that future arrived.</p>
+            
+            <div class="matrix-container">
+                <div class="axis-y">
+                    <span id="yAxisHighLabel">High Y</span>
+                    <span id="yAxisLowLabel">Low Y</span>
+                </div>
+                <div class="matrix-grid">
+                    <!-- Quadrant 2: Low X, High Y -->
+                    <div class="quadrant">
+                        <span class="quadrant-label">Q2</span>
+                        <input type="text" 
+                               id="q2Title" 
+                               class="quadrant-title-input" 
+                               placeholder="Name this future...">
+                        <div class="quadrant-hint" id="q2Hint">Low X + High Y</div>
+                        <textarea id="q2Description" 
+                                  class="quadrant-content" 
+                                  placeholder="Describe this world. What happens when these two factors combine? What does daily life look like here?"></textarea>
+                        <textarea id="q2Implications" 
+                                  class="implications" 
+                                  placeholder="Strategic implications: What would we need to do to thrive (or survive) in this future? What opportunities arise? What constraints?"></textarea>
+                    </div>
+                    
+                    <!-- Quadrant 1: High X, High Y -->
+                    <div class="quadrant">
+                        <span class="quadrant-label">Q1</span>
+                        <input type="text" 
+                               id="q1Title" 
+                               class="quadrant-title-input" 
+                               placeholder="Name this future...">
+                        <div class="quadrant-hint" id="q1Hint">High X + High Y</div>
+                        <textarea id="q1Description" 
+                                  class="quadrant-content" 
+                                  placeholder="Describe this world. What happens when these two factors combine? What does daily life look like here?"></textarea>
+                        <textarea id="q1Implications" 
+                                  class="implications" 
+                                  placeholder="Strategic implications: What would we need to do to thrive (or survive) in this future? What opportunities arise? What constraints?"></textarea>
+                    </div>
+                    
+                    <!-- Quadrant 3: Low X, Low Y -->
+                    <div class="quadrant">
+                        <span class="quadrant-label">Q3</span>
+                        <input type="text" 
+                               id="q3Title" 
+                               class="quadrant-title-input" 
+                               placeholder="Name this future...">
+                        <div class="quadrant-hint" id="q3Hint">Low X + Low Y</div>
+                        <textarea id="q3Description" 
+                                  class="quadrant-content" 
+                                  placeholder="Describe this world. What happens when these two factors combine? What does daily life look like here?"></textarea>
+                        <textarea id="q3Implications" 
+                                  class="implications" 
+                                  placeholder="Strategic implications: What would we need to do to thrive (or survive) in this future? What opportunities arise? What constraints?"></textarea>
+                    </div>
+                    
+                    <!-- Quadrant 4: High X, Low Y -->
+                    <div class="quadrant">
+                        <span class="quadrant-label">Q4</span>
+                        <input type="text" 
+                               id="q4Title" 
+                               class="quadrant-title-input" 
+                               placeholder="Name this future...">
+                        <div class="quadrant-hint" id="q4Hint">High X + Low Y</div>
+                        <textarea id="q4Description" 
+                                  class="quadrant-content" 
+                                  placeholder="Describe this world. What happens when these two factors combine? What does daily life look like here?"></textarea>
+                        <textarea id="q4Implications" 
+                                  class="implications" 
+                                  placeholder="Strategic implications: What would we need to do to thrive (or survive) in this future? What opportunities arise? What constraints?"></textarea>
+                    </div>
+                </div>
+                <div class="axis-x">
+                    <span id="xAxisLowLabel">Low X</span>
+                    <span id="xAxisHighLabel">High X</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Section -->
+        <div class="viz-section">
+            <h3>📊 Futures Landscape</h3>
+            <p class="hint-text">A visual map of your four futures across the uncertainty axes. Use it to identify where current strategies might be vulnerable—print it out, add post-it notes, or workshop it digitally.</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                <button onclick="generateVisualization()">Generate Visualization</button>
+                <button onclick="generateVisualization(true)" class="secondary">Include Implications</button>
+                <button onclick="exportAsSVG()" class="secondary">📤 Export for Miro/Mural</button>
+            </div>
+            
+            <div class="viz-container" id="vizContainer" style="display: none;">
+                <div class="futures-chart">
+                    <canvas id="futuresCanvas" class="futures-canvas"></canvas>
+                </div>
+                <div class="chart-legend" id="chartLegend"></div>
+                <p style="font-size: 13px; color: #666; margin-top: 15px; text-align: center;">
+                    The SVG export creates a file you can import directly into Miro, Mural, FigJam, or similar whiteboard tools for collaborative annotation.
+                </p>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <strong>🧭 Strategic Synthesis Questions:</strong>
+            <ul>
+                <li><strong>Robust strategies:</strong> What actions would serve you well across ALL four futures? Prioritize these.</li>
+                <li><strong>Hedge positions:</strong> What preparations handle the worst cases while preserving upside in better scenarios?</li>
+                <li><strong>Signposts:</strong> What observable events would signal which future is beginning to materialize? (Consider using the <em>Indicators of Change</em> tool for this.)</li>
+                <li><strong>Stress test:</strong> Take your current strategy—how does it perform in each quadrant? Where does it break?</li>
+                <li><strong>Adaptive capacity:</strong> Can you design approaches that pivot gracefully as the future clarifies?</li>
+            </ul>
+        </div>
+
+        <!-- Completion Guidance -->
+        <div class="completion-section">
+            <h3>✅ What to Do with This Analysis</h3>
+            <p>You've now mapped four plausible futures. Here's how to extract maximum value:</p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><strong>Share it:</strong> The real power emerges when multiple stakeholders engage with the same framework. Different people will see different implications.</li>
+                <li><strong>Set signposts:</strong> Identify 2-3 observable indicators for each quadrant that would signal that future is approaching. Monitor them.</li>
+                <li><strong>Revisit quarterly:</strong> As time passes, some quadrants become less plausible. Update your analysis—but don't abandon quadrants too quickly. Surprises happen.</li>
+                <li><strong>Test decisions:</strong> Before major commitments, ask "How does this choice perform in each of our four futures?"</li>
+                <li><strong>Export and discuss:</strong> Use the export function to create a document for team discussion or to share with Claude for deeper analysis.</li>
+            </ul>
+        </div>
+
+        <!-- Related Tools -->
+        <div class="related-tools">
+            <h4>🔗 Companion Tools in the Navigator</h4>
+            <p style="font-size: 14px; color: #4c4c4c; margin-bottom: 10px;">This analysis pairs well with:</p>
+            <ul>
+                <li><strong>Indicators of Change:</strong> Define specific observable signals that reveal which future is materializing</li>
+                <li><strong>Key Assumptions Check:</strong> Surface the hidden assumptions underlying your axis choices and quadrant descriptions</li>
+                <li><strong>Pre-mortem Analysis:</strong> For the most concerning quadrant, imagine it arrived—what went wrong?</li>
+                <li><strong>MCDA Interface:</strong> If you need to choose between strategies, evaluate how each performs across futures</li>
+                <li><strong>Geometric Mean Aggregator:</strong> If multiple stakeholders have different views on axis positions or likelihoods</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <button onclick="saveAnalysis()">💾 Save Analysis</button>
+            <button onclick="exportAnalysis()" class="secondary">📄 Export Report</button>
+            <button onclick="clearAll()" class="danger">🔄 Clear All</button>
+        </div>
+    </div>
+
+    <script>
+        // Quadrant colors for visualization - light pastel backgrounds
+        const quadrantColors = {
+            q1: { fill: 'rgba(34, 139, 34, 0.15)', stroke: '#228B22', name: 'Q1' },
+            q2: { fill: 'rgba(70, 130, 180, 0.15)', stroke: '#4682B4', name: 'Q2' },
+            q3: { fill: 'rgba(205, 92, 92, 0.15)', stroke: '#CD5C5C', name: 'Q3' },
+            q4: { fill: 'rgba(218, 165, 32, 0.15)', stroke: '#DAA520', name: 'Q4' }
+        };
+
+        function updateMatrix() {
+            const xAxisName = document.getElementById('xAxisName').value || 'X Axis';
+            const xLow = document.getElementById('xAxisLow').value || 'Low X';
+            const xHigh = document.getElementById('xAxisHigh').value || 'High X';
+            
+            const yAxisName = document.getElementById('yAxisName').value || 'Y Axis';
+            const yLow = document.getElementById('yAxisLow').value || 'Low Y';
+            const yHigh = document.getElementById('yAxisHigh').value || 'High Y';
+            
+            // Update axis labels
+            document.getElementById('xAxisLowLabel').textContent = xLow;
+            document.getElementById('xAxisHighLabel').textContent = xHigh;
+            document.getElementById('yAxisLowLabel').textContent = yLow;
+            document.getElementById('yAxisHighLabel').textContent = yHigh;
+            
+            // Update center labels
+            document.getElementById('xAxisCenterLabel').textContent = xAxisName || 'X Axis';
+            document.getElementById('yAxisCenterLabel').textContent = yAxisName || 'Y Axis';
+            
+            // Update quadrant hints with actual values
+            document.getElementById('q1Hint').textContent = `${xHigh} + ${yHigh}`;
+            document.getElementById('q2Hint').textContent = `${xLow} + ${yHigh}`;
+            document.getElementById('q3Hint').textContent = `${xLow} + ${yLow}`;
+            document.getElementById('q4Hint').textContent = `${xHigh} + ${yLow}`;
+        }
+
+        function generateVisualization(showImplications = false) {
+            const canvas = document.getElementById('futuresCanvas');
+            const ctx = canvas.getContext('2d');
+            const container = document.getElementById('vizContainer');
+            
+            // Show container first so we can get proper dimensions
+            container.style.display = 'block';
+            
+            // Set canvas size - larger if showing implications
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = Math.max(600, Math.min(800, rect.width || 700));
+            canvas.height = showImplications ? 600 : 450;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Get axis values
+            const xAxisName = document.getElementById('xAxisName').value || 'X Axis';
+            const xLow = document.getElementById('xAxisLow').value || 'Low X';
+            const xHigh = document.getElementById('xAxisHigh').value || 'High X';
+            const yAxisName = document.getElementById('yAxisName').value || 'Y Axis';
+            const yLow = document.getElementById('yAxisLow').value || 'Low Y';
+            const yHigh = document.getElementById('yAxisHigh').value || 'High Y';
+            
+            // Get quadrant titles and implications
+            const q1Title = document.getElementById('q1Title').value || 'Future Q1';
+            const q2Title = document.getElementById('q2Title').value || 'Future Q2';
+            const q3Title = document.getElementById('q3Title').value || 'Future Q3';
+            const q4Title = document.getElementById('q4Title').value || 'Future Q4';
+            
+            // Get implications if needed
+            const q1Impl = showImplications ? getFirstLine(document.getElementById('q1Implications').value) : '';
+            const q2Impl = showImplications ? getFirstLine(document.getElementById('q2Implications').value) : '';
+            const q3Impl = showImplications ? getFirstLine(document.getElementById('q3Implications').value) : '';
+            const q4Impl = showImplications ? getFirstLine(document.getElementById('q4Implications').value) : '';
+            
+            const centerX = padding + chartWidth / 2;
+            const centerY = padding + chartHeight / 2;
+            
+            // Draw quadrant backgrounds
+            // Q2: Top-left
+            ctx.fillStyle = quadrantColors.q2.fill;
+            ctx.fillRect(padding, padding, chartWidth / 2, chartHeight / 2);
+            ctx.strokeStyle = quadrantColors.q2.stroke;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(padding, padding, chartWidth / 2, chartHeight / 2);
+            
+            // Q1: Top-right
+            ctx.fillStyle = quadrantColors.q1.fill;
+            ctx.fillRect(centerX, padding, chartWidth / 2, chartHeight / 2);
+            ctx.strokeStyle = quadrantColors.q1.stroke;
+            ctx.strokeRect(centerX, padding, chartWidth / 2, chartHeight / 2);
+            
+            // Q3: Bottom-left
+            ctx.fillStyle = quadrantColors.q3.fill;
+            ctx.fillRect(padding, centerY, chartWidth / 2, chartHeight / 2);
+            ctx.strokeStyle = quadrantColors.q3.stroke;
+            ctx.strokeRect(padding, centerY, chartWidth / 2, chartHeight / 2);
+            
+            // Q4: Bottom-right
+            ctx.fillStyle = quadrantColors.q4.fill;
+            ctx.fillRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
+            ctx.strokeStyle = quadrantColors.q4.stroke;
+            ctx.strokeRect(centerX, centerY, chartWidth / 2, chartHeight / 2);
+            
+            // Draw axis lines
+            ctx.strokeStyle = '#2c5282';
+            ctx.lineWidth = 2;
+            
+            // Horizontal axis
+            ctx.beginPath();
+            ctx.moveTo(padding - 10, centerY);
+            ctx.lineTo(width - padding + 10, centerY);
+            ctx.stroke();
+            
+            // Arrow head right
+            ctx.beginPath();
+            ctx.moveTo(width - padding + 10, centerY);
+            ctx.lineTo(width - padding, centerY - 6);
+            ctx.lineTo(width - padding, centerY + 6);
+            ctx.closePath();
+            ctx.fillStyle = '#2c5282';
+            ctx.fill();
+            
+            // Vertical axis
+            ctx.beginPath();
+            ctx.moveTo(centerX, height - padding + 10);
+            ctx.lineTo(centerX, padding - 10);
+            ctx.stroke();
+            
+            // Arrow head up
+            ctx.beginPath();
+            ctx.moveTo(centerX, padding - 10);
+            ctx.lineTo(centerX - 6, padding);
+            ctx.lineTo(centerX + 6, padding);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw quadrant labels
+            ctx.font = 'bold 14px -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+            
+            // Calculate offset for implications
+            const implOffset = showImplications ? 25 : 0;
+            
+            // Q2 label
+            ctx.fillStyle = quadrantColors.q2.stroke;
+            const q2CenterX = padding + chartWidth / 4;
+            const q2CenterY = padding + chartHeight / 4 - implOffset;
+            wrapText(ctx, q2Title, q2CenterX, q2CenterY, chartWidth / 2 - 20, 18);
+            if (showImplications && q2Impl) {
+                ctx.font = '13px -apple-system, sans-serif';
+                ctx.fillStyle = '#333';
+                wrapText(ctx, '→ ' + q2Impl, q2CenterX, q2CenterY + 35, chartWidth / 2 - 30, 16);
+                ctx.font = 'bold 14px -apple-system, sans-serif';
+            }
+            
+            // Q1 label
+            ctx.fillStyle = quadrantColors.q1.stroke;
+            const q1CenterX = centerX + chartWidth / 4;
+            const q1CenterY = padding + chartHeight / 4 - implOffset;
+            wrapText(ctx, q1Title, q1CenterX, q1CenterY, chartWidth / 2 - 20, 18);
+            if (showImplications && q1Impl) {
+                ctx.font = '13px -apple-system, sans-serif';
+                ctx.fillStyle = '#333';
+                wrapText(ctx, '→ ' + q1Impl, q1CenterX, q1CenterY + 35, chartWidth / 2 - 30, 16);
+                ctx.font = 'bold 14px -apple-system, sans-serif';
+            }
+            
+            // Q3 label
+            ctx.fillStyle = quadrantColors.q3.stroke;
+            const q3CenterX = padding + chartWidth / 4;
+            const q3CenterY = centerY + chartHeight / 4 - implOffset;
+            wrapText(ctx, q3Title, q3CenterX, q3CenterY, chartWidth / 2 - 20, 18);
+            if (showImplications && q3Impl) {
+                ctx.font = '13px -apple-system, sans-serif';
+                ctx.fillStyle = '#333';
+                wrapText(ctx, '→ ' + q3Impl, q3CenterX, q3CenterY + 35, chartWidth / 2 - 30, 16);
+                ctx.font = 'bold 14px -apple-system, sans-serif';
+            }
+            
+            // Q4 label
+            ctx.fillStyle = quadrantColors.q4.stroke;
+            const q4CenterX = centerX + chartWidth / 4;
+            const q4CenterY = centerY + chartHeight / 4 - implOffset;
+            wrapText(ctx, q4Title, q4CenterX, q4CenterY, chartWidth / 2 - 20, 18);
+            if (showImplications && q4Impl) {
+                ctx.font = '13px -apple-system, sans-serif';
+                ctx.fillStyle = '#333';
+                wrapText(ctx, '→ ' + q4Impl, q4CenterX, q4CenterY + 35, chartWidth / 2 - 30, 16);
+                ctx.font = 'bold 14px -apple-system, sans-serif';
+            }
+            
+            // Draw axis labels
+            ctx.font = 'bold 12px -apple-system, sans-serif';
+            ctx.fillStyle = '#333';
+            
+            // X-axis labels
+            ctx.textAlign = 'left';
+            ctx.fillText(truncateText(xLow, 20), padding, height - padding + 25);
+            ctx.textAlign = 'right';
+            ctx.fillText(truncateText(xHigh, 20), width - padding, height - padding + 25);
+            ctx.textAlign = 'center';
+            ctx.fillText(truncateText(xAxisName, 30), centerX, height - padding + 40);
+            
+            // Y-axis labels
+            ctx.save();
+            ctx.translate(padding - 35, centerY);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText(truncateText(yAxisName, 30), 0, 0);
+            ctx.restore();
+            
+            ctx.textAlign = 'right';
+            ctx.fillText(truncateText(yHigh, 15), padding - 10, padding + 15);
+            ctx.fillText(truncateText(yLow, 15), padding - 10, height - padding - 5);
+            
+            // Update legend
+            updateLegend(q1Title, q2Title, q3Title, q4Title);
+        }
+        
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    lines.push(line.trim());
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line.trim());
+            
+            // Limit to 2 lines
+            if (lines.length > 2) {
+                lines = lines.slice(0, 2);
+                lines[1] = lines[1].substring(0, lines[1].length - 3) + '...';
+            }
+            
+            const startY = y - ((lines.length - 1) * lineHeight) / 2;
+            lines.forEach((line, i) => {
+                ctx.fillText(line, x, startY + i * lineHeight);
+            });
+        }
+        
+        function truncateText(text, maxLength) {
+            if (text.length > maxLength) {
+                return text.substring(0, maxLength - 3) + '...';
+            }
+            return text;
+        }
+        
+        function getFirstLine(text) {
+            if (!text) return '';
+            // Get first sentence or first 60 chars
+            const firstSentence = text.split(/[.!?]/)[0];
+            if (firstSentence.length > 60) {
+                return firstSentence.substring(0, 57) + '...';
+            }
+            return firstSentence;
+        }
+        
+        function exportAsSVG() {
+            // Get all data
+            const xAxisName = document.getElementById('xAxisName').value || 'X Axis';
+            const xLow = document.getElementById('xAxisLow').value || 'Low X';
+            const xHigh = document.getElementById('xAxisHigh').value || 'High X';
+            const yAxisName = document.getElementById('yAxisName').value || 'Y Axis';
+            const yLow = document.getElementById('yAxisLow').value || 'Low Y';
+            const yHigh = document.getElementById('yAxisHigh').value || 'High Y';
+            
+            const q1Title = document.getElementById('q1Title').value || 'Future Q1';
+            const q2Title = document.getElementById('q2Title').value || 'Future Q2';
+            const q3Title = document.getElementById('q3Title').value || 'Future Q3';
+            const q4Title = document.getElementById('q4Title').value || 'Future Q4';
+            
+            const q1Impl = getFirstLine(document.getElementById('q1Implications').value);
+            const q2Impl = getFirstLine(document.getElementById('q2Implications').value);
+            const q3Impl = getFirstLine(document.getElementById('q3Implications').value);
+            const q4Impl = getFirstLine(document.getElementById('q4Implications').value);
+            
+            const width = 800;
+            const height = 600;
+            const padding = 80;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+            const centerX = padding + chartWidth / 2;
+            const centerY = padding + chartHeight / 2;
+            
+            const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  <style>
+    .title { font: bold 14px -apple-system, BlinkMacSystemFont, sans-serif; }
+    .impl { font: 13px -apple-system, BlinkMacSystemFont, sans-serif; fill: #333; }
+    .axis-label { font: bold 12px -apple-system, BlinkMacSystemFont, sans-serif; fill: #333; }
+    .axis-name { font: bold 13px -apple-system, BlinkMacSystemFont, sans-serif; fill: #2c5282; }
+  </style>
+  
+  <!-- Q2: Top-left (blue) -->
+  <rect x="${padding}" y="${padding}" width="${chartWidth/2}" height="${chartHeight/2}" fill="#eef6fc" stroke="#4682B4" stroke-width="2"/>
+  <text x="${padding + chartWidth/4}" y="${padding + chartHeight/4 - 10}" text-anchor="middle" class="title" fill="#4682B4">${escapeXML(q2Title)}</text>
+  ${q2Impl ? `<text x="${padding + chartWidth/4}" y="${padding + chartHeight/4 + 15}" text-anchor="middle" class="impl">→ ${escapeXML(q2Impl)}</text>` : ''}
+  
+  <!-- Q1: Top-right (green) -->
+  <rect x="${centerX}" y="${padding}" width="${chartWidth/2}" height="${chartHeight/2}" fill="#eef8ee" stroke="#228B22" stroke-width="2"/>
+  <text x="${centerX + chartWidth/4}" y="${padding + chartHeight/4 - 10}" text-anchor="middle" class="title" fill="#228B22">${escapeXML(q1Title)}</text>
+  ${q1Impl ? `<text x="${centerX + chartWidth/4}" y="${padding + chartHeight/4 + 15}" text-anchor="middle" class="impl">→ ${escapeXML(q1Impl)}</text>` : ''}
+  
+  <!-- Q3: Bottom-left (pink) -->
+  <rect x="${padding}" y="${centerY}" width="${chartWidth/2}" height="${chartHeight/2}" fill="#fcf0f3" stroke="#CD5C5C" stroke-width="2"/>
+  <text x="${padding + chartWidth/4}" y="${centerY + chartHeight/4 - 10}" text-anchor="middle" class="title" fill="#CD5C5C">${escapeXML(q3Title)}</text>
+  ${q3Impl ? `<text x="${padding + chartWidth/4}" y="${centerY + chartHeight/4 + 15}" text-anchor="middle" class="impl">→ ${escapeXML(q3Impl)}</text>` : ''}
+  
+  <!-- Q4: Bottom-right (orange) -->
+  <rect x="${centerX}" y="${centerY}" width="${chartWidth/2}" height="${chartHeight/2}" fill="#fdf8ef" stroke="#DAA520" stroke-width="2"/>
+  <text x="${centerX + chartWidth/4}" y="${centerY + chartHeight/4 - 10}" text-anchor="middle" class="title" fill="#DAA520">${escapeXML(q4Title)}</text>
+  ${q4Impl ? `<text x="${centerX + chartWidth/4}" y="${centerY + chartHeight/4 + 15}" text-anchor="middle" class="impl">→ ${escapeXML(q4Impl)}</text>` : ''}
+  
+  <!-- Axes -->
+  <line x1="${padding - 10}" y1="${centerY}" x2="${width - padding + 10}" y2="${centerY}" stroke="#2c5282" stroke-width="2"/>
+  <line x1="${centerX}" y1="${height - padding + 10}" x2="${centerX}" y2="${padding - 10}" stroke="#2c5282" stroke-width="2"/>
+  
+  <!-- Arrow heads -->
+  <polygon points="${width - padding + 10},${centerY} ${width - padding},${centerY - 6} ${width - padding},${centerY + 6}" fill="#2c5282"/>
+  <polygon points="${centerX},${padding - 10} ${centerX - 6},${padding} ${centerX + 6},${padding}" fill="#2c5282"/>
+  
+  <!-- Axis labels -->
+  <text x="${padding}" y="${height - padding + 25}" class="axis-label">${escapeXML(xLow)}</text>
+  <text x="${width - padding}" y="${height - padding + 25}" text-anchor="end" class="axis-label">${escapeXML(xHigh)}</text>
+  <text x="${centerX}" y="${height - padding + 45}" text-anchor="middle" class="axis-name">${escapeXML(xAxisName)}</text>
+  
+  <text x="${padding - 15}" y="${padding + 15}" text-anchor="end" class="axis-label">${escapeXML(yHigh)}</text>
+  <text x="${padding - 15}" y="${height - padding - 5}" text-anchor="end" class="axis-label">${escapeXML(yLow)}</text>
+  <text x="25" y="${centerY}" text-anchor="middle" class="axis-name" transform="rotate(-90, 25, ${centerY})">${escapeXML(yAxisName)}</text>
+</svg>`;
+            
+            // Download the SVG
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'futures_matrix.svg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function escapeXML(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+        }
+        
+        function updateLegend(q1, q2, q3, q4) {
+            const legend = document.getElementById('chartLegend');
+            legend.innerHTML = `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${quadrantColors.q1.fill}; border: 2px solid ${quadrantColors.q1.stroke};"></div>
+                    <span>Q1: ${truncateText(q1 || 'High X + High Y', 25)}</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${quadrantColors.q2.fill}; border: 2px solid ${quadrantColors.q2.stroke};"></div>
+                    <span>Q2: ${truncateText(q2 || 'Low X + High Y', 25)}</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${quadrantColors.q3.fill}; border: 2px solid ${quadrantColors.q3.stroke};"></div>
+                    <span>Q3: ${truncateText(q3 || 'Low X + Low Y', 25)}</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${quadrantColors.q4.fill}; border: 2px solid ${quadrantColors.q4.stroke};"></div>
+                    <span>Q4: ${truncateText(q4 || 'High X + Low Y', 25)}</span>
+                </div>
+            `;
+        }
+
+        function saveAnalysis() {
+            const data = {
+                question: document.getElementById('question').value,
+                axes: {
+                    x: {
+                        name: document.getElementById('xAxisName').value,
+                        low: document.getElementById('xAxisLow').value,
+                        high: document.getElementById('xAxisHigh').value
+                    },
+                    y: {
+                        name: document.getElementById('yAxisName').value,
+                        low: document.getElementById('yAxisLow').value,
+                        high: document.getElementById('yAxisHigh').value
+                    }
+                },
+                quadrants: {
+                    q1: {
+                        title: document.getElementById('q1Title').value,
+                        description: document.getElementById('q1Description').value,
+                        implications: document.getElementById('q1Implications').value
+                    },
+                    q2: {
+                        title: document.getElementById('q2Title').value,
+                        description: document.getElementById('q2Description').value,
+                        implications: document.getElementById('q2Implications').value
+                    },
+                    q3: {
+                        title: document.getElementById('q3Title').value,
+                        description: document.getElementById('q3Description').value,
+                        implications: document.getElementById('q3Implications').value
+                    },
+                    q4: {
+                        title: document.getElementById('q4Title').value,
+                        description: document.getElementById('q4Description').value,
+                        implications: document.getElementById('q4Implications').value
+                    }
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `alternative_futures_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportAnalysis() {
+            let report = 'ALTERNATIVE FUTURES ANALYSIS (2×2)\n';
+            report += '='.repeat(60) + '\n\n';
+            
+            const question = document.getElementById('question').value;
+            if (question) {
+                report += 'QUESTION:\n' + question + '\n\n';
+                report += '='.repeat(60) + '\n\n';
+            }
+            
+            const xName = document.getElementById('xAxisName').value || 'X Axis';
+            const yName = document.getElementById('yAxisName').value || 'Y Axis';
+            
+            report += 'AXES OF UNCERTAINTY:\n\n';
+            report += `X-Axis: ${xName}\n`;
+            report += `  → ${document.getElementById('xAxisLow').value || 'Low'}\n`;
+            report += `  → ${document.getElementById('xAxisHigh').value || 'High'}\n\n`;
+            report += `Y-Axis: ${yName}\n`;
+            report += `  → ${document.getElementById('yAxisLow').value || 'Low'}\n`;
+            report += `  → ${document.getElementById('yAxisHigh').value || 'High'}\n\n`;
+            report += '='.repeat(60) + '\n\n';
+            
+            const quadrants = ['q1', 'q2', 'q3', 'q4'];
+            const xLow = document.getElementById('xAxisLow').value || 'Low X';
+            const xHigh = document.getElementById('xAxisHigh').value || 'High X';
+            const yLow = document.getElementById('yAxisLow').value || 'Low Y';
+            const yHigh = document.getElementById('yAxisHigh').value || 'High Y';
+            
+            const labels = {
+                q1: `${xHigh} + ${yHigh}`,
+                q2: `${xLow} + ${yHigh}`,
+                q3: `${xLow} + ${yLow}`,
+                q4: `${xHigh} + ${yLow}`
+            };
+            
+            quadrants.forEach(q => {
+                const title = document.getElementById(`${q}Title`).value || 'Untitled Future';
+                const desc = document.getElementById(`${q}Description`).value;
+                const impl = document.getElementById(`${q}Implications`).value;
+                
+                report += `QUADRANT ${q.toUpperCase()}: ${labels[q]}\n`;
+                report += `"${title}"\n\n`;
+                if (desc) report += 'Description:\n' + desc + '\n\n';
+                if (impl) report += 'Strategic Implications:\n' + impl + '\n\n';
+                report += '-'.repeat(60) + '\n\n';
+            });
+            
+            report += 'NEXT STEPS:\n';
+            report += '• Identify signposts that indicate which future is materializing\n';
+            report += '• Test current strategies against each quadrant\n';
+            report += '• Design robust approaches that work across multiple futures\n';
+            report += '• Share with stakeholders for additional perspectives\n\n';
+            
+            report += `Generated: ${new Date().toLocaleString()}\n`;
+            report += 'Tool: Alternative Futures Analysis (2×2)\n';
+
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `alternative_futures_report_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadAnalysis(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    document.getElementById('question').value = data.question || '';
+                    
+                    if (data.axes) {
+                        document.getElementById('xAxisName').value = data.axes.x?.name || '';
+                        document.getElementById('xAxisLow').value = data.axes.x?.low || '';
+                        document.getElementById('xAxisHigh').value = data.axes.x?.high || '';
+                        document.getElementById('yAxisName').value = data.axes.y?.name || '';
+                        document.getElementById('yAxisLow').value = data.axes.y?.low || '';
+                        document.getElementById('yAxisHigh').value = data.axes.y?.high || '';
+                    }
+                    
+                    if (data.quadrants) {
+                        ['q1', 'q2', 'q3', 'q4'].forEach(q => {
+                            if (data.quadrants[q]) {
+                                document.getElementById(`${q}Title`).value = data.quadrants[q].title || '';
+                                document.getElementById(`${q}Description`).value = data.quadrants[q].description || '';
+                                document.getElementById(`${q}Implications`).value = data.quadrants[q].implications || '';
+                            }
+                        });
+                    }
+                    
+                    updateMatrix();
+                    
+                    // Auto-generate visualization if data is loaded
+                    if (data.quadrants && (data.quadrants.q1?.title || data.quadrants.q2?.title)) {
+                        setTimeout(generateVisualization, 100);
+                    }
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input for re-loading same file
+            event.target.value = '';
+        }
+
+        function clearAll() {
+            if (confirm('Clear all data? This cannot be undone.')) {
+                document.getElementById('question').value = '';
+                document.getElementById('xAxisName').value = '';
+                document.getElementById('xAxisLow').value = '';
+                document.getElementById('xAxisHigh').value = '';
+                document.getElementById('yAxisName').value = '';
+                document.getElementById('yAxisLow').value = '';
+                document.getElementById('yAxisHigh').value = '';
+                ['q1', 'q2', 'q3', 'q4'].forEach(q => {
+                    document.getElementById(`${q}Title`).value = '';
+                    document.getElementById(`${q}Description`).value = '';
+                    document.getElementById(`${q}Implications`).value = '';
+                });
+                document.getElementById('vizContainer').style.display = 'none';
+                updateMatrix();
+            }
+        }
+
+        // Initialize
+        updateMatrix();
+    </script>
+</body>
+</html>

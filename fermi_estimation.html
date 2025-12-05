@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fermi Estimation Worksheet</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #1a202c;
+            font-size: 15px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        h1 { 
+            color: #2c5282; 
+            margin-bottom: 8px;
+            font-size: 1.8em;
+        }
+        
+        h2 { 
+            color: #2c5282; 
+            margin-bottom: 12px; 
+            font-size: 1.2em; 
+        }
+        
+        h3 { 
+            color: #2c5282; 
+            margin: 0 0 10px 0; 
+            font-size: 1.1em; 
+        }
+        
+        .subtitle { 
+            color: #555; 
+            margin-bottom: 20px;
+            font-size: 1.05em;
+        }
+        
+        /* Load Banner */
+        .load-banner {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .load-banner p {
+            margin: 0;
+            color: #234e52;
+            font-size: 14px;
+        }
+        
+        .load-banner-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* Philosophy/Intro Box */
+        .philosophy-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-left: 4px solid #0d9488;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+        }
+        
+        .philosophy-box p {
+            margin: 0 0 12px 0;
+            color: #234e52;
+            font-size: 14px;
+        }
+        
+        .philosophy-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .philosophy-box strong {
+            color: #0f766e;
+        }
+        
+        /* Collapsible details */
+        details {
+            margin-top: 15px;
+        }
+        
+        details summary {
+            cursor: pointer;
+            color: #0d9488;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        
+        details summary:hover {
+            color: #0f766e;
+        }
+        
+        /* Example box inside details */
+        .example-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+            border: 1px solid #5eead4;
+            padding: 18px;
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+        
+        .example-box h4 {
+            color: #0f766e;
+            margin: 0 0 12px 0;
+            font-size: 14px;
+        }
+        
+        .example-box p, .example-box li {
+            margin: 0 0 8px 0;
+            color: #115e59;
+            font-size: 14px;
+        }
+        
+        .example-box ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        /* Principles Box */
+        .principles-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .principles-box h4 {
+            color: #0d9488;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+        
+        .principles-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #234e52;
+        }
+        
+        .principles-box li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .principles-box li:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Section styling */
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .section-help {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+        
+        /* Inputs */
+        textarea, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #0d9488;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* Decomposition Tree */
+        .decomposition-tree {
+            margin-top: 15px;
+        }
+        
+        .component {
+            margin-left: 25px;
+            padding: 18px;
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        
+        .component:hover {
+            border-color: #0d9488;
+        }
+        
+        .component.root {
+            margin-left: 0;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+            border: 2px solid #0d9488;
+        }
+        
+        .component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .component-name {
+            flex: 1;
+            font-weight: 600;
+            padding: 8px 12px;
+            border: 2px solid #0d9488;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .component-formula {
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 14px;
+            color: #334155;
+            border-left: 3px solid #0d9488;
+        }
+        
+        /* Method selector */
+        .method-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .method-selector span {
+            font-size: 13px;
+            color: #555;
+        }
+        
+        .method-btn {
+            padding: 6px 12px;
+            background: #e5e7eb;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .method-btn:hover {
+            background: #d1d5db;
+        }
+        
+        .method-btn.active {
+            background: #0d9488;
+            color: white;
+            border-color: #0d9488;
+        }
+        
+        /* Estimate inputs */
+        .estimate-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        @media (max-width: 600px) {
+            .estimate-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .estimate-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        
+        .estimate-field input {
+            width: 100%;
+        }
+        
+        .unit-field {
+            margin-top: 8px;
+        }
+        
+        .unit-field input {
+            width: 180px;
+        }
+        
+        /* Calculated value display */
+        .calculated-value {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 2px solid #0d9488;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .main-estimate {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0f766e;
+        }
+        
+        .estimate-range {
+            font-size: 14px;
+            color: #555;
+            margin-top: 6px;
+        }
+        
+        /* Uncertainty visualization */
+        .uncertainty-bar {
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .uncertainty-range {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, #5eead4 0%, #0d9488 50%, #5eead4 100%);
+            border-radius: 6px;
+        }
+        
+        .uncertainty-marker {
+            position: absolute;
+            top: -2px;
+            height: 16px;
+            width: 3px;
+            background: #0f766e;
+            border-radius: 2px;
+            transform: translateX(-50%);
+        }
+        
+        /* Subcomponents area */
+        .subcomponents {
+            margin-top: 8px;
+            padding-left: 5px;
+            border-left: 2px solid #e5e7eb;
+        }
+        
+        .subcomponents-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #d1d5db;
+        }
+        
+        .subcomponents-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .add-btn-small {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .add-btn-small:hover {
+            background: #4b5563;
+        }
+        
+        .leaf-actions {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #e5e7eb;
+        }
+        
+        .add-btn-inline {
+            background: transparent;
+            color: #6b7280;
+            border: 1px dashed #d1d5db;
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-btn-inline:hover {
+            background: #f8fafc;
+            border-color: #0d9488;
+            color: #0d9488;
+        }
+        
+        /* Sanity Checks Section */
+        .sanity-section {
+            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+            border: 1px solid #fde047;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .sanity-section h3 {
+            color: #854d0e;
+            margin-bottom: 10px;
+        }
+        
+        .sanity-help {
+            font-size: 14px;
+            color: #713f12;
+            margin-bottom: 15px;
+        }
+        
+        .sanity-check {
+            background: white;
+            border: 1px solid #fde047;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .sanity-check-row {
+            display: grid;
+            grid-template-columns: 1fr 150px auto;
+            gap: 10px;
+            align-items: start;
+        }
+        
+        @media (max-width: 700px) {
+            .sanity-check-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .sanity-check textarea {
+            min-height: 50px;
+        }
+        
+        .sanity-verdict {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .verdict-btn {
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+        }
+        
+        .verdict-btn.pass { border-color: #10b981; }
+        .verdict-btn.pass.active { background: #10b981; color: white; }
+        .verdict-btn.warning { border-color: #f59e0b; }
+        .verdict-btn.warning.active { background: #f59e0b; color: white; }
+        .verdict-btn.fail { border-color: #ef4444; }
+        .verdict-btn.fail.active { background: #ef4444; color: white; }
+        
+        .no-checks {
+            color: #92400e;
+            font-size: 14px;
+            padding: 15px;
+            text-align: center;
+            background: #fffbeb;
+            border-radius: 6px;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 10px 18px;
+            background: #2c5282;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #1a365d;
+        }
+        
+        button.secondary {
+            background: #6b7280;
+        }
+        
+        button.secondary:hover {
+            background: #4b5563;
+        }
+        
+        button.primary-action {
+            background: #0d9488;
+        }
+        
+        button.primary-action:hover {
+            background: #0f766e;
+        }
+        
+        button.add-btn {
+            background: #6b7280;
+            font-size: 13px;
+            padding: 8px 14px;
+        }
+        
+        button.add-btn:hover {
+            background: #4b5563;
+        }
+        
+        button.remove-btn {
+            background: #6b7280;
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+        
+        button.remove-btn:hover {
+            background: #4b5563;
+        }
+        
+        button.view-btn {
+            background: #0d9488;
+            padding: 12px 24px;
+            font-size: 15px;
+        }
+        
+        button.view-btn:hover {
+            background: #0f766e;
+        }
+        
+        /* What To Do Next Section */
+        .next-steps-box {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+        
+        .next-steps-box h4 {
+            color: #0d9488;
+            margin-bottom: 12px;
+        }
+        
+        .next-steps-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #234e52;
+        }
+        
+        .next-steps-box li {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .next-steps-box li strong {
+            color: #0f766e;
+        }
+        
+        /* Resources */
+        .resources-box {
+            margin-top: 20px;
+        }
+        
+        .resources-content {
+            margin-top: 12px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .resources-content ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .resources-content li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .resources-content a {
+            color: #0d9488;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .toolbar-help {
+            width: 100%;
+            font-size: 12px;
+            color: #718096;
+            margin-top: 8px;
+        }
+        
+        /* Analysis View */
+        .analysis-view {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border: 2px solid #0d9488;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+        }
+        
+        .analysis-view.hidden {
+            display: none;
+        }
+        
+        .analysis-view h3 {
+            color: #0f766e;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #99f6e4;
+        }
+        
+        .render-question {
+            background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .render-question-label {
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #0d9488;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .render-question-text {
+            font-size: 1.1em;
+            color: #115e59;
+            font-weight: 500;
+        }
+        
+        .render-result {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+        }
+        
+        .render-result-label {
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .render-result-value {
+            font-size: 2.2em;
+            font-weight: bold;
+        }
+        
+        .render-result-range {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .render-section {
+            margin-top: 25px;
+        }
+        
+        .render-section-title {
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .render-component {
+            background: #f8fafc;
+            border-left: 3px solid #0d9488;
+            border-radius: 0 6px 6px 0;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .render-component-name {
+            font-weight: 500;
+            color: #334155;
+        }
+        
+        .render-component-value {
+            font-family: 'SF Mono', Monaco, monospace;
+            color: #0d9488;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .render-component-range {
+            font-size: 12px;
+            color: #64748b;
+            width: 100%;
+        }
+        
+        .render-sanity-item {
+            background: #fffbeb;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .render-sanity-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .render-sanity-pass { border-left: 3px solid #10b981; }
+        .render-sanity-pass .render-sanity-icon { color: #10b981; }
+        .render-sanity-warning { border-left: 3px solid #f59e0b; }
+        .render-sanity-warning .render-sanity-icon { color: #f59e0b; }
+        .render-sanity-fail { border-left: 3px solid #ef4444; }
+        .render-sanity-fail .render-sanity-icon { color: #ef4444; }
+        
+        .render-sanity-content {
+            flex: 1;
+        }
+        
+        .render-sanity-text {
+            color: #334155;
+        }
+        
+        .render-sanity-ref {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
+        /* Utility */
+        .hidden { display: none !important; }
+        .mt-15 { margin-top: 15px; }
+        
+        /* Prompt template */
+        .prompt-template {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 12px;
+        }
+        
+        .prompt-template p {
+            font-size: 13px;
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+        
+        .prompt-template pre {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 13px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #334155;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fermi Estimation Worksheet</h1>
+        <p class="subtitle">Break unknowable quantities into estimable pieces</p>
+        
+        <!-- Load Banner -->
+        <div class="load-banner">
+            <p>Have a previous estimation? Load it to continue working.</p>
+            <div class="load-banner-buttons">
+                <button class="secondary" onclick="document.getElementById('loadInput').click()">📂 Load Previous (.json)</button>
+                <button class="secondary" onclick="loadExample()">📋 Load Example</button>
+                <input type="file" id="loadInput" accept=".json" style="display: none;" onchange="loadEstimation(event)">
+            </div>
+        </div>
+        
+        <!-- Philosophy Box -->
+        <div class="philosophy-box">
+            <p><strong>The method:</strong> Decompose what you can't measure into what you can estimate. Multiply rough numbers, arrive at rough truth.</p>
+            
+            <p><strong>The art:</strong> Not all decompositions are equal. Carve reality at its joints — find components that are genuinely independent, that isolate the variables which actually drive the answer. A skilled decomposition reveals structure; a naive one obscures it.</p>
+            
+            <p><strong>The discipline:</strong> Each estimate carries uncertainty. Before finalizing, ask: <em>What would make this off by 10x?</em> If you can imagine it, widen your range.</p>
+            
+            <details>
+                <summary>📖 Worked Example: How many dentists in San Francisco?</summary>
+                <div class="example-box">
+                    <p><strong>Decomposition:</strong> Population (~880K) × visits per person per year (~1.5) ÷ visits a dentist handles per year (~2,000) = ~660 dentists.</p>
+                    <p><strong>Reality check:</strong> ~1,200 licensed dentists in SF. Within 2x — reasonable for back-of-envelope. Discrepancy explained by part-timers, specialists, commuter patients.</p>
+                    <p><strong>The joint we carved:</strong> Dentist productivity (1,500–2,500 visits/year) creates 60% variance alone. That's the variable that matters.</p>
+                </div>
+            </details>
+        </div>
+        
+        <!-- Principles Box -->
+        <div class="principles-box">
+            <h4>🧭 Principles for Good Fermi Estimates</h4>
+            <ul>
+                <li><strong>Decompose until you can estimate:</strong> Keep breaking down until each component is something you can reasonably bound. "People per household" is estimable; "economic activity" is not.</li>
+                <li><strong>Prefer multiplicative decompositions:</strong> Multiplying several rough estimates tends to be more robust than long addition chains. Errors often partially cancel.</li>
+                <li><strong>Anchor on known quantities:</strong> Start with things you're confident about (populations, physical constraints, time units) and derive unknowns from them.</li>
+                <li><strong>Use ranges, not points:</strong> A single number hides your uncertainty. Min/max bounds force you to think about what could vary.</li>
+                <li><strong>Sanity check against reference classes:</strong> Does your answer make sense compared to similar things you know? If estimating a company's revenue, compare to similar companies.</li>
+                <li><strong>Identify the crux:</strong> Which input, if wrong by 3x, would most change your answer? That's where additional research has highest value.</li>
+            </ul>
+        </div>
+        
+        <!-- Main Question Section -->
+        <div class="section">
+            <h2>Define Your Question</h2>
+            <p class="section-help">What quantity do you want to estimate? Be specific about units, time frame, and scope.</p>
+            <textarea id="mainQuestion" rows="2" placeholder="e.g., 'How many committed advocates would we need to shift public opinion on factory farming in the US?' or 'What's the potential reach of a grassroots animal welfare campaign in a major city?'"></textarea>
+            <div class="mt-15">
+                <button class="primary-action" onclick="startDecomposition()">Start Decomposition</button>
+            </div>
+        </div>
+        
+        <!-- Decomposition Section -->
+        <div class="section hidden" id="decompositionSection">
+            <h2>Decomposition Tree</h2>
+            <p class="section-help">Break your question into smaller, estimable components. Add subcomponents until each leaf is something you can reasonably estimate.</p>
+            <div id="decompositionTree" class="decomposition-tree"></div>
+        </div>
+        
+        <!-- Sanity Checks Section -->
+        <div class="sanity-section hidden" id="sanitySection">
+            <h3>🔍 Sanity Checks</h3>
+            <p class="sanity-help">Compare your estimate against independent reference points. If multiple checks fail, your decomposition may have a structural error.</p>
+            <div id="sanityChecks"></div>
+            <button class="add-btn mt-15" onclick="addSanityCheck()">+ Add Sanity Check</button>
+        </div>
+        
+        <!-- View Analysis Button -->
+        <div class="mt-15 hidden" id="viewButtonContainer" style="text-align: center;">
+            <button class="view-btn" onclick="showAnalysis()">📊 View Your Estimation</button>
+        </div>
+        
+        <!-- Analysis View (rendered summary) -->
+        <div class="analysis-view hidden" id="analysisView">
+            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px;">
+                <h3>📊 Fermi Estimation Summary</h3>
+                <button class="secondary" onclick="hideAnalysis()">Close</button>
+            </div>
+            <div id="analysisContent"></div>
+        </div>
+        
+        <!-- What To Do Next -->
+        <div class="next-steps-box hidden" id="nextStepsSection">
+            <h4>📋 What To Do With This Estimation</h4>
+            <ul>
+                <li><strong>Identify the crux:</strong> Which component has the widest uncertainty range? That's where more research would most improve your estimate.</li>
+                <li><strong>Test with base rates:</strong> Use <em>Reference Class Forecasting</em> to compare your estimate against historical data for similar quantities.</li>
+                <li><strong>Verify your inputs:</strong> For key assumptions, use <em>Quality of Information Check</em> to assess whether your sources are reliable.</li>
+                <li><strong>Stress test scenarios:</strong> Use <em>Monte Carlo Simulation</em> to see how your uncertainty ranges propagate to the final answer.</li>
+                <li><strong>Get external review:</strong> Use the "Copy for Claude" button to generate a prompt for rigorous critique — or copy the template below.</li>
+            </ul>
+            
+            <details>
+                <summary>📝 Claude Review Prompt Template</summary>
+                <div class="prompt-template">
+                    <p>Copy this template and paste your estimation details into it:</p>
+                    <pre id="claudeTemplate">I've done a Fermi estimation and need rigorous critique. Challenge my reasoning — I want accuracy, not reassurance.
+
+QUESTION: [Your question]
+
+RESULT: [Your estimate] (range: [min] – [max])
+
+DECOMPOSITION:
+• [Component 1]: [estimate] [unit]
+• [Component 2]: [estimate] [unit]
+• [Component 3]: [estimate] [unit]
+(etc.)
+
+SANITY CHECKS:
+• [Check 1]: [pass/warning/fail]
+• [Check 2]: [pass/warning/fail]
+
+Please assess:
+1. Is my decomposition structure sound, or have I framed it in a way that introduces systematic error?
+2. Which inputs are most likely wrong, and by how much?
+3. Where is my uncertainty range too narrow?
+4. What sanity checks should I have done but didn't?
+5. What's your adjusted estimate?
+
+Be direct. I need to know where I'm wrong.</pre>
+                    <button class="secondary" onclick="copyTemplate()" style="margin-top: 10px;">Copy Template</button>
+                </div>
+            </details>
+            
+            <div class="resources-box">
+                <details>
+                    <summary>📚 Further Reading</summary>
+                    <div class="resources-content">
+                        <ul>
+                            <li><a href="https://www.lesswrong.com/posts/d5NyJ2Lf6N22AD9PB/where-to-draw-the-boundary" target="_blank">Where to Draw the Boundary?</a> — Yudkowsky on carving reality at the joints</li>
+                            <li><a href="https://www.lesswrong.com/posts/PsEppdvgRisz5xAHG/fermi-estimates" target="_blank">Fermi Estimates</a> — LessWrong introduction to the method</li>
+                            <li><a href="https://www.cold-takes.com/fermi-estimates/" target="_blank">Fermi Estimates for the Real World</a> — Holden Karnofsky on practical applications</li>
+                            <li><a href="https://what-if.xkcd.com/" target="_blank">What If?</a> — Randall Munroe's Fermi-style explorations</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+        
+        <!-- Toolbar -->
+        <div class="toolbar hidden" id="toolbar">
+            <button class="secondary" onclick="saveEstimation()">💾 Save (.json)</button>
+            <button class="secondary" onclick="exportText()">📄 Export (.txt)</button>
+            <button class="secondary" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+            <button class="secondary" onclick="copyForClaude()">🤖 Copy for Claude</button>
+            <button class="secondary" onclick="clearAll()">🗑️ Clear All</button>
+            <p class="toolbar-help">
+                <strong>Save:</strong> JSON file to reload later. <strong>Export:</strong> Plain text summary. <strong>Copy for Claude:</strong> Formatted prompt for AI review.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== DATA STRUCTURES ====================
+        
+        let componentIdCounter = 0;
+        let components = {};
+        let rootId = null;
+        let sanityChecks = [];
+        let sanityIdCounter = 0;
+        
+        // ==================== UTILITY FUNCTIONS ====================
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+        
+        function formatNumber(num) {
+            if (num === null || num === undefined || isNaN(num)) return '?';
+            
+            const absNum = Math.abs(num);
+            
+            // Very large or very small: scientific notation
+            if (absNum >= 1e7 || (absNum < 0.001 && absNum !== 0)) {
+                return num.toExponential(2);
+            }
+            
+            // Large numbers: use K, M, B suffixes
+            if (absNum >= 1e6) {
+                return (num / 1e6).toFixed(1) + 'M';
+            }
+            if (absNum >= 1e3) {
+                return (num / 1e3).toFixed(1) + 'K';
+            }
+            
+            // Normal range
+            if (Number.isInteger(num)) {
+                return num.toLocaleString();
+            }
+            return num.toLocaleString(undefined, { maximumFractionDigits: 3 });
+        }
+        
+        // ==================== DECOMPOSITION LOGIC ====================
+        
+        function startDecomposition() {
+            const question = document.getElementById('mainQuestion').value.trim();
+            if (!question) {
+                alert('Please enter a question to estimate.');
+                return;
+            }
+            
+            // Create root component if not exists
+            if (!rootId) {
+                rootId = 'comp_' + componentIdCounter++;
+                components[rootId] = {
+                    id: rootId,
+                    name: question,
+                    method: 'multiply',
+                    subcomponents: [],
+                    estimate: null,
+                    min: null,
+                    max: null,
+                    unit: '',
+                    parent: null
+                };
+            } else {
+                components[rootId].name = question;
+            }
+            
+            // Show sections
+            document.getElementById('decompositionSection').classList.remove('hidden');
+            document.getElementById('sanitySection').classList.remove('hidden');
+            document.getElementById('nextStepsSection').classList.remove('hidden');
+            document.getElementById('toolbar').classList.remove('hidden');
+            
+            renderTree();
+            checkViewButton();
+        }
+        
+        function renderTree() {
+            const container = document.getElementById('decompositionTree');
+            container.innerHTML = '';
+            
+            if (rootId && components[rootId]) {
+                container.appendChild(renderComponent(components[rootId], true));
+            }
+        }
+        
+        function renderComponent(comp, isRoot = false) {
+            const div = document.createElement('div');
+            div.className = `component ${isRoot ? 'root' : ''}`;
+            div.id = `component-${comp.id}`;
+            
+            const hasSubcomponents = comp.subcomponents && comp.subcomponents.length > 0;
+            const value = calculateComponentValue(comp);
+            
+            let html = `
+                <div class="component-header">
+                    <input type="text" class="component-name" value="${escapeHtml(comp.name)}" 
+                           onchange="updateComponent('${comp.id}', 'name', this.value)"
+                           placeholder="Name this component...">
+                    ${!isRoot ? `<button class="remove-btn" onclick="removeComponent('${comp.id}')">Remove</button>` : ''}
+                </div>
+            `;
+            
+            if (hasSubcomponents) {
+                // Show method selector and formula
+                html += `
+                    <div class="method-selector">
+                        <span>Combine by:</span>
+                        <button class="method-btn ${comp.method === 'multiply' ? 'active' : ''}" 
+                                onclick="updateComponent('${comp.id}', 'method', 'multiply')">Multiply (×)</button>
+                        <button class="method-btn ${comp.method === 'add' ? 'active' : ''}" 
+                                onclick="updateComponent('${comp.id}', 'method', 'add')">Add (+)</button>
+                        <button class="method-btn ${comp.method === 'divide' ? 'active' : ''}" 
+                                onclick="updateComponent('${comp.id}', 'method', 'divide')">Divide (÷)</button>
+                    </div>
+                    <div class="component-formula">${generateFormula(comp)}</div>
+                `;
+            } else {
+                // Show estimate inputs for leaf nodes
+                html += `
+                    <div class="estimate-grid">
+                        <div class="estimate-field">
+                            <label>Low estimate</label>
+                            <input type="number" placeholder="Minimum plausible" value="${comp.min !== null ? comp.min : ''}" 
+                                   onchange="updateComponent('${comp.id}', 'min', parseFloat(this.value) || null)" step="any">
+                        </div>
+                        <div class="estimate-field">
+                            <label>Best estimate</label>
+                            <input type="number" placeholder="Most likely" value="${comp.estimate !== null ? comp.estimate : ''}" 
+                                   onchange="updateComponent('${comp.id}', 'estimate', parseFloat(this.value) || null)" step="any">
+                        </div>
+                        <div class="estimate-field">
+                            <label>High estimate</label>
+                            <input type="number" placeholder="Maximum plausible" value="${comp.max !== null ? comp.max : ''}" 
+                                   onchange="updateComponent('${comp.id}', 'max', parseFloat(this.value) || null)" step="any">
+                        </div>
+                    </div>
+                    <div class="unit-field">
+                        <input type="text" placeholder="Unit (e.g., people, $, visits/year)" 
+                               value="${escapeHtml(comp.unit || '')}" 
+                               onchange="updateComponent('${comp.id}', 'unit', this.value)">
+                    </div>
+                `;
+            }
+            
+            // Show calculated value
+            if (value !== null) {
+                const uncertaintyPos = getUncertaintyPosition(value);
+                html += `
+                    <div class="calculated-value">
+                        <div class="main-estimate">${formatNumber(value.estimate)} ${escapeHtml(comp.unit || '')}</div>
+                        ${value.min !== null && value.max !== null ? `
+                            <div class="estimate-range">Range: ${formatNumber(value.min)} — ${formatNumber(value.max)}</div>
+                            <div class="uncertainty-bar">
+                                <div class="uncertainty-range" style="left: ${uncertaintyPos.left}%; width: ${uncertaintyPos.width}%;"></div>
+                                <div class="uncertainty-marker" style="left: ${uncertaintyPos.marker}%;"></div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            // Subcomponents area
+            if (hasSubcomponents) {
+                html += `
+                    <div class="subcomponents-header">
+                        <span class="subcomponents-label">Factors:</span>
+                        <button class="add-btn-small" onclick="addSubcomponent('${comp.id}')">+ Add</button>
+                    </div>
+                    <div class="subcomponents">
+                `;
+                comp.subcomponents.forEach(subId => {
+                    const subComp = components[subId];
+                    if (subComp) {
+                        html += `<div id="sub-placeholder-${subId}"></div>`;
+                    }
+                });
+                html += `</div>`;
+            } else {
+                // Leaf node: show option to break down further
+                const breakdownText = isRoot ? 
+                    '+ Decompose into factors (instead of direct estimate)' :
+                    '↳ Break into sub-factors';
+                html += `
+                    <div class="leaf-actions">
+                        <button class="add-btn-inline" onclick="addSubcomponent('${comp.id}')">
+                            ${breakdownText}
+                        </button>
+                    </div>
+                `;
+            }
+            
+            div.innerHTML = html;
+            
+            // Recursively render subcomponents
+            if (hasSubcomponents) {
+                comp.subcomponents.forEach(subId => {
+                    const subComp = components[subId];
+                    if (subComp) {
+                        const placeholder = div.querySelector(`#sub-placeholder-${subId}`);
+                        if (placeholder) {
+                            placeholder.replaceWith(renderComponent(subComp, false));
+                        }
+                    }
+                });
+            }
+            
+            return div;
+        }
+        
+        function generateFormula(comp) {
+            if (!comp.subcomponents || comp.subcomponents.length === 0) return '';
+            
+            const operators = {
+                'multiply': ' × ',
+                'add': ' + ',
+                'divide': ' ÷ '
+            };
+            const operator = operators[comp.method] || ' × ';
+            
+            const terms = comp.subcomponents.map(id => {
+                const sub = components[id];
+                if (!sub) return '?';
+                const value = calculateComponentValue(sub);
+                return value !== null ? formatNumber(value.estimate) : '?';
+            });
+            
+            const result = calculateComponentValue(comp);
+            const resultStr = result !== null ? formatNumber(result.estimate) : '?';
+            
+            return terms.join(operator) + ' = ' + resultStr;
+        }
+        
+        function calculateComponentValue(comp) {
+            if (!comp) return null;
+            
+            if (!comp.subcomponents || comp.subcomponents.length === 0) {
+                // Leaf node
+                if (comp.estimate === null) return null;
+                return {
+                    estimate: comp.estimate,
+                    min: comp.min !== null ? comp.min : comp.estimate * 0.5,
+                    max: comp.max !== null ? comp.max : comp.estimate * 2
+                };
+            }
+            
+            // Calculate from subcomponents
+            const subValues = comp.subcomponents.map(id => calculateComponentValue(components[id]));
+            if (subValues.some(v => v === null)) return null;
+            
+            let estimate, min, max;
+            
+            if (comp.method === 'multiply') {
+                estimate = subValues.reduce((acc, v) => acc * v.estimate, 1);
+                min = subValues.reduce((acc, v) => acc * v.min, 1);
+                max = subValues.reduce((acc, v) => acc * v.max, 1);
+            } else if (comp.method === 'add') {
+                estimate = subValues.reduce((acc, v) => acc + v.estimate, 0);
+                min = subValues.reduce((acc, v) => acc + v.min, 0);
+                max = subValues.reduce((acc, v) => acc + v.max, 0);
+            } else if (comp.method === 'divide') {
+                // First value divided by product of rest
+                if (subValues.length === 0) return null;
+                estimate = subValues[0].estimate;
+                min = subValues[0].min;
+                max = subValues[0].max;
+                for (let i = 1; i < subValues.length; i++) {
+                    estimate /= subValues[i].estimate;
+                    // For division, min divides by max and vice versa
+                    const newMin = min / subValues[i].max;
+                    const newMax = max / subValues[i].min;
+                    min = newMin;
+                    max = newMax;
+                }
+            }
+            
+            return { estimate, min, max };
+        }
+        
+        function getUncertaintyPosition(value) {
+            if (!value || value.min === null || value.max === null || value.estimate === null) {
+                return { left: 10, width: 80, marker: 50 };
+            }
+            
+            // Use log scale for better visualization
+            const logMin = Math.log10(Math.max(value.min, 0.001));
+            const logMax = Math.log10(Math.max(value.max, 0.001));
+            const logEst = Math.log10(Math.max(value.estimate, 0.001));
+            
+            const range = logMax - logMin;
+            if (range <= 0) {
+                return { left: 10, width: 80, marker: 50 };
+            }
+            
+            const markerPos = 10 + ((logEst - logMin) / range) * 80;
+            
+            return {
+                left: 10,
+                width: 80,
+                marker: Math.max(10, Math.min(90, markerPos))
+            };
+        }
+        
+        function updateComponent(id, field, value) {
+            if (components[id]) {
+                components[id][field] = value;
+                renderTree();
+                checkViewButton();
+            }
+        }
+        
+        function addSubcomponent(parentId) {
+            const newId = 'comp_' + componentIdCounter++;
+            components[newId] = {
+                id: newId,
+                name: '',
+                method: 'multiply',
+                subcomponents: [],
+                estimate: null,
+                min: null,
+                max: null,
+                unit: '',
+                parent: parentId
+            };
+            
+            if (!components[parentId].subcomponents) {
+                components[parentId].subcomponents = [];
+            }
+            components[parentId].subcomponents.push(newId);
+            
+            renderTree();
+            checkViewButton();
+            
+            // Focus the new component's name input
+            setTimeout(() => {
+                const newComp = document.querySelector(`#component-${newId} .component-name`);
+                if (newComp) newComp.focus();
+            }, 50);
+        }
+        
+        function removeComponent(id) {
+            const comp = components[id];
+            if (!comp || !comp.parent) return;
+            
+            // Remove from parent
+            const parent = components[comp.parent];
+            if (parent && parent.subcomponents) {
+                parent.subcomponents = parent.subcomponents.filter(subId => subId !== id);
+            }
+            
+            // Recursively remove descendants
+            function removeDescendants(compId) {
+                const c = components[compId];
+                if (c && c.subcomponents) {
+                    c.subcomponents.forEach(removeDescendants);
+                }
+                delete components[compId];
+            }
+            
+            removeDescendants(id);
+            renderTree();
+            checkViewButton();
+        }
+        
+        // ==================== SANITY CHECKS ====================
+        
+        function addSanityCheck() {
+            const newCheck = {
+                id: 'sanity_' + sanityIdCounter++,
+                description: '',
+                reference: '',
+                verdict: null // 'pass', 'warning', 'fail'
+            };
+            sanityChecks.push(newCheck);
+            renderSanityChecks();
+        }
+        
+        function renderSanityChecks() {
+            const container = document.getElementById('sanityChecks');
+            
+            if (sanityChecks.length === 0) {
+                container.innerHTML = '<div class="no-checks">No sanity checks yet. Add one to validate your estimate against external references.</div>';
+                return;
+            }
+            
+            container.innerHTML = sanityChecks.map(check => `
+                <div class="sanity-check" id="check-${check.id}">
+                    <div class="sanity-check-row">
+                        <div>
+                            <textarea placeholder="What are you checking? e.g., 'Compare to known dentist count in similar cities' or 'Check if implied market share is realistic'"
+                                      onchange="updateSanityCheck('${check.id}', 'description', this.value)">${escapeHtml(check.description)}</textarea>
+                            <input type="text" placeholder="Reference value or source" 
+                                   value="${escapeHtml(check.reference)}"
+                                   onchange="updateSanityCheck('${check.id}', 'reference', this.value)"
+                                   style="margin-top: 8px;">
+                        </div>
+                        <div class="sanity-verdict">
+                            <button class="verdict-btn pass ${check.verdict === 'pass' ? 'active' : ''}" 
+                                    onclick="updateSanityCheck('${check.id}', 'verdict', 'pass')">✓ Pass</button>
+                            <button class="verdict-btn warning ${check.verdict === 'warning' ? 'active' : ''}" 
+                                    onclick="updateSanityCheck('${check.id}', 'verdict', 'warning')">⚠ Warning</button>
+                            <button class="verdict-btn fail ${check.verdict === 'fail' ? 'active' : ''}" 
+                                    onclick="updateSanityCheck('${check.id}', 'verdict', 'fail')">✗ Fail</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeSanityCheck('${check.id}')">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateSanityCheck(id, field, value) {
+            const check = sanityChecks.find(c => c.id === id);
+            if (check) {
+                check[field] = value;
+                if (field === 'verdict') {
+                    renderSanityChecks();
+                }
+            }
+        }
+        
+        function removeSanityCheck(id) {
+            sanityChecks = sanityChecks.filter(c => c.id !== id);
+            renderSanityChecks();
+        }
+        
+        // ==================== VIEW ANALYSIS ====================
+        
+        function checkViewButton() {
+            const hasRoot = rootId && components[rootId];
+            const rootValue = hasRoot ? calculateComponentValue(components[rootId]) : null;
+            
+            const container = document.getElementById('viewButtonContainer');
+            if (rootValue !== null) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+        
+        function showAnalysis() {
+            const container = document.getElementById('analysisContent');
+            const root = components[rootId];
+            const rootValue = calculateComponentValue(root);
+            
+            if (!root || !rootValue) {
+                alert('Complete at least the main estimate before viewing analysis.');
+                return;
+            }
+            
+            let html = `
+                <div class="render-question">
+                    <div class="render-question-label">Question</div>
+                    <div class="render-question-text">${escapeHtml(root.name)}</div>
+                </div>
+                
+                <div class="render-result">
+                    <div class="render-result-label">Estimate</div>
+                    <div class="render-result-value">${formatNumber(rootValue.estimate)} ${escapeHtml(root.unit || '')}</div>
+                    <div class="render-result-range">Range: ${formatNumber(rootValue.min)} — ${formatNumber(rootValue.max)}</div>
+                </div>
+            `;
+            
+            // List components
+            const leafComponents = [];
+            function collectLeaves(compId, depth = 0) {
+                const comp = components[compId];
+                if (!comp) return;
+                if (!comp.subcomponents || comp.subcomponents.length === 0) {
+                    leafComponents.push({ comp, depth });
+                } else {
+                    comp.subcomponents.forEach(subId => collectLeaves(subId, depth + 1));
+                }
+            }
+            collectLeaves(rootId);
+            
+            if (leafComponents.length > 0) {
+                html += `
+                    <div class="render-section">
+                        <div class="render-section-title">Input Factors</div>
+                        ${leafComponents.map(({ comp }) => {
+                            const val = calculateComponentValue(comp);
+                            const rangeStr = val && val.min !== null && val.max !== null ?
+                                `Range: ${formatNumber(val.min)} — ${formatNumber(val.max)}` : '';
+                            return `
+                                <div class="render-component">
+                                    <span class="render-component-name">${escapeHtml(comp.name || '(unnamed)')}</span>
+                                    <span class="render-component-value">${val ? formatNumber(val.estimate) : '?'} ${escapeHtml(comp.unit || '')}</span>
+                                    ${rangeStr ? `<span class="render-component-range">${rangeStr}</span>` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+            
+            // Sanity checks
+            const completedChecks = sanityChecks.filter(c => c.description && c.verdict);
+            if (completedChecks.length > 0) {
+                html += `
+                    <div class="render-section">
+                        <div class="render-section-title">Sanity Checks</div>
+                        ${completedChecks.map(check => {
+                            const verdictClass = check.verdict === 'pass' ? 'render-sanity-pass' : 
+                                                 check.verdict === 'warning' ? 'render-sanity-warning' : 'render-sanity-fail';
+                            const verdictIcon = check.verdict === 'pass' ? '✓' : 
+                                                check.verdict === 'warning' ? '⚠' : '✗';
+                            return `
+                                <div class="render-sanity-item ${verdictClass}">
+                                    <span class="render-sanity-icon">${verdictIcon}</span>
+                                    <div class="render-sanity-content">
+                                        <div class="render-sanity-text">${escapeHtml(check.description)}</div>
+                                        ${check.reference ? `<div class="render-sanity-ref">${escapeHtml(check.reference)}</div>` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            document.getElementById('analysisView').classList.remove('hidden');
+            document.getElementById('analysisView').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function hideAnalysis() {
+            document.getElementById('analysisView').classList.add('hidden');
+        }
+        
+        // ==================== DATA MANAGEMENT ====================
+        
+        function saveEstimation() {
+            const data = {
+                version: '1.0',
+                question: document.getElementById('mainQuestion').value,
+                rootId: rootId,
+                components: components,
+                componentIdCounter: componentIdCounter,
+                sanityChecks: sanityChecks,
+                sanityIdCounter: sanityIdCounter,
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `fermi_estimation_${date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadEstimation(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    document.getElementById('mainQuestion').value = data.question || '';
+                    rootId = data.rootId || null;
+                    components = data.components || {};
+                    componentIdCounter = data.componentIdCounter || 0;
+                    sanityChecks = data.sanityChecks || [];
+                    sanityIdCounter = data.sanityIdCounter || 0;
+                    
+                    if (rootId) {
+                        document.getElementById('decompositionSection').classList.remove('hidden');
+                        document.getElementById('sanitySection').classList.remove('hidden');
+                        document.getElementById('nextStepsSection').classList.remove('hidden');
+                        document.getElementById('toolbar').classList.remove('hidden');
+                        renderTree();
+                        renderSanityChecks();
+                        checkViewButton();
+                    }
+                    
+                    hideAnalysis();
+                    alert('Estimation loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        function exportText() {
+            const root = components[rootId];
+            const rootValue = root ? calculateComponentValue(root) : null;
+            
+            let text = 'FERMI ESTIMATION\n';
+            text += '='.repeat(50) + '\n\n';
+            
+            text += 'QUESTION:\n';
+            text += (root ? root.name : document.getElementById('mainQuestion').value) + '\n\n';
+            
+            if (rootValue) {
+                text += 'RESULT:\n';
+                text += `Best estimate: ${formatNumber(rootValue.estimate)} ${root.unit || ''}\n`;
+                text += `Range: ${formatNumber(rootValue.min)} — ${formatNumber(rootValue.max)}\n\n`;
+            }
+            
+            text += 'COMPONENTS:\n';
+            function printComponent(compId, indent = '') {
+                const comp = components[compId];
+                if (!comp) return;
+                const val = calculateComponentValue(comp);
+                text += `${indent}• ${comp.name || '(unnamed)'}: ${val ? formatNumber(val.estimate) : '?'} ${comp.unit || ''}\n`;
+                if (comp.subcomponents && comp.subcomponents.length > 0) {
+                    comp.subcomponents.forEach(subId => printComponent(subId, indent + '  '));
+                }
+            }
+            if (rootId) printComponent(rootId);
+            
+            const completedChecks = sanityChecks.filter(c => c.description);
+            if (completedChecks.length > 0) {
+                text += '\nSANITY CHECKS:\n';
+                completedChecks.forEach(check => {
+                    const symbol = check.verdict === 'pass' ? '✓' : check.verdict === 'warning' ? '⚠' : check.verdict === 'fail' ? '✗' : '?';
+                    text += `${symbol} ${check.description}\n`;
+                    if (check.reference) text += `  Reference: ${check.reference}\n`;
+                });
+            }
+            
+            text += '\n' + '='.repeat(50) + '\n';
+            text += 'Generated: ' + new Date().toLocaleString() + '\n';
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fermi_estimation.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function copyToClipboard() {
+            const root = components[rootId];
+            const rootValue = root ? calculateComponentValue(root) : null;
+            
+            let text = 'FERMI ESTIMATION\n';
+            text += '='.repeat(50) + '\n\n';
+            
+            text += 'QUESTION: ' + (root ? root.name : document.getElementById('mainQuestion').value) + '\n\n';
+            
+            if (rootValue) {
+                text += `RESULT: ${formatNumber(rootValue.estimate)} ${root.unit || ''}\n`;
+                text += `RANGE: ${formatNumber(rootValue.min)} — ${formatNumber(rootValue.max)}\n\n`;
+            }
+            
+            text += 'DECOMPOSITION:\n';
+            function printComponent(compId, indent = '') {
+                const comp = components[compId];
+                if (!comp) return;
+                const val = calculateComponentValue(comp);
+                text += `${indent}• ${comp.name || '(unnamed)'}: ${val ? formatNumber(val.estimate) : '?'} ${comp.unit || ''}\n`;
+                if (comp.subcomponents && comp.subcomponents.length > 0) {
+                    comp.subcomponents.forEach(subId => printComponent(subId, indent + '  '));
+                }
+            }
+            if (rootId) printComponent(rootId);
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Estimation copied to clipboard!');
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Estimation copied to clipboard!');
+            });
+        }
+        
+        function copyForClaude() {
+            const root = components[rootId];
+            const rootValue = root ? calculateComponentValue(root) : null;
+            
+            let analysis = '';
+            analysis += 'QUESTION: ' + (root ? root.name : document.getElementById('mainQuestion').value) + '\n\n';
+            
+            if (rootValue) {
+                analysis += `RESULT: ${formatNumber(rootValue.estimate)} ${root.unit || ''}\n`;
+                analysis += `RANGE: ${formatNumber(rootValue.min)} — ${formatNumber(rootValue.max)}\n\n`;
+            }
+            
+            analysis += 'DECOMPOSITION:\n';
+            function printComponent(compId, indent = '') {
+                const comp = components[compId];
+                if (!comp) return '';
+                let text = '';
+                const val = calculateComponentValue(comp);
+                const rangeStr = val && val.min !== null && val.max !== null ? 
+                    ` [range: ${formatNumber(val.min)} — ${formatNumber(val.max)}]` : '';
+                text += `${indent}• ${comp.name || '(unnamed)'}: ${val ? formatNumber(val.estimate) : '?'} ${comp.unit || ''}${rangeStr}\n`;
+                if (comp.subcomponents && comp.subcomponents.length > 0) {
+                    text += `${indent}  (Combined by: ${comp.method})\n`;
+                    comp.subcomponents.forEach(subId => {
+                        text += printComponent(subId, indent + '  ');
+                    });
+                }
+                return text;
+            }
+            if (rootId) analysis += printComponent(rootId);
+            
+            const completedChecks = sanityChecks.filter(c => c.description);
+            if (completedChecks.length > 0) {
+                analysis += '\nSANITY CHECKS:\n';
+                completedChecks.forEach(check => {
+                    const symbol = check.verdict === 'pass' ? '✓ PASS' : check.verdict === 'warning' ? '⚠ WARNING' : check.verdict === 'fail' ? '✗ FAIL' : '? UNASSESSED';
+                    analysis += `${symbol}: ${check.description}\n`;
+                    if (check.reference) analysis += `  Reference: ${check.reference}\n`;
+                });
+            }
+            
+            const prompt = `I've done a Fermi estimation and need rigorous critique. Challenge my reasoning — I want accuracy, not reassurance.
+
+${analysis}
+═══════════════════════════════════════════════════════════════
+
+Please assess:
+
+1. STRUCTURE: Is my decomposition sound, or have I framed it in a way that introduces systematic error? Are there better ways to carve this at the joints?
+
+2. INPUTS: Which estimates are most likely wrong, and by how much? Where am I probably overconfident?
+
+3. SANITY: What checks should I have done but didn't? Does this pass the laugh test for someone knowledgeable?
+
+4. SENSITIVITY: Which input, if wrong by 2-3x, would most change the answer?
+
+5. BOTTOM LINE: What's your adjusted estimate and confidence level?
+
+Be direct. I need to know where I'm wrong, not reassurance that I tried.`;
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert('Analysis with prompt copied! Paste into a Claude conversation for critical review.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = prompt;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Analysis with prompt copied!');
+            });
+        }
+        
+        function copyTemplate() {
+            const template = document.getElementById('claudeTemplate').innerText;
+            navigator.clipboard.writeText(template).then(() => {
+                alert('Template copied! Fill in your details and paste into a Claude conversation.');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = template;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Template copied!');
+            });
+        }
+        
+        function clearAll() {
+            if (!confirm('Clear all data? This cannot be undone.')) return;
+            
+            document.getElementById('mainQuestion').value = '';
+            rootId = null;
+            components = {};
+            componentIdCounter = 0;
+            sanityChecks = [];
+            sanityIdCounter = 0;
+            
+            document.getElementById('decompositionSection').classList.add('hidden');
+            document.getElementById('sanitySection').classList.add('hidden');
+            document.getElementById('viewButtonContainer').classList.add('hidden');
+            document.getElementById('nextStepsSection').classList.add('hidden');
+            document.getElementById('toolbar').classList.add('hidden');
+            
+            document.getElementById('decompositionTree').innerHTML = '';
+            document.getElementById('sanityChecks').innerHTML = '';
+            hideAnalysis();
+        }
+        
+        // ==================== LOAD EXAMPLE ====================
+        
+        function loadExample() {
+            // Warn if data exists
+            if (rootId || document.getElementById('mainQuestion').value.trim()) {
+                if (!confirm('This will replace your current work. Continue?')) {
+                    return;
+                }
+            }
+            
+            document.getElementById('mainQuestion').value = 'How many piano tuners are in Chicago?';
+            
+            // Build the decomposition
+            rootId = 'comp_0';
+            componentIdCounter = 6;
+            
+            components = {
+                'comp_0': {
+                    id: 'comp_0',
+                    name: 'How many piano tuners are in Chicago?',
+                    method: 'divide',
+                    subcomponents: ['comp_1', 'comp_5'],
+                    estimate: null,
+                    min: null,
+                    max: null,
+                    unit: 'tuners',
+                    parent: null
+                },
+                'comp_1': {
+                    id: 'comp_1',
+                    name: 'Total piano tunings needed per year in Chicago',
+                    method: 'multiply',
+                    subcomponents: ['comp_2', 'comp_3', 'comp_4'],
+                    estimate: null,
+                    min: null,
+                    max: null,
+                    unit: 'tunings/year',
+                    parent: 'comp_0'
+                },
+                'comp_2': {
+                    id: 'comp_2',
+                    name: 'Number of households in Chicago',
+                    method: 'multiply',
+                    subcomponents: [],
+                    estimate: 1100000,
+                    min: 1000000,
+                    max: 1200000,
+                    unit: 'households',
+                    parent: 'comp_1'
+                },
+                'comp_3': {
+                    id: 'comp_3',
+                    name: 'Fraction of households with a piano',
+                    method: 'multiply',
+                    subcomponents: [],
+                    estimate: 0.02,
+                    min: 0.01,
+                    max: 0.04,
+                    unit: '',
+                    parent: 'comp_1'
+                },
+                'comp_4': {
+                    id: 'comp_4',
+                    name: 'Tunings per piano per year',
+                    method: 'multiply',
+                    subcomponents: [],
+                    estimate: 1.5,
+                    min: 1,
+                    max: 2,
+                    unit: 'tunings/year',
+                    parent: 'comp_1'
+                },
+                'comp_5': {
+                    id: 'comp_5',
+                    name: 'Tunings a single tuner can do per year',
+                    method: 'multiply',
+                    subcomponents: [],
+                    estimate: 1200,
+                    min: 800,
+                    max: 1600,
+                    unit: 'tunings/year',
+                    parent: 'comp_0'
+                }
+            };
+            
+            // Add sanity checks
+            sanityChecks = [
+                {
+                    id: 'sanity_0',
+                    description: 'Compare to known ratio of service professionals to population in similar trades (e.g., 1 dentist per 1,500 people)',
+                    reference: 'Dentist ratio ~1:1,500. Piano tuners should be rarer (fewer people own pianos than have teeth).',
+                    verdict: 'pass'
+                },
+                {
+                    id: 'sanity_1',
+                    description: 'Does implied piano tuner income seem reasonable?',
+                    reference: 'At ~1,200 tunings/year × $100/tuning = $120K revenue. After expenses, maybe $70-80K income. Plausible for skilled trade.',
+                    verdict: 'pass'
+                }
+            ];
+            sanityIdCounter = 2;
+            
+            // Show sections
+            document.getElementById('decompositionSection').classList.remove('hidden');
+            document.getElementById('sanitySection').classList.remove('hidden');
+            document.getElementById('nextStepsSection').classList.remove('hidden');
+            document.getElementById('toolbar').classList.remove('hidden');
+            
+            renderTree();
+            renderSanityChecks();
+            checkViewButton();
+            hideAnalysis();
+            
+            alert('Example loaded! This is the classic "piano tuners in Chicago" Fermi estimation.');
+        }
+        
+        // ==================== INITIALIZE ====================
+        
+        renderSanityChecks();
+    </script>
+</body>
+</html>
