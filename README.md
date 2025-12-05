@@ -1,6 +1,6 @@
 # wiser-analyser
 
-A collection of interactive decision-support tools for people doing high-stakes work under uncertainty — particularly in AI safety, existential risk reduction, and other pressing cause areas. Also includes a navigator interface that allows you to easily find the right tool but does not yet link to each tool - you'll have to manually go to the suggested tool file, which lists a bunch of not yet built/finished tools as well as the ones available here. There will be many more tools soon - this is currently in partial + beta release.
+A collection of interactive decision-support tools for people doing high-stakes work under uncertainty — particularly in AI safety, existential risk reduction, and other pressing cause areas. Also includes a navigator interface that allows you to easily find the right tool but does not yet link to each tool - you'll have to manually go to the suggested tool file, which lists a bunch of not yet built/finished tools as well as the ones available here. There will be many more tools soon - this is currently in partial + beta release. There's a bunch of mojibake I've yet to clean up in some of the files, I'll get round to this very soon!
 
 ## What These Tools Are
 
