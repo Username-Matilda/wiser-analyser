@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCDA - Stakeholder Input Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .section h3 {
+            color: #495057;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        label .required {
+            color: #dc3545;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: monospace;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #6c757d;
+        }
+
+        button.danger {
+            background: #dc3545;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        td input[type="number"] {
+            width: 80px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .reciprocal-cell {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .diagonal-cell {
+            background: #e9ecef;
+            font-weight: bold;
+        }
+
+        .inconsistent-cell {
+            background-color: #ffebee !important;
+        }
+
+        .weight-display {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 2px solid #dee2e6;
+        }
+
+        .weight-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .weight-value {
+            background: #667eea;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .consistency-indicator {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .consistency-good {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .consistency-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .consistency-bad {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .json-output {
+            background: #2d2d2d;
+            color: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .scale-reference {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .scale-reference table {
+            margin-top: 10px;
+        }
+
+        .scale-reference th {
+            background: #6c757d;
+        }
+
+        #setupSection {
+            display: block;
+        }
+
+        #weightsSection, #scoresSection, #exportSection {
+            display: none;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: #e9ecef;
+            margin: 0 5px;
+            position: relative;
+        }
+
+        .progress-step.active {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .progress-step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .prefilled-score {
+            background: #e3f2fd !important;
+            border: 2px solid #2196f3 !important;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .type-objective {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .type-subjective {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Stakeholder Input Form</h1>
+            <p>Weights & Performance Scoring</p>
+        </div>
+
+        <div class="content">
+            <div class="progress-indicator">
+                <div class="progress-step active" id="step1">1. Setup</div>
+                <div class="progress-step" id="step2">2. Weights</div>
+                <div class="progress-step" id="step3">3. Scores</div>
+                <div class="progress-step" id="step4">4. Export</div>
+            </div>
+
+            <!-- Setup Section -->
+            <div id="setupSection">
+                <div class="section">
+                    <h2>Your Information</h2>
+                    
+                    <div class="input-group">
+                        <label>Your Name <span class="required">*</span></label>
+                        <input type="text" id="stakeholderName" placeholder="Enter your name">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Load Decision Information</h2>
+                    
+                    <div class="alert alert-info">
+                        <strong>📋 Instructions:</strong> The decision facilitator should have sent you two pieces of information:
+                        <ol style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>Criteria</strong> - The factors you'll evaluate</li>
+                            <li><strong>Alternatives</strong> - The options you're choosing between</li>
+                        </ol>
+                        Paste the JSON data you received below:
+                    </div>
+
+                    <div class="input-group">
+                        <label>Paste Criteria & Alternatives JSON <span class="required">*</span></label>
+                        <textarea id="setupJson" placeholder='{"criteria": [...], "alternatives": [...], "objective_scores": {...}}'></textarea>
+                        <div class="help-text">This should include the criteria list and alternatives to evaluate</div>
+                    </div>
+
+                    <button onclick="loadSetup()" style="font-size: 18px; padding: 15px 40px;">Load Data & Continue</button>
+                </div>
+            </div>
+
+            <!-- Weights Section -->
+            <div id="weightsSection">
+                <div class="section">
+                    <h2>⚖ï¸ Step 1: Determine Criteria Weights (AHP)</h2>
+                    
+                    <div class="alert alert-info">
+                        <strong>What are we doing?</strong> For each pair of criteria, indicate how much more important the <strong>row</strong> criterion is compared to the <strong>column</strong> criterion. This reveals what matters most to you.
+                    </div>
+
+                    <div class="scale-reference">
+                        <strong>ðŸ“ AHP Comparison Scale:</strong>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Value</th>
+                                    <th>Meaning</th>
+                                    <th>When to Use</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>1</strong></td>
+                                    <td>Equal importance</td>
+                                    <td>Both criteria contribute equally</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>3</strong></td>
+                                    <td>Moderate importance</td>
+                                    <td>Experience slightly favors one criterion</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>5</strong></td>
+                                    <td>Strong importance</td>
+                                    <td>Strong evidence favoring one criterion</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>7</strong></td>
+                                    <td>Very strong importance</td>
+                                    <td>A criterion is strongly favored</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>9</strong></td>
+                                    <td>Extreme importance</td>
+                                    <td>Highest possible validity</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2,4,6,8</strong></td>
+                                    <td>Intermediate values</td>
+                                    <td>When compromise is needed</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>0.11-0.99</strong></td>
+                                    <td>Reciprocal values</td>
+                                    <td>When column criterion is more important</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="comparisonMatrix"></div>
+
+                    <button onclick="calculateWeights()" style="margin-top: 20px;">Calculate My Weights</button>
+                    
+                    <div id="weightsDisplay"></div>
+                    <div id="consistencyDisplay"></div>
+
+                    <button onclick="proceedToScoring()" id="proceedToScoring" style="display: none; margin-top: 20px; font-size: 18px; padding: 15px 40px;">Continue to Scoring →</button>
+                </div>
+            </div>
+
+            <!-- Scores Section -->
+            <div id="scoresSection">
+                <div class="section">
+                    <h2>📊 Step 2: Score Alternatives</h2>
+                    
+                    <div class="alert alert-info">
+                        <strong>What are we doing?</strong> Rate how well each alternative performs on each criterion.<br>
+                        <strong>📊 Objective criteria</strong> (blue background) are pre-filled with factual data.<br>
+                        <strong>💭 Subjective criteria</strong> require your judgment - score them based on your perspective.
+                    </div>
+
+                    <div id="scoringTables"></div>
+
+                    <button onclick="proceedToExport()" style="margin-top: 20px; font-size: 18px; padding: 15px 40px;">Continue to Export →</button>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div id="exportSection">
+                <div class="section">
+                    <h2>✅ Complete! Export Your Data</h2>
+                    
+                    <div class="alert alert-success">
+                        <strong>🎉 You're done!</strong> Your weights and scores have been recorded. Now export your data to send back to the decision facilitator.
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>📧 Next Step:</strong>
+                        <ol style="margin-left: 20px; margin-top: 10px;">
+                            <li>Click "Generate Data" below</li>
+                            <li>Download the JSON file OR copy the text manually</li>
+                            <li>Email your data to the person who sent you this form</li>
+                        </ol>
+                    </div>
+
+                    <button onclick="generateJSON()" style="font-size: 18px; padding: 15px 40px;">1ï¸⃣ Generate Data</button>
+                    
+                    <div id="exportButtons" style="display: none; margin-top: 20px;">
+                        <div class="alert alert-success">
+                            ✓ Data generated successfully! Now choose how to export:
+                        </div>
+                        <button onclick="downloadJSON()" class="secondary">💾 Download JSON File</button>
+                        <p style="margin-top: 15px; color: #6c757d;">
+                            <strong>Or copy manually:</strong> Select all the text in the box below and copy it (Ctrl+C or Cmd+C).
+                        </p>
+                    </div>
+
+                    <div id="jsonOutput" style="display: none; margin-top: 20px;">
+                        <h3 style="margin-bottom: 10px;">Generated Data:</h3>
+                        <div class="json-output" id="jsonDisplay"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let data = {
+            stakeholderName: '',
+            criteria: [],
+            alternatives: [],
+            objectiveScores: {},
+            comparisons: {},
+            weights: {},
+            scores: {},
+            consistencyRatio: 0
+        };
+
+        function loadSetup() {
+            const name = document.getElementById('stakeholderName').value.trim();
+            const jsonText = document.getElementById('setupJson').value.trim();
+            
+            if (!name) {
+                alert('Please enter your name first.');
+                return;
+            }
+
+            if (!jsonText) {
+                alert('Please paste the setup JSON first.');
+                return;
+            }
+
+            try {
+                let setup;
+                
+                // The flexible parser: accept truth in all its forms
+                try {
+                    // Attempt standard parse
+                    setup = JSON.parse(jsonText);
+                } catch (parseError) {
+                    // Standard parse failed - likely multiple objects pasted sequentially
+                    // Take only the first valid setup object
+                    const objectStrings = jsonText
+                        .split(/\}\s*\{/)
+                        .map((str, idx, arr) => {
+                            if (idx === 0) return str + '}';
+                            if (idx === arr.length - 1) return '{' + str;
+                            return '{' + str + '}';
+                        })
+                        .filter(str => str.trim());
+                    
+                    // Parse first object that looks like setup
+                    for (const str of objectStrings) {
+                        try {
+                            const obj = JSON.parse(str);
+                            if (obj.criteria && obj.alternatives) {
+                                setup = obj;
+                                break;
+                            }
+                        } catch (e) {
+                            continue;
+                        }
+                    }
+                    
+                    if (!setup) {
+                        throw new Error('No valid setup object found');
+                    }
+                }
+                
+                if (!setup.criteria || !Array.isArray(setup.criteria)) {
+                    throw new Error('Invalid format: missing criteria array');
+                }
+
+                if (!setup.alternatives || !Array.isArray(setup.alternatives)) {
+                    throw new Error('Invalid format: missing alternatives array');
+                }
+
+                data.stakeholderName = name;
+                data.criteria = setup.criteria;
+                data.alternatives = setup.alternatives;
+                data.objectiveScores = setup.objective_scores || {};
+
+                // Filter to only leaf criteria for weighting
+                data.leafCriteria = data.criteria.filter(c => !c.is_parent);
+
+                if (data.leafCriteria.length < 2) {
+                    throw new Error('Need at least 2 criteria for comparison');
+                }
+
+                // Proceed to weights section
+                document.getElementById('setupSection').style.display = 'none';
+                document.getElementById('weightsSection').style.display = 'block';
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step1').classList.add('completed');
+                document.getElementById('step2').classList.add('active');
+
+                renderComparisonMatrix();
+                
+            } catch (error) {
+                alert('Error loading setup: ' + error.message);
+            }
+        }
+
+        function renderComparisonMatrix() {
+            const criteria = data.leafCriteria;
+            const n = criteria.length;
+            
+            let html = '<h3>Pairwise Comparisons</h3>';
+            html += '<div style="overflow-x: auto;"><table><thead><tr><th></th>';
+            
+            criteria.forEach(crit => {
+                html += `<th>${crit.name}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            for (let i = 0; i < n; i++) {
+                html += `<tr><th>${criteria[i].name}</th>`;
+                
+                for (let j = 0; j < n; j++) {
+                    if (i === j) {
+                        html += '<td class="diagonal-cell">1.0</td>';
+                    } else if (i < j) {
+                        const key = `${criteria[i].id}_${criteria[j].id}`;
+                        const value = data.comparisons[key] || 1;
+                        html += `<td><input type="number" id="comp_${i}_${j}" 
+                                value="${value}" min="0.11" max="9" step="0.01" 
+                                onchange="updateComparison(${i}, ${j})"></td>`;
+                    } else {
+                        html += `<td class="reciprocal-cell" id="recip_${i}_${j}">-</td>`;
+                    }
+                }
+                
+                html += '</tr>';
+            }
+
+            html += '</tbody></table></div>';
+            document.getElementById('comparisonMatrix').innerHTML = html;
+            
+            updateAllReciprocals();
+        }
+
+        function updateComparison(i, j) {
+            const criteria = data.leafCriteria;
+            const value = parseFloat(document.getElementById(`comp_${i}_${j}`).value);
+            const key = `${criteria[i].id}_${criteria[j].id}`;
+            data.comparisons[key] = value;
+            
+            const recipCell = document.getElementById(`recip_${j}_${i}`);
+            if (recipCell) {
+                recipCell.textContent = (1 / value).toFixed(3);
+            }
+        }
+
+        function updateAllReciprocals() {
+            const criteria = data.leafCriteria;
+            const n = criteria.length;
+            
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    const key = `${criteria[i].id}_${criteria[j].id}`;
+                    const value = data.comparisons[key] || 1;
+                    const recipCell = document.getElementById(`recip_${j}_${i}`);
+                    if (recipCell) {
+                        recipCell.textContent = (1 / value).toFixed(3);
+                    }
+                }
+            }
+        }
+
+        function calculateWeights() {
+            const criteria = data.leafCriteria;
+            const n = criteria.length;
+
+            // Build comparison matrix
+            const matrix = [];
+            for (let i = 0; i < n; i++) {
+                matrix[i] = [];
+                for (let j = 0; j < n; j++) {
+                    if (i === j) {
+                        matrix[i][j] = 1;
+                    } else if (i < j) {
+                        const key = `${criteria[i].id}_${criteria[j].id}`;
+                        matrix[i][j] = data.comparisons[key] || 1;
+                    } else {
+                        const key = `${criteria[j].id}_${criteria[i].id}`;
+                        matrix[i][j] = 1 / (data.comparisons[key] || 1);
+                    }
+                }
+            }
+
+            // Calculate weights using geometric mean
+            const weightsArray = [];
+            for (let i = 0; i < n; i++) {
+                let product = 1;
+                for (let j = 0; j < n; j++) {
+                    product *= matrix[i][j];
+                }
+                weightsArray[i] = Math.pow(product, 1 / n);
+            }
+
+            // Normalize
+            const sum = weightsArray.reduce((a, b) => a + b, 0);
+            const normalizedWeights = weightsArray.map(w => w / sum);
+
+            // Store weights
+            data.weights = {};
+            criteria.forEach((crit, i) => {
+                data.weights[crit.id] = normalizedWeights[i];
+            });
+
+            // Calculate consistency
+            const ci = calculateConsistencyIndex(matrix, normalizedWeights);
+            const ri = [0, 0, 0.58, 0.90, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49][n] || 1.49;
+            data.consistencyRatio = ci / ri;
+
+            displayWeights(normalizedWeights);
+            displayConsistency();
+            highlightInconsistentCells(matrix, normalizedWeights);
+
+            document.getElementById('proceedToScoring').style.display = 'block';
+        }
+
+        function displayWeights(weightsArray) {
+            const criteria = data.leafCriteria;
+            let html = '<div class="weight-display"><h4>Your Calculated Weights:</h4>';
+            
+            criteria.forEach((crit, i) => {
+                html += `
+                    <div class="weight-item">
+                        <span><strong>${crit.name}</strong></span>
+                        <span class="weight-value">${(weightsArray[i] * 100).toFixed(2)}%</span>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            document.getElementById('weightsDisplay').innerHTML = html;
+        }
+
+        function displayConsistency() {
+            let consistencyClass = 'consistency-good';
+            let consistencyText = 'Excellent - Your judgments are highly consistent!';
+            
+            if (data.consistencyRatio > 0.1) {
+                consistencyClass = 'consistency-bad';
+                consistencyText = 'Poor - Please review and revise your comparisons. Inconsistent cells are highlighted in red.';
+            } else if (data.consistencyRatio > 0.05) {
+                consistencyClass = 'consistency-warning';
+                consistencyText = 'Acceptable - Minor inconsistencies present but within acceptable range.';
+            }
+
+            document.getElementById('consistencyDisplay').innerHTML = `
+                <div class="${consistencyClass}">
+                    <strong>Consistency Ratio: ${data.consistencyRatio.toFixed(3)}</strong><br>
+                    ${consistencyText}
+                </div>
+            `;
+        }
+
+        function calculateConsistencyIndex(matrix, weights) {
+            const n = matrix.length;
+            let lambdaMax = 0;
+
+            for (let i = 0; i < n; i++) {
+                let sum = 0;
+                for (let j = 0; j < n; j++) {
+                    sum += matrix[i][j] * weights[j];
+                }
+                lambdaMax += sum / weights[i];
+            }
+
+            lambdaMax /= n;
+            return (lambdaMax - n) / (n - 1);
+        }
+
+        function highlightInconsistentCells(matrix, weights) {
+            const n = matrix.length;
+            const threshold = 0.15;
+
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    const actual = matrix[i][j];
+                    const expected = weights[i] / weights[j];
+                    const deviation = Math.abs(actual - expected) / expected;
+
+                    const cell = document.getElementById(`comp_${i}_${j}`);
+                    if (cell) {
+                        if (deviation > threshold) {
+                            cell.parentElement.classList.add('inconsistent-cell');
+                        } else {
+                            cell.parentElement.classList.remove('inconsistent-cell');
+                        }
+                    }
+                }
+            }
+        }
+
+        function proceedToScoring() {
+            if (Object.keys(data.weights).length === 0) {
+                alert('Please calculate your weights first.');
+                return;
+            }
+
+            document.getElementById('weightsSection').style.display = 'none';
+            document.getElementById('scoresSection').style.display = 'block';
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step2').classList.add('completed');
+            document.getElementById('step3').classList.add('active');
+
+            renderScoringTables();
+        }
+
+        function renderScoringTables() {
+            const criteria = data.leafCriteria;
+            const alternatives = data.alternatives;
+
+            let html = '<table><thead><tr><th>Alternative</th>';
+            
+            criteria.forEach(crit => {
+                const typeLabel = crit.type === 'objective' ? '📊' : '💭';
+                html += `<th>${typeLabel} ${crit.name}${crit.unit ? ` (${crit.unit})` : ''}</th>`;
+            });
+            
+            html += '</tr></thead><tbody>';
+
+            alternatives.forEach(alt => {
+                html += `<tr><td><strong>${alt.name}</strong></td>`;
+                
+                criteria.forEach(crit => {
+                    const key = `${alt.id}_${crit.id}`;
+                    
+                    if (crit.type === 'objective' && data.objectiveScores[key] !== undefined) {
+                        // Pre-filled objective score
+                        html += `<td class="prefilled-score"><input type="number" 
+                                value="${data.objectiveScores[key]}" 
+                                readonly 
+                                title="Objective score (pre-filled)" 
+                                step="0.01"></td>`;
+                        data.scores[key] = data.objectiveScores[key];
+                    } else {
+                        // Subjective score to be filled
+                        const value = data.scores[key] || '';
+                        html += `<td><input type="number" 
+                                value="${value}" 
+                                onchange="updateScore('${alt.id}', '${crit.id}', this.value)" 
+                                step="0.01"></td>`;
+                    }
+                });
+                
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('scoringTables').innerHTML = html;
+        }
+
+        function updateScore(altId, critId, value) {
+            const key = `${altId}_${critId}`;
+            data.scores[key] = parseFloat(value) || 0;
+        }
+
+        function proceedToExport() {
+            document.getElementById('scoresSection').style.display = 'none';
+            document.getElementById('exportSection').style.display = 'block';
+            document.getElementById('step3').classList.remove('active');
+            document.getElementById('step3').classList.add('completed');
+            document.getElementById('step4').classList.add('active');
+        }
+
+        function generateJSON() {
+            const output = {
+                stakeholder_name: data.stakeholderName,
+                submission_date: new Date().toISOString(),
+                criteria: data.leafCriteria.map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    weight: data.weights[c.id] || 0
+                })),
+                comparisons: data.comparisons,
+                consistency_ratio: data.consistencyRatio,
+                scores: data.scores
+            };
+
+            const jsonString = JSON.stringify(output, null, 2);
+            document.getElementById('jsonDisplay').textContent = jsonString;
+            document.getElementById('jsonOutput').style.display = 'block';
+            document.getElementById('exportButtons').style.display = 'block';
+            
+            document.getElementById('jsonOutput').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function downloadJSON() {
+            const jsonText = document.getElementById('jsonDisplay').textContent;
+            
+            if (!jsonText) {
+                alert('Please generate data first.');
+                return;
+            }
+
+            const blob = new Blob([jsonText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            const stakeholderName = data.stakeholderName.replace(/\s+/g, '_');
+            const timestamp = new Date().toISOString().split('T')[0];
+            
+            a.href = url;
+            a.download = `stakeholder_${stakeholderName}_${timestamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
