@@ -619,7 +619,7 @@
                 </div>
                 
                 <div class="prompt-card">
-                    <h4>⏰ The Time Traveller</h4>
+                    <h4>â° The Time Traveller</h4>
                     <p>Imagine someone from 2050 looking back at your hypothesis. What would they find quaint, naive, or obviously wrong? What "obvious truths" of today might be tomorrow's misconceptions?</p>
                 </div>
                 
@@ -1006,7 +1006,7 @@
                     const hasPlausible = scored.some(a => a.support === 1);
                     if (hasPlausible) {
                         container.innerHTML = `<div class="caution-state">
-                            <strong>⚠️ Caution:</strong> Your hypothesis rests partly on "plausible" assumptions — beliefs that seem reasonable but haven't been directly verified. 
+                            <strong>⚠ï¸ Caution:</strong> Your hypothesis rests partly on "plausible" assumptions — beliefs that seem reasonable but haven't been directly verified. 
                             Consider: what would it take to upgrade these to "well verified"? Is there evidence you could check?
                         </div>`;
                     } else {
@@ -1021,7 +1021,7 @@
             const relLabels = { 0: 'Peripheral', 1: 'Important', 2: 'Essential' };
 
             let html = '<div class="critical-section">';
-            html += `<div class="critical-header">⚠️ ${uniqueFlagged.length} assumption${uniqueFlagged.length > 1 ? 's' : ''} requiring attention</div>`;
+            html += `<div class="critical-header">⚠ï¸ ${uniqueFlagged.length} assumption${uniqueFlagged.length > 1 ? 's' : ''} requiring attention</div>`;
             
             uniqueFlagged.forEach(a => {
                 const idx = getAssumptionIndex(a.id);

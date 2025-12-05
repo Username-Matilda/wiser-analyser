@@ -1105,7 +1105,7 @@
                 typeMarker = '◆ ';
                 cssClass = 'diagram-node-pathway';
             } else {
-                typeMarker = '● ';
+                typeMarker = 'â— ';
                 cssClass = 'diagram-node-option';
             }
             
@@ -1335,7 +1335,7 @@
             const children = networkNodes.filter(n => n.parentKey === parentKey);
             
             children.forEach(child => {
-                const marker = child.type === 'pathway' ? '◆' : '●';
+                const marker = child.type === 'pathway' ? '◆' : 'â—';
                 const label = child.type === 'pathway' ? 'Pathway' : 'Option';
                 result += `${indent}${marker} [${label}] ${child.text || '(empty)'}\n`;
                 result += buildTextTree(`node_${child.id}`, indent + '  ');
